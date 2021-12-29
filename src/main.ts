@@ -1,0 +1,50 @@
+import { createApp } from 'vue';
+import router from './router';
+import App from './App.vue';
+import PrimeVue from 'primevue/config';
+import ConfirmationService from 'primevue/confirmationservice';
+import ToastService from 'primevue/toastservice';
+
+import TabMenu from 'primevue/tabmenu';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
+import Spinner from 'primevue/progressspinner';
+import TextInput from 'primevue/inputtext';
+import Message from 'primevue/message';
+import Splitter from 'primevue/splitter';
+import SplitterPanel from 'primevue/splitterpanel';
+import Dropdown from 'primevue/dropdown';
+import Dialog from 'primevue/dialog';
+import ConfirmDialog from 'primevue/confirmdialog';
+import Toast from 'primevue/toast';
+import Divider from 'primevue/divider';
+import Card from 'primevue/card';
+import InputSwitch from 'primevue/inputswitch';
+import Panel from 'primevue/panel';
+
+const app = createApp(App);
+app.use(router);
+app.use(PrimeVue);
+app.use(ConfirmationService);
+app.use(ToastService);
+app.component('TabMenu', TabMenu);
+app.component('DataTable', DataTable);
+app.component('Column', Column);
+app.component('Button', Button);
+app.component('Spinner', Spinner);
+app.component('TextInput', TextInput);
+app.component('Message', Message);
+app.component('Splitter', Splitter);
+app.component('SplitterPanel', SplitterPanel);
+app.component('Dropdown', Dropdown);
+app.component('Dialog', Dialog);
+app.component('ConfirmDialog', ConfirmDialog);
+app.component('Toast', Toast);
+app.component('Divider', Divider);
+app.component('Card', Card);
+app.component('InputSwitch', InputSwitch);
+app.component('Panel', Panel);
+
+
+app.mount('#app');
