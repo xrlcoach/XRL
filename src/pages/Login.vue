@@ -43,7 +43,7 @@
             path: '/',
           });
         } catch (err) {
-          error.value = err;
+          error.value = String(err);
         } finally {
           loading.value = false;
         }

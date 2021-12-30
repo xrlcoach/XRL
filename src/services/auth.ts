@@ -1,3 +1,5 @@
+import { store } from '../store';
+import { MutationTypes } from '../vuexTypes';
 import { SetData } from './session';
 import { GetActiveUserInfo, GetCurrentRoundInfo, GetCurrentRoundStatus, Login } from './xrlApi';
 
@@ -16,6 +18,7 @@ export function LogoutUser() {
   document.cookie = 'round=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   document.cookie = 'team=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
   sessionStorage.clear();
+  store.commit(MutationTypes.CLEAR_SESSION_DATA);
 }
 
 export async function LoadSessionData() {
@@ -33,4 +36,9 @@ export async function LoadSessionData() {
   document.cookie = `team=${
     userInfo.team_short
   }; expires=${expiry.toUTCString()}; Secure`;
+  // Save in Vuex Store
+  store.commit(MutationTypes.SET_ACTIVE_USER, userInfo);
+  if (roundInfo) {
+    store.commit(MutationTypes.SET_CURRENT_ROUND, roundInfo);
+  }
 }

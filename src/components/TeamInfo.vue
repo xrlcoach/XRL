@@ -50,57 +50,34 @@
 </template>
 
 <script lang="ts">
-  import {
-    computed,
-    defineComponent,
-    onBeforeMount,
-    onMounted,
-    ref,
-  } from 'vue';
-  import { XrlUser } from '../global';
-  import { GetOrdinal } from '../services/utils';
-  import Chart from 'primevue/chart';
-  import { GetAllUserInfoSorted, GetUserInfo } from '../services/users';
+  import { computed, defineComponent } from "vue";
+  import { GetOrdinal } from "../services/utils";
+  import Chart from "primevue/chart";
+  import { store } from "../store";
 
   export default defineComponent({
     setup() {
-      const loading = ref(false);
-      const error = ref('');
-
-      const ladder = ref<XrlUser[]>();
-      const activeUser = ref<XrlUser>();
-
-      const loadData = async () => {
-        loading.value = true;
-        try {
-          ladder.value = await GetAllUserInfoSorted();
-          activeUser.value = await GetUserInfo();
-        } catch (err) {
-          error.value = String(err);
-        } finally {
-          loading.value = false;
-        }
-      };
-
-      onBeforeMount(() => {
-        loadData();
-      });
+      const activeUser = computed(() => store.state.user);
+      const ladder = computed(() => store.getters.xrlLadder);
+      const loading = computed(() => !activeUser.value || !ladder.value);
 
       const position = computed(() => {
         return GetOrdinal(
           (ladder?.value?.findIndex(
-            u => u.username == activeUser?.value?.username
+            (u) => u.username == activeUser?.value?.username
           ) ?? 0) + 1
         );
       });
 
       const imgSrc = computed(() => {
-        return activeUser.value ? `src/assets/${activeUser?.value?.team_short}.png` : null;
+        return activeUser.value
+          ? `src/assets/${activeUser?.value?.team_short}.png`
+          : null;
       });
 
       const resultData = computed(() => {
         return {
-          labels: ['Wins', 'Draws', 'Losses'],
+          labels: ["Wins", "Draws", "Losses"],
           datasets: [
             {
               data: [
@@ -108,7 +85,7 @@
                 activeUser?.value?.stats.draws,
                 activeUser?.value?.stats.losses,
               ],
-              backgroundColor: ['#81C784', '#fdd87d', '#F48FB1'],
+              backgroundColor: ["#81C784", "#fdd87d", "#F48FB1"],
             },
           ],
         };
@@ -123,21 +100,21 @@
       );
       const pointsData = computed(() => {
         return {
-          labels: ['Points'],
+          labels: ["Points"],
           datasets: [
             {
-              label: 'For',
-              backgroundColor: '#81C784',
+              label: "For",
+              backgroundColor: "#81C784",
               data: [activeUser?.value?.stats.for],
             },
             {
-              label: 'Against',
-              backgroundColor: '#F48FB1',
+              label: "Against",
+              backgroundColor: "#F48FB1",
               data: [activeUser?.value?.stats.against],
             },
             {
-              label: 'Diff',
-              backgroundColor: diff.value > 0 ? '#81C784' : '#F48FB1',
+              label: "Diff",
+              backgroundColor: diff.value > 0 ? "#81C784" : "#F48FB1",
               data: [diff.value],
             },
           ],
@@ -148,10 +125,10 @@
         scales: {
           yAxes: [
             {
-              type: 'linear',
+              type: "linear",
               display: true,
-              position: 'left',
-              id: 'y-axis-1',
+              position: "left",
+              id: "y-axis-1",
               ticks: {
                 min: Math.min(0, diff.value),
               },

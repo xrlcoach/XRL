@@ -1,15 +1,28 @@
 import { XrlUser } from "../global";
+import { store } from "../store";
+import { MutationTypes } from "../vuexTypes";
 import { GetData, SetData } from "./session";
 import { GetActiveUserInfo, GetAllUsers } from "./xrlApi";
 
-export async function GetUserInfo(): Promise<XrlUser> {
-  const userFromStorage = GetData('activeUser')
-  if (userFromStorage) {
-    return JSON.parse(userFromStorage) as XrlUser;
-  } 
-  const userInfoFromApi = await GetActiveUserInfo();
-  SetData('activeUser', JSON.stringify(userInfoFromApi));
-  return userInfoFromApi;
+export async function GetUserInfo(): Promise<void> {
+  if (!store.state.user) {
+    const user = await GetActiveUserInfo();
+    store.commit(MutationTypes.SET_ACTIVE_USER, user);
+  }
+  // const userFromStorage = GetData('activeUser')
+  // if (userFromStorage) {
+  //   return JSON.parse(userFromStorage) as XrlUser;
+  // } 
+  // const userInfoFromApi = await GetActiveUserInfo();
+  // SetData('activeUser', JSON.stringify(userInfoFromApi));
+  // return userInfoFromApi;
+}
+
+export async function GetAllUsersInfo(): Promise<void> {
+  if (!store.state.allUsers) {
+    const users = await GetAllUsers();
+    store.commit(MutationTypes.SET_ALL_USERS, users);
+  }
 }
 
 export async function GetAllUserInfoSorted(): Promise<XrlUser[]> {

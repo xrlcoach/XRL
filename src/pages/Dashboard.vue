@@ -4,29 +4,40 @@
       <TeamInfo />
       <RecentFixtures />
       <Inbox />
-      <SquadTable v-if="squad" name="First Team Squad" :squad="squad" />
+      <SquadTable v-if="squad" name="First Team Squad" :squad="sortedSquad" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-  import { defineComponent, onBeforeMount, ref } from 'vue';
-  import { TeamInfo, RecentFixtures, SquadTable, Inbox } from '../components';
-  import { Player } from '../global';
-  import { DefaultPlayerSort, GetUserSquad } from '../services/players';
+  import { computed, defineComponent, onMounted, watch } from "vue";
+  import { TeamInfo, RecentFixtures, SquadTable, Inbox } from "../components";
+  import { DefaultPlayerSort } from "../services/players";
+  import { useXrlStore } from "../store";
+  import { ActionTypes, MutationTypes } from "../vuexTypes";
+  import type { XrlStore } from "../vuexTypes";
 
   export default defineComponent({
     setup() {
-      // const user = ref<XrlUser>();
-      // onBeforeMount(async () => {
-      //   user.value = await GetUserInfo();
-      // });
-      const squad = ref<Player[]>();
-      onBeforeMount(async () => {
-        squad.value = (await GetUserSquad()).sort(DefaultPlayerSort);
+      const store = useXrlStore() as XrlStore;
+      store.dispatch(ActionTypes.GetActiveUser);
+      store.dispatch(ActionTypes.GetAllUsers);
+      store.dispatch(ActionTypes.GetAllFixtures);
+      store.dispatch(ActionTypes.GetAllPlayers);
+      const currentRound = computed(() => store.getters.currentRound);
+      const teamShort = computed(() => store.getters.activeUserTeamShort);
+      const squad = computed(() => store.getters.squad);
+      const sortedSquad = computed(() => squad.value.sort(DefaultPlayerSort));
+      watch(currentRound, (newValue) => {
+        console.log(newValue);
       });
+      watch(teamShort, (newValue) => {
+        console.log(newValue);
+      });
+      onMounted(() => console.log(teamShort));
       return {
-        squad
+        squad,
+        sortedSquad,
       };
     },
     components: {

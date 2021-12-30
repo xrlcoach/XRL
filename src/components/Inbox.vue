@@ -20,19 +20,18 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onBeforeMount, ref } from 'vue';
+  import { computed, defineComponent, onBeforeMount, ref } from 'vue';
   import { UserMessage, XrlUser } from '../global';
   import { GetUserInfo } from '../services/users';
   import { UpdateUserInbox } from '../services/xrlApi';
+import { useXrlStore } from '../store';
+import { XrlStore } from '../vuexTypes';
 
   export default defineComponent({
     setup() {
-      const user = ref<XrlUser>();
-      const inbox = ref<UserMessage[]>([]);
-      onBeforeMount(async () => {
-        user.value = await GetUserInfo();
-        inbox.value = user.value.inbox;
-      });
+      const store = useXrlStore() as XrlStore;
+      const user = computed(() => store.state.user);
+      const inbox = computed(() => store.state.user?.inbox ?? []);
       const deleteMessage = async (messageBody: string) => {
         try {
           //Find index of message in user's inbox array

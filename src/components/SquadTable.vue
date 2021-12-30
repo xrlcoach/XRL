@@ -70,11 +70,11 @@
       squad: Array,
     },
     setup(props) {
-      const players = props.squad as Player[];
+      const players = computed(() => props.squad as Player[]);
       const input = ref('');
       const searchTerm = ref('');
       const filteredPlayers = computed(() => {
-        return players.filter(p => p.search_name.includes(searchTerm.value));
+        return players.value.filter(p => p.search_name.includes(searchTerm.value));
       });
       const clearSearch = () => {
         input.value = '';

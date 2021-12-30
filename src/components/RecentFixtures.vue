@@ -14,34 +14,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, onMounted, ref } from 'vue'
+import { computed, defineComponent, onBeforeMount, onMounted, ref } from 'vue'
 import { XrlFixture } from '../global';
 import { GetUserActiveFixture, GetUserLastFixture } from '../services/rounds';
+import { useXrlStore } from '../store';
+import { XrlStore } from '../vuexTypes';
 import FixturePreview from './FixturePreview.vue';
 
 export default defineComponent({
   setup () {
+    const store = useXrlStore() as XrlStore;
+
     const loading = ref(false);
     const error = ref('');
 
-    const lastMatch = ref<XrlFixture>();
-    const nextMatch = ref<XrlFixture>();
-
-    const loadData = async () => {
-      loading.value = true;
-      try {
-        lastMatch.value = await GetUserLastFixture();
-        nextMatch.value = await GetUserActiveFixture();
-      } catch (err) {
-        error.value = err;
-      } finally {
-        loading.value = false;
-      }
-    }
-
-    onBeforeMount(() => {
-      loadData()
-    });
+    const lastMatch = computed(() => store.getters.lastMatch);
+    const nextMatch = computed(() => store.getters.nextMatch);
 
     return {
       loading,

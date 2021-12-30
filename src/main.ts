@@ -22,9 +22,12 @@ import Divider from 'primevue/divider';
 import Card from 'primevue/card';
 import InputSwitch from 'primevue/inputswitch';
 import Panel from 'primevue/panel';
+import { key, store } from './store';
+import { XrlStore } from './vuexTypes';
 
 const app = createApp(App);
 app.use(router);
+app.use(store as XrlStore, key);
 app.use(PrimeVue);
 app.use(ConfirmationService);
 app.use(ToastService);
