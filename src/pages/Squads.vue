@@ -21,7 +21,6 @@
         v-if="loaded"
         :name="squadName"
         :squad="players"
-        :key="players"
       />
       <div v-else style="height: 100%; display: flex; align-items: center; justify-content: center;">
       <LoadingIndicator />
@@ -31,7 +30,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, PropType, ref, watch } from 'vue';
+  import { computed, defineComponent, onMounted, PropType, ref, watch } from 'vue';
   import { XrlTeam, NrlClub, Player } from '../global';
   import { NrlClubs, XrlTeams } from '../services/players';
   import { SquadTable, LoadingIndicator } from '../components';
@@ -40,6 +39,7 @@
     GetPlayersFromNrlClub,
     GetPlayersFromXrlTeam,
   } from '../services/xrlApi';
+import { useXrlStore } from '../store';
 
   export default defineComponent({
     props: {
@@ -49,46 +49,22 @@
       },
     },
     setup(props) {
+      const store = useXrlStore();
+
       const loaded = ref(false);
       const error = ref('');
 
       const xrlTeams = Array.from(XrlTeams) as string[];
       const nrlClubs = Array.from(NrlClubs) as string[];
 
-      const squadName = ref(props.squadName || GetActiveUserTeamShort());
+      const squadName = ref<XrlTeam | NrlClub>(props.squadName || store.getters.activeUserTeamShort);
 
-      const squadIsXrlTeam = (name: string) => {
-        return xrlTeams.includes(name);
-      };
+      const isXrlTeam = (name: string): name is XrlTeam => {
+        if (xrlTeams.includes(name)) return true;
+        return false;
+      }
 
-      const players = ref([] as Player[]);
-
-      const getPlayers = async (name: string) => {
-        try {
-          loaded.value = false;
-          if (squadIsXrlTeam(name)) {
-            players.value = await GetPlayersFromXrlTeam(name);
-          } else {
-            players.value = await GetPlayersFromNrlClub(name);
-          }
-        } catch (err) {
-          error.value = err;
-        } finally {
-          loaded.value = true;
-        }
-      };
-
-      watch(squadName, async newValue => {
-        getPlayers(newValue);
-      });
-
-      onMounted(async () => {
-        try {
-          await getPlayers(squadName.value);
-        } catch (err) {
-          error.value = err;
-        } 
-      });
+      const players = computed(() => isXrlTeam(squadName.value) ? store.getters.getXrlSquad(squadName.value) : store.getters.getNrlSquad(squadName.value));
 
       return {
         loaded,

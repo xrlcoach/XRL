@@ -44,31 +44,23 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, ref } from 'vue';
+  import { computed, defineComponent, onMounted, ref } from 'vue';
   import { XrlUser } from '../global';
   import { GetAllUserInfoSorted } from '../services/users';
+  import { useXrlStore } from '../store';
 
   export default defineComponent({
     setup() {
+      const store = useXrlStore();
       const loaded = ref(false);
       const error = ref('');
 
-      const ladder = ref([] as XrlUser[]);
+      const ladder = computed(() => store.getters.xrlLadder);
 
       const selectedTeam = ref<XrlUser>();
       const onSelectTeam = () => {
         console.log(selectedTeam.value?.team_name);
       };
-
-      onMounted(async () => {
-        try {
-          ladder.value = await GetAllUserInfoSorted();
-        } catch (err) {
-          error.value = err;
-        } finally {
-          loaded.value = true;
-        }
-      });
 
       return {
         loaded,

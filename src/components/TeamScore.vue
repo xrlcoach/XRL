@@ -1,6 +1,6 @@
 <template>
   <Dialog header="Player Appearance" v-model:visible="showPlayer" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '50vw'}" >
-      <PlayerAppearance :appearance="selectedAppearance"  />
+      <PlayerAppearance v-if="selectedAppearance" :appearance="selectedAppearance"  />
   </Dialog>
     <Card style="width: 700px;">
       <template #title>
@@ -577,11 +577,16 @@
         type: Object as PropType<XrlUser>,
         required: true,
       },
-      roundNumber: Number,
+      roundNumber: {
+        type: Number,
+        required: true
+      },
     },
     setup(props) {
       const loaded = ref(false);
-      const { team, roundNumber } = props;
+      const { team } = props;
+      const roundNumber = computed(() => props.roundNumber);
+      
       const lineup = ref([] as PlayerLineupEntry[]);
       const stats = ref([] as PlayerAppearanceStats[]);
 
@@ -611,15 +616,16 @@
         showPlayer.value = true;
       };
 
-      onMounted(async () => {
+      const getLineupStats = async () => {
+        loaded.value = false;
         try {
           if (team && roundNumber) {
             lineup.value = await GetLineupByTeamAndRound(
-              roundNumber,
+              roundNumber.value,
               team.team_short
             );
             stats.value = await GetStatsByTeamAndRound(
-              roundNumber,
+              roundNumber.value,
               lineup.value.map(p => p.pk)
             );
           }
@@ -628,7 +634,13 @@
         } finally {
           loaded.value = true;
         }
+      }
+
+      onMounted(async () => {
+        getLineupStats();
       });
+
+      watch(() => roundNumber.value, () => getLineupStats());
 
       return {
         loaded,

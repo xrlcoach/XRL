@@ -22,8 +22,9 @@ import Divider from 'primevue/divider';
 import Card from 'primevue/card';
 import InputSwitch from 'primevue/inputswitch';
 import Panel from 'primevue/panel';
+import ProgressSpinner from 'primevue/progressspinner';
 import { key, store } from './store';
-import { XrlStore } from './vuexTypes';
+import { XrlStore } from './store-types';
 
 const app = createApp(App);
 app.use(router);
@@ -48,6 +49,7 @@ app.component('Divider', Divider);
 app.component('Card', Card);
 app.component('InputSwitch', InputSwitch);
 app.component('Panel', Panel);
+app.component('ProgressSpinner', ProgressSpinner);
 
 
 app.mount('#app');

@@ -1,5 +1,5 @@
 import { store } from '../store';
-import { MutationTypes } from '../vuexTypes';
+import { MutationTypes } from '../store-types';
 import { SetData } from './session';
 import { GetActiveUserInfo, GetCurrentRoundInfo, GetCurrentRoundStatus, Login } from './xrlApi';
 
@@ -38,7 +38,4 @@ export async function LoadSessionData() {
   }; expires=${expiry.toUTCString()}; Secure`;
   // Save in Vuex Store
   store.commit(MutationTypes.SET_ACTIVE_USER, userInfo);
-  if (roundInfo) {
-    store.commit(MutationTypes.SET_CURRENT_ROUND, roundInfo);
-  }
 }

@@ -167,7 +167,7 @@ export type XrlUser = {
   provisional_drop: string | null;
   stats: XrlUserStats;
   team_name: string;
-  team_short: string;
+  team_short: XrlTeam;
   username: string;
   waiver_preferences: string[];
   waiver_rank: number;
@@ -197,9 +197,9 @@ export type XrlFixture = {
   pk: string; // ROUND#{{round_number}}
   sk: string; // FIXTURE#{{team_short}}#{{team_short}}
   data: string; // COMPLETED#{{true|false}}
-  away: string;
+  away: XrlTeam;
   away_score: number;
-  home: string;
+  home: XrlTeam;
   home_score: number;
 };
 

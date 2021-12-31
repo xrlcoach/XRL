@@ -5,6 +5,7 @@ import {
   XrlFixture,
   XrlRound,
   XrlRoundWithFixtures,
+  XrlTeam,
   XrlUser,
 } from './global';
 import {
@@ -24,7 +25,7 @@ export interface State {
 }
 
 export type Getters = {
-  activeUserTeamShort(state: State): string;
+  activeUserTeamShort(state: State): XrlTeam;
   currentRound(state: State): XrlRoundWithFixtures | null;
   activeRoundNumber(state: State, getters: any): number;
   squad(state: State, getters: any): Player[];
@@ -32,6 +33,9 @@ export type Getters = {
   nextMatch(state: State, getters: any): XrlFixture | null;
   xrlLadder(state: State): XrlUser[];
   getNrlSquad(state: State): (club: NrlClub) => Player[];
+  getXrlSquad(state: State): (team: XrlTeam) => Player[];
+  getRoundInfo(state: State): (roundNumber: number) => XrlRoundWithFixtures | null;
+  getUserByTeamShort(state: State): (teamShort: XrlTeam) => XrlUser | null;
 };
 
 export enum MutationTypes {

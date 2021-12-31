@@ -1,9 +1,9 @@
 import { InjectionKey } from 'vue';
 import { ActionTree, createStore, GetterTree, MutationTree, Store, useStore as baseUseStore } from 'vuex';
-import { NrlClub, Player, PlayerLineupEntry, XrlRoundWithFixtures, XrlUser } from './global';
+import { NrlClub, Player, PlayerLineupEntry, XrlRoundWithFixtures, XrlTeam, XrlUser } from './global';
 import { SortLeageTable } from './services/users';
-import { ActionTypes, MutationTypes } from './vuexTypes';
-import type { Getters, Mutations, State, Actions, XrlStore } from './vuexTypes';
+import { ActionTypes, MutationTypes } from './store-types';
+import type { Getters, Mutations, State, Actions, XrlStore } from './store-types';
 import { GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetLineup, GetLineupByTeamAndRound } from './services/xrlApi';
 import { GetActiveRoundInfo, GetUserActiveFixture, GetUserLastFixture } from './services/rounds';
 
@@ -18,16 +18,19 @@ const state = {
 const getters: GetterTree<State, State> & Getters = {
   currentRound: state => GetActiveRoundInfo(state.allRounds ?? []),
   activeRoundNumber(state, getters) {
-    return getters['currentRound']?.round_number ?? 0;
+    return getters.currentRound?.round_number ?? 0;
   },
-  activeUserTeamShort: state => state.user?.team_short ?? '',
+  activeUserTeamShort: state => state.user?.team_short ?? 'None',
   xrlLadder: state => state.allUsers ? SortLeageTable(state.allUsers) : [],
   squad(state, getters) {
-    return state.allPlayers?.filter(p => p.xrl_team === getters['activeUserTeamShort']) ?? [];
+    return state.allPlayers?.filter(p => p.xrl_team === getters.activeUserTeamShort) ?? [];
   },
-  nextMatch: (state, getters) => state.user ? GetUserActiveFixture(getters['currentRound'], state.user) : null,
-  lastMatch: (state, getters) => state.user ? GetUserLastFixture(state.allRounds ?? [], getters['activeRoundNumber'], state.user) : null,
+  nextMatch: (state, getters) => state.user ? GetUserActiveFixture(getters.currentRound, state.user) : null,
+  lastMatch: (state, getters) => state.user ? GetUserLastFixture(state.allRounds ?? [], getters.activeRoundNumber, state.user) : null,
   getNrlSquad: (state) => (club: NrlClub) => state.allPlayers?.filter(p => p.nrl_club === club) ?? [],
+  getXrlSquad: (state) => (team: XrlTeam) => state.allPlayers?.filter(p => p.xrl_team === team) ?? [],
+  getRoundInfo: (state) => (roundNumber: number) => state.allRounds?.find(r => r.round_number === roundNumber) ?? null,
+  getUserByTeamShort: (state) => (teamShort: XrlTeam) => state.allUsers?.find(u => u.team_short === teamShort) ?? null,
 };
 
 const mutations: MutationTree<State> & Mutations = {

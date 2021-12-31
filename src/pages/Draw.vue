@@ -8,7 +8,7 @@
             {{ heading }}
             <Dropdown
               v-model="selectedUser"
-              :options="allUsers.map(u => u.team_short)"
+              :options="allUsers?.map(u => u.team_short)"
             />
           </div>
         </SplitterPanel>
@@ -35,7 +35,7 @@
               <template #body="slotProps">
                 <div style="text-align: center">
                   {{
-                    allUsers.find(u => u.team_short === slotProps.data.home)
+                    allUsers?.find(u => u.team_short === slotProps.data.home)
                       ?.team_name
                   }}
                 </div>
@@ -59,7 +59,7 @@
               <template #body="slotProps">
                 <div style="text-align: center">
                   {{
-                    allUsers.find(u => u.team_short === slotProps.data.away)
+                    allUsers?.find(u => u.team_short === slotProps.data.away)
                       ?.team_name
                   }}
                 </div>
@@ -90,23 +90,27 @@ import { useRouter } from 'vue-router';
   import { XrlFixture, XrlRoundWithFixtures, XrlUser } from '../global';
   import { GetActiveRoundNumber, GetAllRounds } from '../services/rounds';
   import { GetAllUserInfoSorted } from '../services/users';
+import { useXrlStore } from '../store';
 
   export default defineComponent({
     setup() {
-      const allRounds = ref([] as XrlRoundWithFixtures[]);
-      const selectedRound = ref();
+      const store = useXrlStore();
+      const allRounds = computed(() => store.state.allRounds);
+      const currentRound = computed(() => store.getters.activeRoundNumber);
+      const selectedRound = ref(store.getters.activeRoundNumber);
 
-      const allUsers = ref([] as XrlUser[]);
+      const allUsers = computed(() => store.state.allUsers);
       const selectedUser = ref('');
 
       const heading = ref('');
       const fixtures = ref([] as XrlFixture[]);
 
       const roundNumbers = computed(() => {
-        return allRounds.value.map(r => r.round_number);
+        return allRounds.value?.map(r => r.round_number) ?? [];
       });
 
       const getRoundInfo = (roundNo: number) => {
+        if (!allRounds.value) return null;
         let i = allRounds.value.findIndex(
           r => r.round_number === selectedRound.value
         );
@@ -119,6 +123,7 @@ import { useRouter } from 'vue-router';
       });
 
       const loadFixtureTable = () => {
+        if (!roundInfo.value) return;
         fixtures.value = roundInfo.value.fixtures;
         heading.value = `Round ${selectedRound.value} - ${
           roundInfo.value?.completed
@@ -138,9 +143,11 @@ import { useRouter } from 'vue-router';
         }
       );
 
+      watch(() => currentRound.value, (newValue) => selectedRound.value = newValue);
+
       const userFixtures = computed(() => {
         let uf: XrlFixture[] = [];
-        if (allRounds) {
+        if (allRounds.value) {
           for (let r of allRounds.value) {
             let i = r.fixtures.findIndex(
               f =>
@@ -162,15 +169,13 @@ import { useRouter } from 'vue-router';
 
       const router = useRouter();
       const goToMatch = (event: any) => {
+        if (!roundInfo.value) return;
         const fixture = event.data as XrlFixture;
         const matchQuery = `round=${roundInfo.value.round_number}&fixture=${fixture.home}-v-${fixture.away}`;
         router.push('/matchcentre?' + matchQuery);
       }
 
       onMounted(async () => {
-        allRounds.value = await GetAllRounds();
-        allUsers.value = await GetAllUserInfoSorted();
-        selectedRound.value = GetActiveRoundNumber();
         getRoundInfo(selectedRound.value);
         loadFixtureTable();
       });

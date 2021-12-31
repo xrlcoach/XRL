@@ -6,7 +6,10 @@
     <TabMenu :model="tabs" />
   </header>
   <main>
-    <router-view v-slot="{ Component }">
+    <div class="page-loader" v-if="loading">
+      <ProgressSpinner />
+    </div>
+    <router-view v-else v-slot="{ Component }">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
       </transition>
@@ -18,7 +21,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref } from 'vue';
+  import { computed, defineComponent, ref } from 'vue';
   import Header from './components/Header.vue';
   import Footer from './components/Footer.vue';
 
@@ -27,10 +30,18 @@
   import 'primeicons/primeicons.css';
 
   import './assets/styles.css';
+import { useXrlStore } from './store';
+import { ActionTypes } from './store-types';
 
   export default defineComponent({
     name: 'App',
     setup() {
+      const store = useXrlStore();
+      const loading = computed(() => !store.state.user || !store.getters.currentRound || !store.state.allPlayers);
+      store.dispatch(ActionTypes.GetActiveUser);
+      store.dispatch(ActionTypes.GetAllUsers);
+      store.dispatch(ActionTypes.GetAllFixtures);
+      store.dispatch(ActionTypes.GetAllPlayers);
       const tabs = ref([
         {
           label: 'Dashboard',
@@ -74,6 +85,7 @@
         },
       ]);
       return {
+        loading,
         tabs,
       };
     },
@@ -98,6 +110,14 @@
   main {
     padding: 50px 10px;
     background-color: var(--surface-b);
+  }
+
+  .page-loader {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   @media screen and (min-width: 928px) {

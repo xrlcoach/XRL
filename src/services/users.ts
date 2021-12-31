@@ -1,6 +1,6 @@
 import { XrlUser } from "../global";
 import { store } from "../store";
-import { MutationTypes } from "../vuexTypes";
+import { MutationTypes } from "../store-types";
 import { GetData, SetData } from "./session";
 import { GetActiveUserInfo, GetAllUsers } from "./xrlApi";
 

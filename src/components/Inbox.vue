@@ -25,7 +25,7 @@
   import { GetUserInfo } from '../services/users';
   import { UpdateUserInbox } from '../services/xrlApi';
 import { useXrlStore } from '../store';
-import { XrlStore } from '../vuexTypes';
+import { XrlStore } from '../store-types';
 
   export default defineComponent({
     setup() {

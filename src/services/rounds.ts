@@ -1,6 +1,6 @@
 import { XrlFixture, XrlRound, XrlRoundWithFixtures, XrlUser } from '../global';
 import { store } from '../store';
-import { MutationTypes } from '../vuexTypes';
+import { MutationTypes } from '../store-types';
 import { GetData, SetData } from './session';
 import { GetUserInfo } from './users';
 import { GetAllFixtures, getCookie, GetNextRoundStatus } from './xrlApi';

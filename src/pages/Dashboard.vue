@@ -14,27 +14,14 @@
   import { TeamInfo, RecentFixtures, SquadTable, Inbox } from "../components";
   import { DefaultPlayerSort } from "../services/players";
   import { useXrlStore } from "../store";
-  import { ActionTypes, MutationTypes } from "../vuexTypes";
-  import type { XrlStore } from "../vuexTypes";
+  import { ActionTypes, MutationTypes } from "../store-types";
+  import type { XrlStore } from "../store-types";
 
   export default defineComponent({
     setup() {
-      const store = useXrlStore() as XrlStore;
-      store.dispatch(ActionTypes.GetActiveUser);
-      store.dispatch(ActionTypes.GetAllUsers);
-      store.dispatch(ActionTypes.GetAllFixtures);
-      store.dispatch(ActionTypes.GetAllPlayers);
-      const currentRound = computed(() => store.getters.currentRound);
-      const teamShort = computed(() => store.getters.activeUserTeamShort);
+      const store = useXrlStore();
       const squad = computed(() => store.getters.squad);
       const sortedSquad = computed(() => squad.value.sort(DefaultPlayerSort));
-      watch(currentRound, (newValue) => {
-        console.log(newValue);
-      });
-      watch(teamShort, (newValue) => {
-        console.log(newValue);
-      });
-      onMounted(() => console.log(teamShort));
       return {
         squad,
         sortedSquad,

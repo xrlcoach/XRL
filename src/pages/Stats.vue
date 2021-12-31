@@ -59,7 +59,6 @@
           <RoundStatsTable
             :stats="statsToShow"
             v-if="statsToShow.length > 0"
-            :key="statsToShow"
           />
           <Card v-else style="width: 100%">
             <template #content> No results. </template>
@@ -69,7 +68,6 @@
           <PlayerStatsTable
             :players="playersToShow"
             v-if="playersToShow.length > 0"
-            :key="playersToShow"
           />
           <Card v-else style="width: 100%">
             <template #content> No results. </template>
@@ -102,12 +100,14 @@
   } from '../components';
   import { NrlClubs, XrlTeams } from '../services/players';
   import { GetActiveRoundNumber } from '../services/rounds';
+import { useXrlStore } from '../store';
 
   export default defineComponent({
     setup() {
+      const store = useXrlStore();
       const loading = ref(true);
 
-      const allPlayers = ref([] as Player[]);
+      const allPlayers = computed(() => store.state.allPlayers);
       const playersToShow = ref([] as Player[]);
 
       const roundStats = ref([] as (PlayerAppearanceStats & Player)[]);
@@ -151,9 +151,7 @@
         console.log('Calling getPlayers');
         loading.value = true;
         try {
-          if (allPlayers.value.length === 0)
-            allPlayers.value = await GetAllPlayers();
-          playersToShow.value = applyFilters(allPlayers.value);
+          playersToShow.value = applyFilters(allPlayers.value ?? []);
         } catch (err) {
           console.log(err);
         } finally {
@@ -167,20 +165,17 @@
           const roundNumber = Number(selectedRound.value);
           if (currentDisplayedRound.value !== roundNumber) {
             const stats = await GetStatsByRound(roundNumber);
-            if (allPlayers.value.length === 0) {
-              allPlayers.value = await GetAllPlayers();
-            }
             roundStats.value = stats
               .filter(
                 p =>
-                  allPlayers.value.find(
+                  allPlayers.value?.find(
                     player => player.player_id === p.player_id
                   ) !== undefined
               )
               .map(p => {
                 return Object.assign(
                   {},
-                  allPlayers.value.find(
+                  allPlayers.value?.find(
                     player => player.player_id === p.player_id
                   ),
                   p

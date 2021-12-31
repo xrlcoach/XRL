@@ -18,7 +18,7 @@ import { computed, defineComponent, onBeforeMount, onMounted, ref } from 'vue'
 import { XrlFixture } from '../global';
 import { GetUserActiveFixture, GetUserLastFixture } from '../services/rounds';
 import { useXrlStore } from '../store';
-import { XrlStore } from '../vuexTypes';
+import { XrlStore } from '../store-types';
 import FixturePreview from './FixturePreview.vue';
 
 export default defineComponent({

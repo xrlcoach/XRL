@@ -1,6 +1,6 @@
 import { PlayerLineupEntry } from "../global";
 import { store } from "../store";
-import { MutationTypes } from "../vuexTypes";
+import { MutationTypes } from "../store-types";
 import { GetActiveRoundNumber } from "./rounds";
 import { GetData, SetData } from "./session";
 import { GetActiveUserTeamShort, GetLineup, GetLineupByTeamAndRound } from "./xrlApi";

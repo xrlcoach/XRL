@@ -103,7 +103,7 @@
             <TabPanel header="Key">
               <ScrollPanel style="width: 100%; height: 200px">
                 <ul>
-                  <li v-for="stat of keyStats" :key="stat">
+                  <li v-for="stat of keyStats" :key="stat.stat">
                     <p>{{ stat.stat }}</p>
                     <p class="value">{{ stat.value }}</p>
                   </li>
@@ -113,7 +113,7 @@
             <TabPanel header="All">
               <ScrollPanel style="width: 100%; height: 200px">
                 <ul>
-                  <li v-for="stat of allStats" :key="stat">
+                  <li v-for="stat of allStats" :key="stat.stat">
                     <p>{{ stat.stat }}</p>
                     <p class="value">{{ stat.value }}</p>
                   </li>
@@ -156,7 +156,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, PropType, ref } from 'vue';
+  import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
   import { Player, ScoringStats, XrlRound, XrlUser } from '../global';
   import TabView from 'primevue/tabview';
   import TabPanel from 'primevue/tabpanel';
@@ -169,6 +169,7 @@
   import { useConfirm } from 'primevue/useconfirm';
   import { useToast } from 'primevue/usetoast';
 import { UpdateUserWaiverPreferences } from '../services/xrlApi';
+import { useXrlStore } from '../store';
 
   export default defineComponent({
     props: {
@@ -178,8 +179,11 @@ import { UpdateUserWaiverPreferences } from '../services/xrlApi';
       },
     },
     setup({ player }) {
+      const store = useXrlStore();
+
       const loaded = ref(false);
-      const user = ref<XrlUser>();
+      const user = computed(() => store.state.user);
+      const roundInfo = computed(() => store.getters.currentRound);
 
       const position1 = player.position;
       const p1ScoringStats = player.scoring_stats[
@@ -203,15 +207,12 @@ import { UpdateUserWaiverPreferences } from '../services/xrlApi';
       );
       const activeIndex = ref(0);
 
-      const roundInfo = ref<XrlRound>();
-
       const confirm = useConfirm();
       const toast = useToast();
 
       const confirmDropPlayer = () => {
         confirm.require({
-          message: `Are you sure you want to drop ${player.player_name} from your squad?`,
-          header: 'Confirmation',
+          message: `Are you sure you want to drop ${player.player_name} from your squad?`,          
           icon: 'pi pi-trash',
           accept: () => {
             toast.add({
@@ -227,7 +228,6 @@ import { UpdateUserWaiverPreferences } from '../services/xrlApi';
       const confirmScoopPlayer = () => {
         confirm.require({
           message: `Are you sure you want to give a lifeline to ${player.player_name}?`,
-          header: 'Confirm Transfer',
           icon: 'pi pi-user',
           accept: () => {
             toast.add({
@@ -243,7 +243,6 @@ import { UpdateUserWaiverPreferences } from '../services/xrlApi';
       const confirmMakeClaim = () => {
         confirm.require({
           message: `Are you sure you want to make a claim for ${player.player_name}?`,
-          header: 'Confirm Claim',
           icon: 'pi pi-volume-up',
           accept: async () => {
             const prefs = [...(user.value?.waiver_preferences ?? [])];
@@ -271,7 +270,6 @@ import { UpdateUserWaiverPreferences } from '../services/xrlApi';
       const confirmDropClaim = () => {
         confirm.require({
           message: `Are you sure you want to remove your claim for ${player.player_name}?`,
-          header: 'Confirm Claim',
           icon: 'pi pi-undo',
           accept: () => {
             toast.add({
@@ -283,12 +281,6 @@ import { UpdateUserWaiverPreferences } from '../services/xrlApi';
           }
         })
       }
-
-      onMounted(async () => {
-        user.value = await GetUserInfo();
-        roundInfo.value = await GetActiveRoundInfo();
-        loaded.value = true;
-      });
 
       return {
         activeIndex,
