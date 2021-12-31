@@ -52,11 +52,19 @@ const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.CLEAR_SESSION_DATA](state) {
     state.user = null;
     state.allUsers = null;
+    state.allPlayers = null;
+    state.allRounds = null;
     state.lineup = null;
   }
 };
 
 const actions: ActionTree<State, State> & Actions = {
+  [ActionTypes.LoadAppData]({ dispatch }): void {
+    dispatch(ActionTypes.GetActiveUser);
+    dispatch(ActionTypes.GetAllUsers);
+    dispatch(ActionTypes.GetAllFixtures);
+    dispatch(ActionTypes.GetAllPlayers);
+  },
   async [ActionTypes.GetActiveUser]({ commit, state }): Promise<XrlUser> {
     if (state.user) {
       return state.user;

@@ -70,6 +70,7 @@ type AugmentedActionContext = {
 } & Omit<ActionContext<State, State>, 'commit' | 'getters'>;
 
 export enum ActionTypes {
+  LoadAppData = 'LoadAppData',
   GetActiveUser = 'GetActiveUser',
   GetAllUsers = 'GetAllUsers',
   GetAllPlayers = 'GetAllPlayers',
@@ -89,6 +90,9 @@ export enum ActionTypes {
 }
 
 export interface Actions {
+  [ActionTypes.LoadAppData]({
+    commit,
+  }: AugmentedActionContext): void;
   [ActionTypes.GetActiveUser]({
     commit,
   }: AugmentedActionContext): Promise<XrlUser>;

@@ -1,15 +1,17 @@
 <template>
   <div>
     <transition name="fade" mode="out-in">
-      <Splitter v-if="loaded" layout="vertical">
+      <Splitter layout="vertical">
         <SplitterPanel>
           <h3>XRL 2021</h3>
         </SplitterPanel>
         <SplitterPanel>
           <DataTable
             :value="ladder"
-            dataKey="player_id"
+            dataKey="username"
             responsiveLayout="scroll"
+            selectionMode="single"
+            @row-select="onSelectTeam"
           >
             <Column>
               <template #body="slotProps">
@@ -52,21 +54,15 @@
   export default defineComponent({
     setup() {
       const store = useXrlStore();
-      const loaded = ref(false);
-      const error = ref('');
 
       const ladder = computed(() => store.getters.xrlLadder);
 
-      const selectedTeam = ref<XrlUser>();
-      const onSelectTeam = () => {
-        console.log(selectedTeam.value?.team_name);
+      const onSelectTeam = (event: any) => {
+        console.log(event.data?.team_name);
       };
 
       return {
-        loaded,
-        error,
         ladder,
-        selectedTeam,
         onSelectTeam,
       };
     },

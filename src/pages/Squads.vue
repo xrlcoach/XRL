@@ -18,13 +18,9 @@
     </div>
     <transition name="fade" mode="out-in">
       <SquadTable
-        v-if="loaded"
         :name="squadName"
         :squad="players"
       />
-      <div v-else style="height: 100%; display: flex; align-items: center; justify-content: center;">
-      <LoadingIndicator />
-      </div>
     </transition>
   </div>
 </template>
@@ -51,9 +47,6 @@ import { useXrlStore } from '../store';
     setup(props) {
       const store = useXrlStore();
 
-      const loaded = ref(false);
-      const error = ref('');
-
       const xrlTeams = Array.from(XrlTeams) as string[];
       const nrlClubs = Array.from(NrlClubs) as string[];
 
@@ -67,8 +60,6 @@ import { useXrlStore } from '../store';
       const players = computed(() => isXrlTeam(squadName.value) ? store.getters.getXrlSquad(squadName.value) : store.getters.getNrlSquad(squadName.value));
 
       return {
-        loaded,
-        error,
         xrlTeams,
         nrlClubs,
         squadName,

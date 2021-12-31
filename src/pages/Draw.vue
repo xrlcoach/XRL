@@ -4,11 +4,12 @@
       <Splitter layout="vertical">
         <SplitterPanel>
           <div class="tableHeader">
-            <Dropdown v-model="selectedRound" :options="roundNumbers" />
+            <Dropdown v-model="selectedRound" :options="roundNumbers" @change="showRoundFixtures" />
             {{ heading }}
             <Dropdown
               v-model="selectedUser"
               :options="allUsers?.map(u => u.team_short)"
+              @change="showUserFixtures"
             />
           </div>
         </SplitterPanel>
@@ -19,6 +20,11 @@
             selectionMode="single"
             @rowSelect="goToMatch"
           >
+            <Column>
+              <template #body="slotProps">
+                <template v-if="selectedRound === '--'">R{{ slotProps.data.round_number }}</template>
+              </template>
+            </Column>
             <Column>
               <template #body="slotProps">
                 <div style="text-align: center">
@@ -97,7 +103,7 @@ import { useXrlStore } from '../store';
       const store = useXrlStore();
       const allRounds = computed(() => store.state.allRounds);
       const currentRound = computed(() => store.getters.activeRoundNumber);
-      const selectedRound = ref(store.getters.activeRoundNumber);
+      const selectedRound = ref(String(store.getters.activeRoundNumber));
 
       const allUsers = computed(() => store.state.allUsers);
       const selectedUser = ref('');
@@ -106,25 +112,28 @@ import { useXrlStore } from '../store';
       const fixtures = ref([] as XrlFixture[]);
 
       const roundNumbers = computed(() => {
-        return allRounds.value?.map(r => r.round_number) ?? [];
+        return allRounds.value?.map(r => String(r.round_number)).concat(['--']) ?? [];
       });
 
       const getRoundInfo = (roundNo: number) => {
         if (!allRounds.value) return null;
         let i = allRounds.value.findIndex(
-          r => r.round_number === selectedRound.value
+          r => r.round_number === roundNo
         );
         if (i !== -1) return allRounds.value[i];
-        return allRounds.value[0];
+        return null;
       };
 
       const roundInfo = computed(() => {
-        return getRoundInfo(selectedRound.value);
+        if (isNaN(Number(selectedRound.value))) return null;
+        return getRoundInfo(Number(selectedRound.value));
       });
 
       const loadFixtureTable = () => {
         if (!roundInfo.value) return;
-        fixtures.value = roundInfo.value.fixtures;
+        fixtures.value = roundInfo.value.fixtures.map(f => {
+          return { ...f, round_number: roundInfo.value?.round_number } as XrlFixture;
+        });
         heading.value = `Round ${selectedRound.value} - ${
           roundInfo.value?.completed
             ? 'Completed'
@@ -136,14 +145,15 @@ import { useXrlStore } from '../store';
         }`;
       };
 
-      watch(
-        () => roundInfo.value,
-        () => {
-          loadFixtureTable();
-        }
-      );
+      // watch(
+      //   () => selectedRound.value,
+      //   () => {
+      //     selectedUser.value = 'None';
+      //     loadFixtureTable();
+      //   }
+      // );
 
-      watch(() => currentRound.value, (newValue) => selectedRound.value = newValue);
+      watch(() => currentRound.value, (newValue) => selectedRound.value = String(newValue));
 
       const userFixtures = computed(() => {
         let uf: XrlFixture[] = [];
@@ -153,44 +163,47 @@ import { useXrlStore } from '../store';
               f =>
                 f.away === selectedUser.value || f.home === selectedUser.value
             );
-            if (i !== -1) uf.push(r.fixtures[i]);
+            if (i !== -1) {
+              const fixture = { ...r.fixtures[i], round_number: r.round_number } as XrlFixture;
+              uf.push(fixture);
+            };
           }
         }
         return uf;
       });
 
-      watch(
-        () => userFixtures.value,
-        (currentValue) => {
-          fixtures.value = currentValue;
-          heading.value = selectedUser.value + ' Fixtures';
-        }
-      );
+      function showRoundFixtures() {
+        selectedUser.value = 'None';
+        loadFixtureTable();
+      }
+
+      function showUserFixtures() {
+        fixtures.value = userFixtures.value;
+        heading.value = selectedUser.value + ' Fixtures';
+        selectedRound.value = '--';
+      };
 
       const router = useRouter();
       const goToMatch = (event: any) => {
-        if (!roundInfo.value) return;
         const fixture = event.data as XrlFixture;
-        const matchQuery = `round=${roundInfo.value.round_number}&fixture=${fixture.home}-v-${fixture.away}`;
+        const matchQuery = `round=${fixture.round_number}&fixture=${fixture.home}-v-${fixture.away}`;
         router.push('/matchcentre?' + matchQuery);
       }
 
       onMounted(async () => {
-        getRoundInfo(selectedRound.value);
         loadFixtureTable();
       });
 
       return {
-        allRounds,
         roundNumbers,
         selectedRound,
         allUsers,
-        roundInfo,
         selectedUser,
-        userFixtures,
         heading,
         fixtures,
-        goToMatch
+        goToMatch,
+        showRoundFixtures,
+        showUserFixtures
       };
     },
   });

@@ -1,5 +1,5 @@
 import { store } from '../store';
-import { MutationTypes } from '../store-types';
+import { ActionTypes, MutationTypes } from '../store-types';
 import { SetData } from './session';
 import { GetActiveUserInfo, GetCurrentRoundInfo, GetCurrentRoundStatus, Login } from './xrlApi';
 
@@ -25,17 +25,17 @@ export async function LoadSessionData() {
   let expiry = new Date();
   expiry.setHours(expiry.getHours() + 24);
   //Get round info and set cookie
-  const roundInfo = await GetCurrentRoundInfo();
-  SetData('currentRound', JSON.stringify(roundInfo));
-  document.cookie = `round=${
-    roundInfo?.round_number
-  }; expires=${expiry.toUTCString()}; Secure`;
+  // const roundInfo = await GetCurrentRoundInfo();
+  // SetData('currentRound', JSON.stringify(roundInfo));
+  // document.cookie = `round=${
+  //   roundInfo?.round_number
+  // }; expires=${expiry.toUTCString()}; Secure`;
   //Get user's data and set team acronym as team cookie
-  const userInfo = await GetActiveUserInfo();
-  SetData('activeUser', JSON.stringify(userInfo));
-  document.cookie = `team=${
-    userInfo.team_short
-  }; expires=${expiry.toUTCString()}; Secure`;
+  // const userInfo = await GetActiveUserInfo();
+  // SetData('activeUser', JSON.stringify(userInfo));
+  // document.cookie = `team=${
+  //   userInfo.team_short
+  // }; expires=${expiry.toUTCString()}; Secure`;
   // Save in Vuex Store
-  store.commit(MutationTypes.SET_ACTIVE_USER, userInfo);
+  store.dispatch(ActionTypes.LoadAppData);
 }

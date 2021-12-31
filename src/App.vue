@@ -32,16 +32,18 @@
   import './assets/styles.css';
 import { useXrlStore } from './store';
 import { ActionTypes } from './store-types';
+import { useRoute } from 'vue-router';
+import { GetIdToken } from './services/xrlApi';
 
   export default defineComponent({
     name: 'App',
     setup() {
       const store = useXrlStore();
-      const loading = computed(() => !store.state.user || !store.getters.currentRound || !store.state.allPlayers);
-      store.dispatch(ActionTypes.GetActiveUser);
-      store.dispatch(ActionTypes.GetAllUsers);
-      store.dispatch(ActionTypes.GetAllFixtures);
-      store.dispatch(ActionTypes.GetAllPlayers);
+      const loggedIn = !!GetIdToken();
+      if (loggedIn) {
+        store.dispatch(ActionTypes.LoadAppData);
+      }
+      const loading = computed(() => loggedIn && (!store.state.user || !store.getters.currentRound || !store.state.allPlayers));
       const tabs = ref([
         {
           label: 'Dashboard',

@@ -201,6 +201,7 @@ export type XrlFixture = {
   away_score: number;
   home: XrlTeam;
   home_score: number;
+  round_number?: number;
 };
 
 export type XrlRoundWithFixtures = {
