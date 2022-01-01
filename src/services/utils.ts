@@ -1,5 +1,7 @@
-import { PlayerAppearanceStats, XrlPosition } from "../global";
+import { Player, PlayerAppearanceStats, XrlPosition } from "../global";
 import { LoadSessionData } from "./auth";
+
+export const CURRENT_YEAR = 2022;
 
 export const PositionMap = {
   fullback: 'Back',
@@ -139,4 +141,9 @@ export function GetPlayerXrlScores(scoringPosition: XrlPosition, appearance: Pla
 export async function RefreshSession() {
   sessionStorage.clear();
   await LoadSessionData();
+}
+
+export function isPlayer(object: any): object is Player {
+  if (object.player_id) return true;
+  return false;
 }

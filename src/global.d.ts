@@ -137,6 +137,7 @@ export type PlayerLineupEntry = {
   second_position: string;
   vice: boolean;
   xrl_team: string;
+  year: number;
 };
 
 export type PlayerAppearanceStats = {
@@ -203,6 +204,37 @@ export type XrlFixture = {
   home_score: number;
   round_number?: number;
 };
+
+export type XrlMatchLineup = {
+  starters: {
+    fullback: string;
+    winger1: string;
+    centre1: string;
+    centre2: string;
+    winger2: string;
+    five_eighth: string;
+    halfback: string;
+    prop1: string;
+    hooker: string;
+    prop2: string;
+    row1: string;
+    row2: string;
+    lock: string;
+  },
+  bench: {
+    int1: string;
+    int2: string;
+    int3: string;
+    int4: string;
+  },
+  roles: {
+    captain: string;
+    captain2: string;
+    vice: string;
+    kicker: string;
+    backup_kicker: string;
+  },
+}
 
 export type XrlRoundWithFixtures = {
   fixtures: XrlFixture[];

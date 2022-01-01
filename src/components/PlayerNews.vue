@@ -33,7 +33,7 @@
       <template #content>
         <transition name="grow" mode="out-in">
           <div v-if="loaded && news.length > 0" style="overflow: hidden">
-            <DataTable :value="news" :key="news">
+            <DataTable :value="news">
               <Column field="datetime" style="width: 25%"></Column>
               <Column field="log"></Column>
             </DataTable>
@@ -45,31 +45,37 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, ref, watch } from 'vue';
+  import { computed, defineComponent, onMounted, ref, watch } from 'vue';
   import { PlayerNews } from '../global';
   import { GetActiveRoundNumber } from '../services/rounds';
   import { GetPlayerNews } from '../services/xrlApi';
+import { useXrlStore } from '../store';
+import { ActionTypes } from '../store-types';
 
   export default defineComponent({
     setup() {
+      const store = useXrlStore();
       const loaded = ref(false);
-      const news = ref([] as PlayerNews[]);
-      const roundNumber = ref(GetActiveRoundNumber());
+
+      store.dispatch(ActionTypes.GetPlayerNews).finally(() => loaded.value = true);
+
+      const latestNews = computed(() => store.state.news);
+      const news = ref(latestNews.value ?? []);
+      const roundNumber = ref(store.getters.activeRoundNumber);
 
       const roundOptions: { label: string; value: number }[] = [];
-      for (let i = GetActiveRoundNumber(); i > 0; i--) {
+      for (let i = store.getters.activeRoundNumber; i > 0; i--) {
         roundOptions.push({ label: String(i), value: i });
       }
 
       watch(roundNumber, async newNumber => {
-        console.log('Getting news');
-        news.value = await GetPlayerNews(newNumber);
-        console.log(news.value.length);
-      });
-
-      onMounted(async () => {
-        news.value = await GetPlayerNews(roundNumber.value);
-        loaded.value = true;
+        if (newNumber === store.getters.activeRoundNumber) {
+          news.value = latestNews.value ?? [];
+        } else {
+          console.log('Getting news');
+          news.value = await GetPlayerNews(newNumber);
+          console.log(news.value.length);
+        }
       });
 
       return {

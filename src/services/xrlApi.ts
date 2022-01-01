@@ -381,6 +381,8 @@ export async function SetLineup(idToken: string, players: PlayerLineupEntry[]) {
   const data = await response.json();
   if (data.error) {
     throw data.error;
+  } else {
+    return 'Success';
   }
 }
 /**

@@ -2,6 +2,9 @@ import {
   NrlClub,
   Player,
   PlayerLineupEntry,
+  PlayerNews,
+  Transfer,
+  WaiverReport,
   XrlFixture,
   XrlRound,
   XrlRoundWithFixtures,
@@ -22,18 +25,23 @@ export interface State {
   allRounds: XrlRoundWithFixtures[] | null;
   lineup: PlayerLineupEntry[] | null;
   allPlayers: Player[] | null;
+  waiverReports: WaiverReport[] | null;
+  transfers: Transfer[] | null;
+  news: PlayerNews[] | null;
 }
 
 export type Getters = {
   activeUserTeamShort(state: State): XrlTeam;
   currentRound(state: State): XrlRoundWithFixtures | null;
   activeRoundNumber(state: State, getters: any): number;
+  nextRoundNotInProgress(state: State): XrlRoundWithFixtures | null;
   squad(state: State, getters: any): Player[];
   lastMatch(state: State, getters: any): XrlFixture | null;
   nextMatch(state: State, getters: any): XrlFixture | null;
   xrlLadder(state: State): XrlUser[];
   getNrlSquad(state: State): (club: NrlClub) => Player[];
   getXrlSquad(state: State): (team: XrlTeam) => Player[];
+  getPlayerById(state: State): (playerId: string) => Player | null;
   getRoundInfo(state: State): (roundNumber: number) => XrlRoundWithFixtures | null;
   getUserByTeamShort(state: State): (teamShort: XrlTeam) => XrlUser | null;
 };
@@ -44,6 +52,10 @@ export enum MutationTypes {
   SET_ALL_USERS = 'SET_ALL_USERS',
   SET_LINEUP = 'SET_LINEUP',
   SET_ALL_PLAYERS = 'SET_ALL_PLAYERS',
+  SET_WAIVER_REPORTS = 'SET_WAIVER_REPORTS',
+  SET_TRANSFERS = 'SET_TRANSFERS',
+  SET_NEWS = 'SET_NEWS',
+  UPDATE_PLAYERS_XRL_TEAM = 'UPDATE_PLAYERS_XRL_TEAM',
   CLEAR_SESSION_DATA = 'CLEAR_SESSION_DATA',
 }
 
@@ -56,7 +68,11 @@ export type Mutations<S = State> = {
   [MutationTypes.SET_ALL_USERS](state: S, users: XrlUser[]): void;
   [MutationTypes.SET_LINEUP](state: S, lineup: PlayerLineupEntry[]): void;
   [MutationTypes.SET_ALL_PLAYERS](state: S, players: Player[]): void;
+  [MutationTypes.SET_WAIVER_REPORTS](state: S, reports: WaiverReport[]): void;
+  [MutationTypes.SET_TRANSFERS](state: S, transfers: Transfer[]): void;
+  [MutationTypes.SET_NEWS](state: S, news: PlayerNews[]): void;
   [MutationTypes.CLEAR_SESSION_DATA](state: S): void;
+  [MutationTypes.UPDATE_PLAYERS_XRL_TEAM](state: S, { players, team }: { players: Player[], team: XrlTeam }): void;
 };
 
 type AugmentedActionContext = {
@@ -74,22 +90,20 @@ export enum ActionTypes {
   GetActiveUser = 'GetActiveUser',
   GetAllUsers = 'GetAllUsers',
   GetAllPlayers = 'GetAllPlayers',
+  GetAllFixtures = 'GetAllFixtures',
+  GetUserLineup = 'GetUserLineup',
+  GetTransferHistory = 'GetTransferHistory',
+  GetWaiverReports = 'GetWaiverReports',
+  GetPlayerNews = 'GetPlayerNews',
+  SetLineup = 'SetLineup',
+  UpdateUserWaiverPreferences = 'UpdateUserWaiverPreferences',
   UpdatePlayerXrlTeam = 'UpdatePlayerXrlTeam',
   ScoopPlayers = 'ScoopPlayers',
   DropPlayers = 'DropPlayers',
-  GetLineup = 'GetLineup',
-  GetLineupByTeamAndRound = 'GetLineupByTeamAndRound',
-  SetLineup = 'SetLineup',
-  GetAllFixtures = 'GetAllFixtures',
-  GetAllStats = 'GetAllStats',
-  UpdateUserWaiverPreferences = 'UpdateUserWaiverPreferences',
-  GetTransferHistory = 'GetTransferHistory',
-  GetTransferHistoryByRound = 'GetTransferHistoryByRound',
-  GetWaiverReports = 'GetWaiverReports',
-  GetPlayerNews = 'GetPlayerNews',
 }
 
 export interface Actions {
+  // #region DATA
   [ActionTypes.LoadAppData]({
     commit,
   }: AugmentedActionContext): void;
@@ -105,9 +119,34 @@ export interface Actions {
   [ActionTypes.GetAllPlayers]({
     commit,
   }: AugmentedActionContext): Promise<Player[]>;
-  [ActionTypes.GetLineup]({
+  [ActionTypes.GetUserLineup]({
     commit,
   }: AugmentedActionContext): Promise<PlayerLineupEntry[]>;
+  [ActionTypes.GetWaiverReports]({
+    commit,
+  }: AugmentedActionContext): Promise<WaiverReport[]>;
+  [ActionTypes.GetTransferHistory]({
+    commit,
+  }: AugmentedActionContext): Promise<Transfer[]>;
+  [ActionTypes.GetPlayerNews]({
+    commit,
+  }: AugmentedActionContext): Promise<PlayerNews[]>;
+  // #endregion
+
+  // #region UPDATES
+  [ActionTypes.SetLineup]({
+    commit,
+  }: AugmentedActionContext, lineup: PlayerLineupEntry[]): Promise<boolean>;
+  [ActionTypes.ScoopPlayers]({
+    commit,
+  }: AugmentedActionContext, players: Player[]): Promise<boolean>;
+  [ActionTypes.DropPlayers]({
+    commit,
+  }: AugmentedActionContext, players: Player[]): Promise<boolean>;
+  [ActionTypes.UpdateUserWaiverPreferences]({
+    commit,
+  }: AugmentedActionContext): void;
+  // #endregion
 }
 
 export type XrlStore = Omit<

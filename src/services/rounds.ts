@@ -74,16 +74,15 @@ export async function GetFixture(roundNumber: number, teamShort: string) {
   return fixture;
 }
 
-export async function GetNextRoundNotInProgress() {
-  const allRounds = await GetAllRounds();
+export function GetNextRoundNotInProgress(allRounds: XrlRoundWithFixtures[]) {
   const notInProgressRounds = allRounds.filter(r => !r.in_progress);
   const roundNumbers = notInProgressRounds.map(r => r.round_number);
   if (roundNumbers.length === 0) {
-    return allRounds[allRounds.length - 1];
+    return null;
   }
   const nextRoundNumber = Math.min(...roundNumbers);
   const nextRound = allRounds.find(r => r.round_number == nextRoundNumber);
-  return nextRound;
+  return nextRound ?? null;
 }
 
 export function GetTeamFixtureFromRound(

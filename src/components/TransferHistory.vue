@@ -84,29 +84,36 @@
     GetGroupPlayersById,
     GetTransferHistoryByRound,
   } from '../services/xrlApi';
+import { useXrlStore } from '../store';
+import { ActionTypes } from '../store-types';
 
   export default defineComponent({
     setup() {
+      const store = useXrlStore();
+
       const loaded = ref(false);
       const error = ref('');
 
-      const allUsers = ref([] as XrlUser[]);
-      const roundNumber = ref(GetActiveRoundNumber());
+      store.dispatch(ActionTypes.GetTransferHistory).finally(() => loaded.value = true);
+
+      const allUsers = computed(() => store.state.allUsers);
+      const roundNumber = ref(store.getters.activeRoundNumber);
       const roundNumbers: { label: string, value: number }[] = [];
       for (let i = roundNumber.value; i > 0; i--) {
         roundNumbers.push({label: String(i), value: i});
       }
-      const transferRecords = ref([] as Transfer[]);
+      const latestTransferRecords = computed(() => store.state.transfers);
+      const transferRecords = ref(latestTransferRecords.value ?? []);
 
-      const players = ref([] as Player[]);
+      const allPlayers = computed(() => store.state.allPlayers);
       const transfers = computed(() => {
         return transferRecords.value.map(t => {
           return {
             ...t,
-            userInfo: allUsers.value.find(u => u.username === t.user),
-            playerInfo: players.value.find(p => p.player_id === t.player_id),
+            userInfo: allUsers.value?.find(u => u.username === t.user),
+            playerInfo: allPlayers.value?.find(p => p.player_id === t.player_id),
             sellerInfo: t.seller
-              ? allUsers.value.find(u => u.username === t.seller)
+              ? allUsers.value?.find(u => u.username === t.seller)
               : undefined,
           };
         });
@@ -114,10 +121,11 @@
 
       const getTransfers = async (roundNo: number) => {
         try {
-          transferRecords.value = await GetTransferHistoryByRound(roundNo);
-          players.value = await GetGroupPlayersById(
-            transferRecords.value.map(t => t.player_id)
-          );
+          if (roundNo === store.getters.activeRoundNumber) {
+            transferRecords.value = latestTransferRecords.value ?? [];
+          } else {
+            transferRecords.value = await GetTransferHistoryByRound(roundNo);
+          }
         } catch (err) {
           error.value = String(err);
         }
@@ -125,13 +133,6 @@
 
       watch(roundNumber, async newValue => {
         await getTransfers(newValue);
-      });
-
-      onMounted(async () => {
-        allUsers.value = await GetAllUserInfoSorted();
-        await getTransfers(roundNumber.value);
-        console.log(transfers.value);
-        loaded.value = true;
       });
 
       return {

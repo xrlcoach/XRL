@@ -87,8 +87,7 @@
                         label="Save Changes"
                         loadingIcon="pi pi-spin pi-spinner"
                         :loading="savingChanges"
-                        :disabled="changesMade"
-                        :key="changesMade"
+                        :disabled="noChangesMade"
                       />
                     </div>
                   </section>
@@ -112,17 +111,24 @@
   import { GetPlayerById } from '../services/xrlApi';
   import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
+import { useXrlStore } from '../store';
+import { isPlayer } from '../services/utils';
+import { ActionTypes } from '../store-types';
 
   export default defineComponent({
     setup() {
+      const store = useXrlStore();
+
       const loaded = ref(false);
       const error = ref('');
 
-      const user = ref<XrlUser>();
-      const squad = ref([] as Player[]);
-      const waiverReports = ref([] as WaiverReport[]);
+      store.dispatch(ActionTypes.GetWaiverReports).finally(() => loaded.value = true);
+
+      const user = computed(() => store.state.user);
+      const squad = computed(() => store.getters.squad);
+      const waiverReports = computed(() => store.state.waiverReports);
       const waiverOptions = computed(() => {
-        return waiverReports.value.map(r => {
+        return waiverReports.value?.map(r => {
           return {
             label:
               'Round ' +
@@ -135,7 +141,7 @@ import { useConfirm } from 'primevue/useconfirm';
       });
       const selectedWaiverRound = ref('');
       const selectedWaiverReport = computed(() => {
-        return waiverReports.value.find(
+        return waiverReports.value?.find(
           r => r.waiver_round === selectedWaiverRound.value
         );
       });
@@ -144,16 +150,20 @@ import { useConfirm } from 'primevue/useconfirm';
         showReport.value = true;
       });
 
-      let originalPreferences: Player[] = [];
-      const preferences = ref([] as Player[]);
-      let originalPD = '';
-      const provisionalDrop = ref('');
+      const originalPreferences: Player[] = [];
+      user.value?.waiver_preferences.forEach(id => {
+        const p = store.getters.getPlayerById(id);
+        if (isPlayer(p)) originalPreferences.push(p);
+      });
+      const preferences = ref<Player[]>([...originalPreferences]);
+      const originalPD: Player | null = store.getters.getPlayerById(user.value?.provisional_drop ?? '');
+      const provisionalDrop = ref(originalPD);
 
-      const changesMade = computed(() => {
+      const noChangesMade = computed(() => {
         return (
           JSON.stringify(preferences.value) ===
             JSON.stringify(originalPreferences) &&
-          provisionalDrop.value === originalPD
+          JSON.stringify(provisionalDrop.value) === JSON.stringify(originalPD)
         );
       });
 
@@ -178,7 +188,6 @@ import { useConfirm } from 'primevue/useconfirm';
       const confirmDropClaim = () => {
         confirm.require({
           message: `Are you sure you want to remove your claim for ${selectedPlayers.value?.[0]?.player_name}?`,
-          header: 'Confirm Claim',
           icon: 'pi pi-undo',
           accept: () => {
             toast.add({
@@ -190,27 +199,6 @@ import { useConfirm } from 'primevue/useconfirm';
           }
         })
       }
-
-      onMounted(async () => {
-        try {
-          user.value = await GetUserInfo();
-          squad.value = await GetUserSquad();
-          waiverReports.value = await GetWaivers();
-          for (let id of user.value.waiver_preferences) {
-            originalPreferences = [
-              ...preferences.value,
-              await GetPlayerById(id),
-            ];
-            preferences.value = originalPreferences;
-          }
-          originalPD = user.value.provisional_drop || '';
-          provisionalDrop.value = originalPD;
-        } catch (err) {
-          error.value = err;
-        } finally {
-          loaded.value = true;
-        }
-      });
 
       return {
         loaded,
@@ -226,7 +214,7 @@ import { useConfirm } from 'primevue/useconfirm';
         provisionalDrop,
         savingChanges,
         saveChanges,
-        changesMade,
+        noChangesMade,
         confirmDropClaim,
         selectedPlayers
       };

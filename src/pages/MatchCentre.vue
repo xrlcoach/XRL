@@ -101,10 +101,9 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        loadFixture(
-          Number(query.round),
-          (query.fixture as string)?.split('-v-')[0]
-        );
+        const roundNumber = query.round ? Number(query.round) : store.getters.activeRoundNumber;
+        const team = (query.fixture as string)?.split('-v-')[0] ?? store.getters.activeUserTeamShort;
+        loadFixture(roundNumber, team);
       } catch (err) {
         console.log(err);
       } finally {
@@ -115,7 +114,6 @@ export default defineComponent({
     return {
       loaded,
       roundInfo,
-      fixture,
       homeTeam,
       awayTeam,
       isUserMatch,

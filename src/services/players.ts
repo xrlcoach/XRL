@@ -35,7 +35,9 @@ export const XrlTeams = [
   'ROX',
   'WOL',
   'XIII',
-  'None'
+  'None',
+  'On Waivers',
+  'Pre-Waivers'
 ] as const;
 
 export async function GetUserSquad() {
