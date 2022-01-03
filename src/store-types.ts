@@ -3,6 +3,7 @@ import {
   Player,
   PlayerLineupEntry,
   PlayerNews,
+  TradeOfferBuilder,
   Transfer,
   WaiverReport,
   XrlFixture,
@@ -100,6 +101,7 @@ export enum ActionTypes {
   UpdatePlayerXrlTeam = 'UpdatePlayerXrlTeam',
   ScoopPlayers = 'ScoopPlayers',
   DropPlayers = 'DropPlayers',
+  SendTradeOffer = 'SendTradeOffer',
 }
 
 export interface Actions {
@@ -146,6 +148,9 @@ export interface Actions {
   [ActionTypes.UpdateUserWaiverPreferences]({
     commit,
   }: AugmentedActionContext): void;
+  [ActionTypes.SendTradeOffer]({
+    commit,
+  }: AugmentedActionContext, offer: TradeOfferBuilder): void;
   // #endregion
 }
 

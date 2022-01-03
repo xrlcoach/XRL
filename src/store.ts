@@ -1,6 +1,6 @@
 import { InjectionKey } from 'vue';
 import { ActionTree, createStore, GetterTree, MutationTree, Store, useStore as baseUseStore } from 'vuex';
-import { NrlClub, Player, PlayerLineupEntry, PlayerNews, Transfer, WaiverReport, XrlRoundWithFixtures, XrlTeam, XrlUser } from './global';
+import { NrlClub, Player, PlayerLineupEntry, PlayerNews, TradeOfferBuilder, Transfer, WaiverReport, XrlRoundWithFixtures, XrlTeam, XrlUser } from './global';
 import { SortLeageTable } from './services/users';
 import { ActionTypes, MutationTypes } from './store-types';
 import type { Getters, Mutations, State, Actions, XrlStore } from './store-types';
@@ -192,6 +192,9 @@ const actions: ActionTree<State, State> & Actions = {
     }
   },
   [ActionTypes.UpdateUserWaiverPreferences]({ commit, state, getters }): void {
+    
+  },
+  [ActionTypes.SendTradeOffer]({ commit, state, getters}, offer: TradeOfferBuilder): void {
     
   }
   // #endregion

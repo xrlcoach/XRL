@@ -267,6 +267,33 @@ export type Transfer = {
   seller?: string;
 };
 
+export type TradeOfferBuilder = {
+  sendingUser: XrlUser,
+  targetUser: XrlUser | null,
+  playersWanted: Player[],
+  playersOffered: Player[],
+  powerplaysWanted: number,
+  powerplaysOffered: number,  
+}
+
+export type TradeOffer = {
+  pk: string;
+  sk: string;
+  data: string;
+  offer_id: string;
+  datetime: string;
+  offered_by: string;
+  offered_to: string;
+  players_offered: string[];
+  players_wanted: string[];
+  powerplays_offered: number;
+  powerplays_wanted: number;
+  offer_status: string;
+  year: number;
+}
+
+
+
 export type PlayerNews = {
   pk: string, //NEWS
   sk: string, //PLAYER#...

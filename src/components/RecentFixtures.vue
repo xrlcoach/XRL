@@ -1,11 +1,11 @@
 <template>
   <div>
     <Splitter style="height: 350px">
-      <SplitterPanel :size="50">
+      <SplitterPanel class="fixture-container" :size="50">
         <h4>Last Match</h4>
         <FixturePreview :fixture="lastMatch" />
       </SplitterPanel>
-      <SplitterPanel :size="50">
+      <SplitterPanel class="fixture-container" :size="50">
         <h4>Next Match</h4>
         <FixturePreview :fixture="nextMatch" />
       </SplitterPanel>
@@ -45,5 +45,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  
+  .fixture-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 </style>

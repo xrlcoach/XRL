@@ -187,6 +187,7 @@ import { ActionTypes } from '../store-types';
 
       const confirmDropClaim = () => {
         confirm.require({
+          header: 'Confirm',
           message: `Are you sure you want to remove your claim for ${selectedPlayers.value?.[0]?.player_name}?`,
           icon: 'pi pi-undo',
           accept: () => {

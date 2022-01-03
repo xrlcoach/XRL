@@ -127,6 +127,7 @@
         <SplitterPanel>
           <div id="roles">
             <div
+              v-if="canPowerplay"
               style="
                 padding: 20px 0px;
                 display: flex;
@@ -267,7 +268,10 @@ export default defineComponent({
     const user = computed(() => store.state.user);
     const squad = computed(() => store.getters.squad);
     const existingLineup = computed(() => store.state.lineup);
+    
+    const newLineup = ref<PlayerLineupEntry[]>([]);
     const powerplay = ref(false);
+    const canPowerplay = computed(() => store.state.user && store.state.user.powerplays > 0);
 
     const backs = computed(() => {
       return squad.value.filter(
@@ -337,6 +341,26 @@ export default defineComponent({
       int4: '',
     });
 
+    function fillExistingSelections() {
+      if (existingLineup.value && existingLineup.value.length) {
+        existingLineup.value.forEach(player => {
+          if (Object.keys(benchPositions.value).includes(player.position_specific)) {
+            selections.value.bench[player.position_specific as keyof typeof selections.value.bench] = player.player_id;
+          } else {
+            selections.value.starters[player.position_specific as keyof typeof selections.value.starters] = player.player_id;
+          }
+          for (const role of Object.keys(selections.value.roles)) {
+            if (player[role as keyof PlayerLineupEntry]) {
+              selections.value.roles[role as keyof typeof selections.value.roles] = player.player_id;
+              if (role === 'captain2') {
+                powerplay.value = true;
+              }
+            }
+          }
+        })
+      }
+    }
+
     watch(selections.value.bench, newValue => {
       console.log('Change in bench');
       for (let position of Object.keys(newValue)) {
@@ -362,7 +386,6 @@ export default defineComponent({
     const submitLineup = () => {
       submitting.value = true;
       try {
-        const lineup: PlayerLineupEntry[] = [];
         for (let position of Object.keys(selections.value.starters)) {
           let playerInfo = squad.value.find(
             p =>
@@ -372,7 +395,7 @@ export default defineComponent({
               ]
           );
           if (playerInfo) {
-            lineup.push({
+            newLineup.value.push({
               pk: playerInfo.pk,
               sk: `LINEUP#${CURRENT_YEAR}#` + roundNumber.value,
               data: 'TEAM#' + user.value?.team_short,
@@ -416,7 +439,7 @@ export default defineComponent({
               ]
           );
           if (playerInfo) {
-            lineup.push({
+            newLineup.value.push({
               pk: playerInfo.pk,
               sk: `LINEUP#${CURRENT_YEAR}#` + roundNumber.value,
               data: 'TEAM#' + user.value?.team_short,
@@ -456,7 +479,7 @@ export default defineComponent({
             });
           }
         }
-        issues.value = validateLineup(lineup);
+        issues.value = validateLineup(newLineup.value);
         if (issues.value.length > 0) {
           submitting.value = false;
           confirmationRequired.value = true;
@@ -529,22 +552,21 @@ export default defineComponent({
         }
       });
       if (!selections.some(p => p.captain)) issues.push("You haven't chosen a captain");
-      if (!powerplay && !selections.some(p => p.vice)) issues.push("You haven't chosen a vice-captain");
-      if (powerplay && !selections.some(p => p.captain2)) issues.push("You haven't chosen a co-captain");
+      if (!powerplay.value && !selections.some(p => p.vice)) issues.push("You haven't chosen a vice-captain");
+      if (powerplay.value && !selections.some(p => p.captain2)) issues.push("You haven't chosen a co-captain");
       return issues;
     }
 
     const saveLineup = async () => {
       submitting.value = true;
-      setTimeout(() => {
-        toast.add({
-          severity: 'success',
-          summary: 'Confirmed',
-          detail: `Lineup confirmed`,
-          life: 3000,
-        });
-        submitting.value = false;
-      }, 1000);
+      await store.dispatch(ActionTypes.SetLineup, newLineup.value);
+      toast.add({
+        severity: 'success',
+        summary: 'Confirmed',
+        detail: `Lineup confirmed`,
+        life: 3000,
+      });
+      submitting.value = false;
     };
 
     const confirmLineup = () => {
@@ -552,7 +574,7 @@ export default defineComponent({
       saveLineup();
     };
 
-    const loadMatchAndLineup = () => {
+    const loadMatchAndLineup = async () => {
       if (!user.value) {
         error.value = 'No user data found. Please log out and in again';
         return;
@@ -588,7 +610,12 @@ export default defineComponent({
         } catch (err) {
           console.log(err);
         }
+      } else {
+        fillExistingSelections();
       }
+    }
+
+    const fillExistingLineup = () => {
       for (let position of Object.keys(selections.value.starters)) {
         selections.value.starters[
           position as keyof typeof selections.value.starters
@@ -616,9 +643,13 @@ export default defineComponent({
             ?.player_id || '';
       }
       console.log(selections.value.roles);
-      powerplay.value =
-        existingLineup.value?.findIndex(p => p.captain2) !== -1;
+      powerplay.value = existingLineup.value ? 
+        existingLineup.value?.findIndex(p => p.captain2) !== -1 : false;
     }
+
+    watch(existingLineup, newValue => {
+      fillExistingSelections();
+    })
 
     onMounted(async () => {
       loadMatchAndLineup();
@@ -641,6 +672,7 @@ export default defineComponent({
       benchPositions,
       selections,
       powerplay,
+      canPowerplay,
       submitLineup,
       submitting,
       confirmationRequired,
@@ -659,6 +691,7 @@ export default defineComponent({
 #lineupContainer {
   margin: 20px 0px;
   transition: box-shadow 0.5s ease;
+  overflow: hidden;
 }
 #fixtureTitle {
   display: flex;

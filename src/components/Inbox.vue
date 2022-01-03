@@ -13,6 +13,9 @@
               <Button class="p-button-danger" @click="deleteMessage(slotProps.data.message)">Delete</Button>
             </template>
           </Column>
+          <template #empty>
+            No messages
+          </template>
         </DataTable>
       </SplitterPanel>
     </Splitter>

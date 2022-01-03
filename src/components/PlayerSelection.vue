@@ -30,7 +30,10 @@
 
   export default defineComponent({
     props: {
-      number: Number,
+      number: {
+        type: Number,
+        required: true,
+      },
       options: Array,
       selectedPlayerId: String,
       position: String,
@@ -38,7 +41,7 @@
     emits: ['update:selectedPlayerId', 'update:position'],
     setup(props) {
       // if (props.number === 1) console.log(props);
-      const selectedPlayerId = ref(props.selectedPlayerId || 'None');
+      const selectedPlayerId = computed(() => props.selectedPlayerId || 'None');
 
       const options = Array.from(props.options || []) as Player[];
       options.push({

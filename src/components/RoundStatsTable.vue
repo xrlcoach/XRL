@@ -97,9 +97,9 @@
               player_name: p.player_name,
               search_name: p.search_name,
               nrl_club: p.nrl_club,
-              minutes: p.stats['Mins Played'],
-              tries: p.stats.Tries,
-              goals: p.scoring_stats.kicker.goals,
+              minutes: p.stats['Mins Played'] ?? 0,
+              tries: p.stats.Tries ?? 0,
+              goals: p.scoring_stats.kicker.goals ?? 0,
               field_goals:
                 (scoring?.field_goals ?? 0) +
                 (scoring?.['2point_field_goals'] ?? 0),

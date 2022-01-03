@@ -81,12 +81,12 @@ import { SortByTotalXrlScore } from '../services/players';
         required: true,
       },
     },
-    setup({ players }) {
-
-      players.sort(SortByTotalXrlScore);
+    setup(props) {
+      const players = computed(() => props.players);
+      players.value.sort(SortByTotalXrlScore);
 
       const playerDisplayData = computed(() => {
-        return players.map(p => {
+        return players.value.map(p => {
           let scoring = p.scoring_stats[
             p.position as keyof PlayerScoringStats
           ] as ScoringStats | undefined;
@@ -95,9 +95,9 @@ import { SortByTotalXrlScore } from '../services/players';
             player_name: p.player_name,
             search_name: p.search_name,
             nrl_club: p.nrl_club,
-            appearances: p.stats.appearances,
-            tries: p.stats.Tries,
-            goals: p.scoring_stats.kicker.goals,
+            appearances: p.stats.appearances ?? 0,
+            tries: p.stats.Tries ?? 0,
+            goals: p.scoring_stats.kicker.goals ?? 0,
             field_goals:
               (scoring?.field_goals ?? 0) +
               (scoring?.['2point_field_goals'] ?? 0),
@@ -115,7 +115,7 @@ import { SortByTotalXrlScore } from '../services/players';
       const selectedPlayer = ref<Player>();
       const showPlayer = ref(false);
       const onSelectPlayer = (event: any) => {
-        selectedPlayer.value = players.find(
+        selectedPlayer.value = players.value.find(
           p => p.player_id === event.data.player_id
         );
         showPlayer.value = true;

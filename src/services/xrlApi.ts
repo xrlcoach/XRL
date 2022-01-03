@@ -55,9 +55,9 @@ export function GetActiveUserTeamShort() {
 /**
  * Calls GetUsers lambda function to retrieve all users' data
  */
-export async function GetAllUsers() {
+export async function GetAllUsers(year: number = new Date().getFullYear()) {
   const response = await fetch(
-    import.meta.env['VITE_XRL_API_ROUTE'] + '/xrl-users',
+    import.meta.env['VITE_XRL_API_ROUTE'] + '/xrl-users?year=' + year,
     {
       method: 'GET',
       headers: {
@@ -72,6 +72,7 @@ export async function GetAllUsers() {
   }
   return data as XrlUser[];
 }
+
 /**
  * Passes the id token to the GetUsers lambda, which isolates username and retrieves their user data
  * @param {String} idToken
