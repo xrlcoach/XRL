@@ -16,6 +16,9 @@
         </keep-alive>
       </transition>
     </router-view>
+  <Sidebar v-model:visible="showSidebar" @hide="onSidebarHide" class="p-sidebar-lg">
+    <PlayerProfile v-if="selectedPlayer" :player="selectedPlayer" />
+  </Sidebar>
   </main>
   <footer>
     <Footer />
@@ -23,9 +26,10 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, ref } from 'vue';
+  import { computed, defineComponent, ref, watch } from 'vue';
   import Header from './components/Header.vue';
   import Footer from './components/Footer.vue';
+  import PlayerProfile from './components/PlayerProfile.vue';
 
   import 'primevue/resources/themes/vela-green/theme.css';
   import 'primevue/resources/primevue.min.css';
@@ -33,7 +37,7 @@
 
   import './assets/styles.css';
 import { useXrlStore } from './store';
-import { ActionTypes } from './store-types';
+import { ActionTypes, MutationTypes } from './store-types';
 import { useRoute } from 'vue-router';
 import { GetIdToken } from './services/xrlApi';
 
@@ -46,6 +50,15 @@ import { GetIdToken } from './services/xrlApi';
         store.dispatch(ActionTypes.LoadAppData);
       }
       const loading = computed(() => loggedIn && (!store.state.user || !store.getters.currentRound || !store.state.allPlayers));
+      const selectedPlayer = computed(() => store.state.selectedPlayer);
+      const playerProfileVisible = computed(() => store.state.playerProfileVisible);
+      const showSidebar = ref(false);
+      const onSidebarHide = () => {
+        store.commit(MutationTypes.HIDE_PLAYER_TAB);
+      };
+      watch(playerProfileVisible, (value) => {
+        showSidebar.value = value;
+      });
       const tabs = ref([
         {
           label: 'Dashboard',
@@ -91,11 +104,15 @@ import { GetIdToken } from './services/xrlApi';
       return {
         loading,
         tabs,
+        selectedPlayer,
+        showSidebar,
+        onSidebarHide
       };
     },
     components: {
       Header,
       Footer,
+      PlayerProfile
     },
   });
 </script>

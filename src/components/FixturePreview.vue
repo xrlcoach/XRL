@@ -3,7 +3,7 @@
     <router-link v-if="fixture" :to="fixtureLink" class="fixture-preview">
       <div>
         <p>
-          <img :src="`src/assets/${fixture?.home}.png`" :height="100" :width="100" />
+          <img :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${fixture?.home}.png`" :height="100" :width="100" />
         </p>
         <p>{{ fixture?.home }}&nbsp;{{ fixture?.home_score }}</p>
       </div>
@@ -12,7 +12,7 @@
       </div>
       <div>
         <p>
-          <img :src="`src/assets/${fixture?.away}.png`" :height="100" :width="100" />
+          <img :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${fixture?.away}.png`" :height="100" :width="100" />
         </p>
         <p>{{ fixture?.away_score }}&nbsp;{{ fixture?.away }}</p>
       </div>

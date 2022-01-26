@@ -7,7 +7,7 @@
         <div class="teamScoreHeader">
           <div>
             <img
-              :src="`src/assets/${team.team_short}.png`"
+              :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${team.team_short}.png`"
               :alt="team.team_name"
               :height="50"
               :width="50"
@@ -56,7 +56,7 @@
             >
               <template #body="slotProps">
                 <img
-                  :src="`src/assets/${slotProps.data?.nrl_club}.svg`"
+                  :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data?.nrl_club}.svg`"
                   :alt="slotProps.data?.nrl_club"
                   :height="50"
                   :width="50"
@@ -293,7 +293,7 @@
             >
               <template #body="slotProps">
                 <img
-                  :src="`src/assets/${slotProps.data?.nrl_club}.svg`"
+                  :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data?.nrl_club}.svg`"
                   :alt="slotProps.data?.nrl_club"
                   :height="50"
                   :width="50"

@@ -19,7 +19,7 @@
               <template #body="slotProps">
                 <div style="text-align: center">
                   <img
-                    :src="`src/assets/${slotProps.data.team_short}.png`"
+                    :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data.team_short}.png`"
                     :alt="slotProps.data.team_short"
                     :height="50"
                     :width="50"

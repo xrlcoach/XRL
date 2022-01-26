@@ -1,13 +1,5 @@
 <template>
   <div>
-    <Dialog
-      header="Player Profile"
-      v-model:visible="showPlayer"
-      :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
-      :style="{ width: '50vw' }"
-    >
-      <PlayerProfile v-if="selectedPlayer" :player="selectedPlayer" />
-    </Dialog>
     <DataTable
       :value="filteredPlayers"
       dataKey="player_id"
@@ -47,7 +39,7 @@
       <Column header="Club" :sortable="true">
         <template #body="slotProps">
           <img
-            :src="`src/assets/${slotProps.data.nrl_club}.svg`"
+            :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data.nrl_club}.svg`"
             :alt="slotProps.data.nrl_club"
             :height="50"
             :width="50"
@@ -75,6 +67,8 @@
   import { computed, defineComponent, PropType, ref } from 'vue';
   import { Player, PlayerScoringStats, ScoringStats } from '../global';
 import { SortByTotalXrlScore } from '../services/players';
+import { useXrlStore } from '../store';
+import { MutationTypes } from '../store-types';
   import PlayerProfile from './PlayerProfile.vue';
 
   export default defineComponent({
@@ -86,6 +80,8 @@ import { SortByTotalXrlScore } from '../services/players';
       },
     },
     setup(props, { emit }) {
+      const store = useXrlStore();
+
       const players = computed(() => props.players);
       players.value.sort(SortByTotalXrlScore);
 
@@ -117,12 +113,11 @@ import { SortByTotalXrlScore } from '../services/players';
       const includeKickingPoints = ref(true);
 
       const selectedPlayer = ref<Player>();
-      const showPlayer = ref(false);
       const onSelectPlayer = (event: any) => {
         selectedPlayer.value = players.value.find(
           p => p.player_id === event.data.player_id
         );
-        showPlayer.value = true;
+        store.commit(MutationTypes.SHOW_SELECTED_PLAYER, selectedPlayer.value);
       };
 
       const searchTerm = ref('');
@@ -146,7 +141,6 @@ import { SortByTotalXrlScore } from '../services/players';
         searchTerm,
         clearSearch,
         filteredPlayers,
-        showPlayer,
         includeKickingPoints,
         exportPlayerStats
       };

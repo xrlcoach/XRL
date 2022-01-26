@@ -22,7 +22,7 @@
         <div class="cell">
           <h4>NRL Club</h4>
           <img
-            :src="`src/assets/${appearance.nrl_club}.svg`"
+            :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${appearance.nrl_club}.svg`"
             :alt="appearance.nrl_club"
             :height="50"
             :width="50"
@@ -32,7 +32,7 @@
         <div class="cell">
           <h4>XRL Team</h4>
           <img
-            :src="`src/assets/${appearance.xrl_team}.png`"
+            :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${appearance.xrl_team}.png`"
             :alt="appearance.xrl_team"
             :height="50"
             :width="50"
@@ -72,7 +72,7 @@
           <div class="cell">
             <h4>Opponent</h4>
             <img
-              :src="`src/assets/${appearance.appearanceStats?.opponent}.svg`"
+              :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${appearance.appearanceStats?.opponent}.svg`"
               :alt="appearance.appearanceStats?.opponent"
               :height="50"
               :width="50"

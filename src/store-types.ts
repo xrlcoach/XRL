@@ -29,6 +29,8 @@ export interface State {
   waiverReports: WaiverReport[] | null;
   transfers: Transfer[] | null;
   news: PlayerNews[] | null;
+  selectedPlayer: Player | null,
+  playerProfileVisible: boolean,
 }
 
 export type Getters = {
@@ -58,6 +60,8 @@ export enum MutationTypes {
   SET_NEWS = 'SET_NEWS',
   UPDATE_PLAYERS_XRL_TEAM = 'UPDATE_PLAYERS_XRL_TEAM',
   CLEAR_SESSION_DATA = 'CLEAR_SESSION_DATA',
+  SHOW_SELECTED_PLAYER = 'SHOW_SELECTED_PLAYER',
+  HIDE_PLAYER_TAB = 'HIDE_PLAYER_TAB'
 }
 
 export type Mutations<S = State> = {
@@ -74,6 +78,8 @@ export type Mutations<S = State> = {
   [MutationTypes.SET_NEWS](state: S, news: PlayerNews[]): void;
   [MutationTypes.CLEAR_SESSION_DATA](state: S): void;
   [MutationTypes.UPDATE_PLAYERS_XRL_TEAM](state: S, { players, team }: { players: Player[], team: XrlTeam }): void;
+  [MutationTypes.SHOW_SELECTED_PLAYER](state: S, player: Player): void;
+  [MutationTypes.HIDE_PLAYER_TAB](state: S): void;
 };
 
 type AugmentedActionContext = {

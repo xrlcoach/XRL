@@ -33,7 +33,7 @@
                 <template #body="slotProps">
                   <div style="display: flex; gap: 10px; align-items: center">
                     <img
-                      :src="`src/assets/${slotProps.data.userInfo.team_short}.png`"
+                      :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data.userInfo.team_short}.png`"
                       :alt="slotProps.data.userInfo.team_short"
                       :height="50"
                       :width="50"

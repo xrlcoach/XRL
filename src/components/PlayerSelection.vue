@@ -73,7 +73,7 @@
 
       const jerseyUrl = computed(() => {
         return encodeURI(
-          `src/assets/jerseys/${
+          `https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/jerseys/${
             options.find(p => p.player_id == selectedPlayerId.value)
               ?.nrl_club || 'default'
           }_jersey.png`

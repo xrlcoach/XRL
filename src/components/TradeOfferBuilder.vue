@@ -14,10 +14,13 @@
           <label for="offeredPlayersSelect">Offer</label>
           <Dropdown
             id="offeredPlayersSelect"
-            v-model="selectedPlayer"
+            v-model="offeredPlayers[0]"
             :options="userSquad"
             optionLabel="player_name"
           />
+        </div>
+        <div>
+          <Button class="p-button-link" label="Add Player" icon="pi pi-plus" @click="desiredPlayers.push(null)" />
         </div>
         <div>
           <Button
@@ -32,7 +35,7 @@
           <label for="desiredPlayersSelect">For</label>
           <Dropdown
             id="desiredPlayersSelect"
-            v-model="selectedPlayer"
+            v-model="desiredPlayers[0]"
             :options="targetUserSquad"
             optionLabel="player_name"
           />
@@ -80,7 +83,7 @@
       );
 
       const xrlTeams = XrlTeams.filter((team) => team !== "None");
-      const selectedTeam = ref<XrlTeam>("None");
+      const selectedTeam = ref<XrlTeam>(targetUser.value?.team_short ?? "None");
 
       watch(selectedTeam, async (team) => {
         if (selectedTeam.value !== "None") {
@@ -91,7 +94,7 @@
         }
       });
 
-      const desiredPlayers = ref([] as Player[]);
+      const desiredPlayers = ref(player ? [player] : [] as Player[]);
       if (player) desiredPlayers.value.push(player);
       const offeredPlayers = ref([] as Player[]);
       const selectedPlayer = ref<Player>();

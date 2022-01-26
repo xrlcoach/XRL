@@ -1,13 +1,5 @@
 <template>
   <div>
-    <Dialog
-      header="Player Profile"
-      v-model:visible="showPlayer"
-      :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
-      :style="{ width: '50vw' }"
-    >
-      <PlayerProfile v-if="selectedPlayer" :player="selectedPlayer" />
-    </Dialog>
     <Splitter>
       <SplitterPanel>
         <h3>{{ name }}</h3>
@@ -39,7 +31,7 @@
           <Column header="Club">
             <template #body="slotProps">
               <img
-                :src="`src/assets/${slotProps.data.nrl_club}.svg`"
+                :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data.nrl_club}.svg`"
                 :alt="slotProps.data.nrl_club"
                 :height="50"
                 :width="50"
@@ -69,6 +61,8 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
 import { Player } from '../global';
+import { useXrlStore } from '../store';
+import { MutationTypes } from '../store-types';
 import PlayerProfile from './PlayerProfile.vue';
 
 export default defineComponent({
@@ -77,6 +71,7 @@ export default defineComponent({
     squad: Array,
   },
   setup(props) {
+    const store = useXrlStore();
     const players = computed(() => props.squad as Player[]);
     const input = ref('');
     const searchTerm = ref('');
@@ -87,11 +82,10 @@ export default defineComponent({
       input.value = '';
       searchTerm.value = '';
     };
-    const showPlayer = ref(false);
     const selectedPlayer = ref<Player>();
     const onSelectPlayer = (event: any) => {
       selectedPlayer.value = event.data as Player;
-      showPlayer.value = true;
+      store.commit(MutationTypes.SHOW_SELECTED_PLAYER, selectedPlayer.value);
     };
     return {
       input,
@@ -100,7 +94,6 @@ export default defineComponent({
       players: filteredPlayers,
       selectedPlayer,
       onSelectPlayer,
-      showPlayer,
     };
   },
   components: {

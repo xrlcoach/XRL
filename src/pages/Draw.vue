@@ -29,7 +29,7 @@
               <template #body="slotProps">
                 <div style="text-align: center">
                   <img
-                    :src="`src/assets/${slotProps.data.home}.png`"
+                    :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data.home}.png`"
                     :alt="slotProps.data.home"
                     :height="50"
                     :width="50"
@@ -75,7 +75,7 @@
               <template #body="slotProps">
                 <div style="text-align: center">
                   <img
-                    :src="`src/assets/${slotProps.data.away}.png`"
+                    :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data.away}.png`"
                     :alt="slotProps.data.away"
                     :height="50"
                     :width="50"

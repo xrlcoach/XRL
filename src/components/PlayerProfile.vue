@@ -6,7 +6,7 @@
         <div class="cell">
           <h4>NRL Club</h4>
           <img
-            :src="`src/assets/${player.nrl_club}.svg`"
+            :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${player.nrl_club}.svg`"
             :alt="player.nrl_club"
             :height="50"
             :width="50"
@@ -16,7 +16,7 @@
         <div class="cell">
           <h4>XRL Team</h4>
           <img
-            :src="`src/assets/${player.xrl_team}.png`"
+            :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${player.xrl_team}.png`"
             :alt="player.xrl_team"
             :height="50"
             :width="50"
@@ -187,6 +187,9 @@
         />
       </AccordionTab>
     </Accordion>
+    <Dialog v-model:visible="tradeFormVisible" header="Trade Offer" style="width: 450px" :breakpoints="{ '450px': '100vw' }">
+      <TradeOfferBuilder :player="player" />
+    </Dialog>
   </div>
 </template>
 
@@ -206,6 +209,7 @@ import { useToast } from 'primevue/usetoast';
 import { UpdateUserWaiverPreferences } from '../services/xrlApi';
 import { useXrlStore } from '../store';
 import { ActionTypes } from '../store-types';
+import TradeOfferBuilder from './TradeOfferBuilder.vue';
 
 export default defineComponent({
   props: {
@@ -244,6 +248,7 @@ export default defineComponent({
 
     const confirm = useConfirm();
     const toast = useToast();
+    const tradeFormVisible = ref(false);
 
     const confirmDropPlayer = () => {
       confirm.require({
@@ -328,7 +333,7 @@ export default defineComponent({
     }
 
     const openTradeForm = () => {
-      
+      tradeFormVisible.value = true;
     }
 
     return {
@@ -344,7 +349,8 @@ export default defineComponent({
       confirmMakeClaim,
       confirmDropClaim,
       roundInfo,
-      openTradeForm
+      openTradeForm,
+      tradeFormVisible,
     };
   },
   components: {
@@ -353,6 +359,7 @@ export default defineComponent({
     ScrollPanel,
     Accordion,
     AccordionTab,
+    TradeOfferBuilder,
   },
 });
 </script>

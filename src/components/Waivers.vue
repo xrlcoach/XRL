@@ -48,7 +48,7 @@
                           <div class="preferenceDisplayName">
                             <div>
                               <img
-                                :src="`src/assets/${slotProps.item.nrl_club}.svg`"
+                                :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.item.nrl_club}.svg`"
                                 :alt="slotProps.item.nrl_club"
                                 :height="50"
                                 :width="50"

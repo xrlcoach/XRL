@@ -16,6 +16,8 @@ const state = {
   waiverReports: null,
   transfers: null,
   news: null,
+  selectedPlayer: null,
+  playerProfileVisible: false,
 };
 
 const getters: GetterTree<State, State> & Getters = {
@@ -74,6 +76,14 @@ const mutations: MutationTree<State> & Mutations = {
     for (let player of players) {
       player.xrl_team = team;
     }
+  },
+  [MutationTypes.SHOW_SELECTED_PLAYER] (state, player) {
+    state.selectedPlayer = player;
+    state.playerProfileVisible = true;
+  },
+  [MutationTypes.HIDE_PLAYER_TAB] (state) {
+    state.playerProfileVisible = false;
+    state.selectedPlayer = null;
   }
 };
 

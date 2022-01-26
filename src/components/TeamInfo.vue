@@ -72,7 +72,7 @@ import { useXrlStore } from "../store";
 
       const imgSrc = computed(() => {
         return activeUser.value
-          ? `src/assets/${activeUser?.value?.team_short}.png`
+          ? `https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${activeUser?.value?.team_short}.png`
           : null;
       });
 
