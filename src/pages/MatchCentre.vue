@@ -34,11 +34,8 @@
 import { computed, defineComponent, onMounted, ref } from 'vue';
 import { XrlFixture, XrlRoundWithFixtures, XrlUser } from '../global';
 import {
-  GetActiveRoundInfo,
-  GetRoundInfo,
   GetTeamFixtureFromRound,
 } from '../services/rounds';
-import { GetUserInfo, GetUserInfoByTeamShort } from '../services/users';
 import { TeamScore } from '../components';
 import { useRoute, RouterLink } from 'vue-router';
 import { useXrlStore } from '../store';

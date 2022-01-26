@@ -218,7 +218,7 @@ export function createAppearanceExportData(appearances: (PlayerAppearanceStats &
   return data;
 }
 
-export function exportStatsAsCSV(data: PlayerExportData[] | AppearanceExportData[], fileName: string) {
+export function exportStatsAsCSV(data: any[], fileName: string) {
   if (!data.length) return;
   let csv = '\ufeff';
   const columns: string[] = Object.keys(data[0]);

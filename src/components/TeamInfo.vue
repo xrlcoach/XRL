@@ -53,10 +53,11 @@
   import { computed, defineComponent } from "vue";
   import { GetOrdinal } from "../services/utils";
   import Chart from "primevue/chart";
-  import { store } from "../store";
+import { useXrlStore } from "../store";
 
   export default defineComponent({
     setup() {
+      const store = useXrlStore();
       const activeUser = computed(() => store.state.user);
       const ladder = computed(() => store.getters.xrlLadder);
       const loading = computed(() => !activeUser.value || !ladder.value);

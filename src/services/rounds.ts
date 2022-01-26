@@ -33,23 +33,23 @@ export function GetActiveRoundInfo(allRounds: XrlRoundWithFixtures[]) {
   return currentRound ?? null;
 }
 
-export async function GetRoundInfo(roundNumber: number) {
-  const allRounds = await GetAllRounds();
-  const specifiedRound = allRounds.find(r => r.round_number === roundNumber);
-  if (!specifiedRound) throw "Couldn't find info for round " + roundNumber;
-  return specifiedRound;
-}
+// export async function GetRoundInfo(roundNumber: number) {
+//   const allRounds = await GetAllRounds();
+//   const specifiedRound = allRounds.find(r => r.round_number === roundNumber);
+//   if (!specifiedRound) throw "Couldn't find info for round " + roundNumber;
+//   return specifiedRound;
+// }
 
-export async function GetUserFixtures() {
-  const allRounds = await GetAllRounds();
-  const user = await GetUserInfo();
-  const fixtures = allRounds.map(r =>
-    r.fixtures.find(
-      f => f.away === user.team_short || f.home === user.team_short
-    )
-  );
-  return fixtures;
-}
+// export async function GetUserFixtures() {
+//   const allRounds = await GetAllRounds();
+//   const user = await GetUserInfo();
+//   const fixtures = allRounds.map(r =>
+//     r.fixtures.find(
+//       f => f.away === user.team_short || f.home === user.team_short
+//     )
+//   );
+//   return fixtures;
+// }
 
 export function GetUserActiveFixture(activeRound: XrlRoundWithFixtures, user: XrlUser): XrlFixture | null {
   const fixture = activeRound?.fixtures.find(
@@ -66,13 +66,13 @@ export function GetUserLastFixture(allRounds: XrlRoundWithFixtures[], activeRoun
   return fixture ?? null;
 }
 
-export async function GetFixture(roundNumber: number, teamShort: string) {
-  const roundInfo = await GetRoundInfo(roundNumber);
-  const fixture = roundInfo?.fixtures.find(
-    f => f.away === teamShort || f.home === teamShort
-  );
-  return fixture;
-}
+// export async function GetFixture(roundNumber: number, teamShort: string) {
+//   const roundInfo = await GetRoundInfo(roundNumber);
+//   const fixture = roundInfo?.fixtures.find(
+//     f => f.away === teamShort || f.home === teamShort
+//   );
+//   return fixture;
+// }
 
 export function GetNextRoundNotInProgress(allRounds: XrlRoundWithFixtures[]) {
   const notInProgressRounds = allRounds.filter(r => !r.in_progress);

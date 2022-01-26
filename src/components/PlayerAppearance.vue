@@ -7,7 +7,7 @@
           <Tag
             v-if="appearance.captain || appearance.captain2"
             value="Captain"
-            severity="primary"
+            severity="success"
           />
           <Tag v-if="appearance.vice" value="Vice-Captain" severity="success" />
           <Tag v-if="appearance.kicker" value="Kicker" severity="info" />
@@ -280,7 +280,7 @@
             <TabPanel header="Key">
               <ScrollPanel style="width: 100%; height: 200px">
                 <ul>
-                  <li v-for="stat of keyStats" :key="stat">
+                  <li v-for="stat of keyStats" :key="stat.stat">
                     <p>{{ stat.stat }}</p>
                     <p class="value">{{ stat.value }}</p>
                   </li>
@@ -290,7 +290,7 @@
             <TabPanel header="All">
               <ScrollPanel style="width: 100%; height: 200px">
                 <ul>
-                  <li v-for="stat of allStats" :key="stat">
+                  <li v-for="stat of allStats" :key="stat.stat">
                     <p>{{ stat.stat }}</p>
                     <p class="value">{{ stat.value }}</p>
                   </li>

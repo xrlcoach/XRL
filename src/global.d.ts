@@ -176,7 +176,7 @@ export type PlayerLineupEntry = {
   position_specific: string;
   round_number: string;
   score?: number;
-  second_position: string;
+  second_position: string | null;
   vice: boolean;
   xrl_team: string;
   year: number;

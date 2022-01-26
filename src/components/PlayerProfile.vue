@@ -343,7 +343,8 @@ export default defineComponent({
       confirmScoopPlayer,
       confirmMakeClaim,
       confirmDropClaim,
-      roundInfo
+      roundInfo,
+      openTradeForm
     };
   },
   components: {

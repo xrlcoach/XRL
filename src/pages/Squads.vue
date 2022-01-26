@@ -17,25 +17,17 @@
       </div>
     </div>
     <transition name="fade" mode="out-in">
-      <SquadTable
-        :name="squadName"
-        :squad="players"
-      />
+      <SquadTable :name="squadName" :squad="players" />
     </transition>
   </div>
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, onMounted, PropType, ref, watch } from 'vue';
-  import { XrlTeam, NrlClub, Player } from '../global';
-  import { NrlClubs, XrlTeams } from '../services/players';
-  import { SquadTable, LoadingIndicator } from '../components';
-  import {
-    GetActiveUserTeamShort,
-    GetPlayersFromNrlClub,
-    GetPlayersFromXrlTeam,
-  } from '../services/xrlApi';
-import { useXrlStore } from '../store';
+  import { computed, defineComponent, PropType, ref } from "vue";
+  import { XrlTeam, NrlClub } from "../global";
+  import { NrlClubs, XrlTeams } from "../services/players";
+  import { SquadTable, LoadingIndicator } from "../components";
+  import { useXrlStore } from "../store";
 
   export default defineComponent({
     props: {
@@ -50,14 +42,20 @@ import { useXrlStore } from '../store';
       const xrlTeams = Array.from(XrlTeams) as string[];
       const nrlClubs = Array.from(NrlClubs) as string[];
 
-      const squadName = ref<XrlTeam | NrlClub>(props.squadName || store.getters.activeUserTeamShort);
+      const squadName = ref<XrlTeam | NrlClub>(
+        props.squadName || store.getters.activeUserTeamShort
+      );
 
       const isXrlTeam = (name: string): name is XrlTeam => {
         if (xrlTeams.includes(name)) return true;
         return false;
-      }
+      };
 
-      const players = computed(() => isXrlTeam(squadName.value) ? store.getters.getXrlSquad(squadName.value) : store.getters.getNrlSquad(squadName.value));
+      const players = computed(() =>
+        isXrlTeam(squadName.value)
+          ? store.getters.getXrlSquad(squadName.value)
+          : store.getters.getNrlSquad(squadName.value)
+      );
 
       return {
         xrlTeams,
@@ -68,7 +66,7 @@ import { useXrlStore } from '../store';
     },
     components: {
       SquadTable,
-      LoadingIndicator
+      LoadingIndicator,
     },
   });
 </script>

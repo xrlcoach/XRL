@@ -10,14 +10,14 @@
       optionValue="player_id"
       optionLabel="player_name"
       v-model="selectedPlayerId"
-      @change="$emit('update:selectedPlayerId', $event.value)"
+      @change="onSelectionChange"
       placeholder="--"
     />
     <Dropdown 
       v-if="number > 13"
       :options="positionOptions"
       v-model="position"
-      @change="$emit('update:position', $event.value)"
+      @change="onPositionChange"
       placeholder="--"
       style="margin-top: 5px;"
     />
@@ -27,6 +27,7 @@
 <script lang="ts">
   import { computed, defineComponent, ref, watch } from 'vue';
   import { Player } from '../global';
+  import { DropdownChangeEvent } from 'primevue/dropdown/Dropdown';
 
   export default defineComponent({
     props: {
@@ -39,7 +40,7 @@
       position: String,
     },
     emits: ['update:selectedPlayerId', 'update:position'],
-    setup(props) {
+    setup(props, { emit }) {
       // if (props.number === 1) console.log(props);
       const selectedPlayerId = computed(() => props.selectedPlayerId || 'None');
 
@@ -70,7 +71,6 @@
         }
       });
 
-
       const jerseyUrl = computed(() => {
         return encodeURI(
           `src/assets/jerseys/${
@@ -80,9 +80,15 @@
         );
       });
 
-      // watch(selectedPlayerId, newValue => {
-      //   context.emit('selection-change', newValue);
-      // });
+      const onSelectionChange = (event: any) => {
+        const { value } = event as DropdownChangeEvent;
+        emit('update:selectedPlayerId', value);
+      }
+
+      const onPositionChange = (event: any) => {
+        const { value } = event as DropdownChangeEvent;
+        emit('update:position', value);
+      }
 
       return {
         selectedPlayerId,
@@ -90,7 +96,9 @@
         options,
         jerseyUrl,
         position,
-        positionOptions
+        positionOptions,
+        onSelectionChange,
+        onPositionChange
       };
     },
   });

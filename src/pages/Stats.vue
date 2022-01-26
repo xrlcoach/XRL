@@ -91,28 +91,31 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, onMounted, ref } from 'vue';
+  import { computed, defineComponent, onMounted, ref } from "vue";
   import {
     GetAllPlayers,
-    GetCurrentRoundNumber,
     GetStatsByRound,
-  } from '../services/xrlApi';
-  import { createAppearanceExportData, createPlayerExportData, exportStatsAsCSV, PositionOrder } from '../services/utils';
+  } from "../services/xrlApi";
+  import {
+    createAppearanceExportData,
+    createPlayerExportData,
+    exportStatsAsCSV,
+    PositionOrder,
+  } from "../services/utils";
   import {
     NrlClub,
     Player,
     PlayerAppearanceStats,
     XrlPosition,
     XrlTeam,
-  } from '../global';
+  } from "../global";
   import {
     LoadingIndicator,
     PlayerStatsTable,
     RoundStatsTable,
-  } from '../components';
-  import { NrlClubs, XrlTeams } from '../services/players';
-  import { GetActiveRoundNumber } from '../services/rounds';
-import { useXrlStore } from '../store';
+  } from "../components";
+  import { NrlClubs, XrlTeams } from "../services/players";
+  import { useXrlStore } from "../store";
 
   export default defineComponent({
     setup() {
@@ -125,19 +128,19 @@ import { useXrlStore } from '../store';
       const roundStats = ref([] as (PlayerAppearanceStats & Player)[]);
       const statsToShow = ref([] as (PlayerAppearanceStats & Player)[]);
 
-      const positionOptions = ['ALL'].concat(PositionOrder);
-      const selectedPosition = ref<XrlPosition | 'ALL'>();
+      const positionOptions = ["ALL"].concat(PositionOrder);
+      const selectedPosition = ref<XrlPosition | "ALL">();
 
-      const nrlClubOptions = ['ALL'].concat(NrlClubs);
-      const selectedNrlClub = ref<NrlClub | 'ALL'>();
+      const nrlClubOptions = ["ALL"].concat(NrlClubs);
+      const selectedNrlClub = ref<NrlClub | "ALL">();
 
-      const xrlTeamOptions = ['ALL'].concat(XrlTeams);
-      const selectedXrlTeam = ref<XrlTeam | 'ALL'>();
+      const xrlTeamOptions = ["ALL"].concat(XrlTeams);
+      const selectedXrlTeam = ref<XrlTeam | "ALL">();
 
-      const roundOptions = ['ALL'].concat([
-        ...Array.from(Array(21).keys()).map(n => String(n + 1)),
+      const roundOptions = ["ALL"].concat([
+        ...Array.from(Array(21).keys()).map((n) => String(n + 1)),
       ]);
-      const selectedRound = ref('');
+      const selectedRound = ref("");
       const currentDisplayedRound = ref(0);
 
       const currentYear = new Date().getFullYear();
@@ -148,24 +151,24 @@ import { useXrlStore } from '../store';
       const isSpecificRound = ref(false);
 
       const applyFilters = <T extends Player>(results: T[]): T[] => {
-        return results.filter(p => {
+        return results.filter((p) => {
           return (
             (!selectedPosition.value ||
-              selectedPosition.value === 'ALL' ||
+              selectedPosition.value === "ALL" ||
               selectedPosition.value === p.position ||
               selectedPosition.value === p.position2) &&
             (!selectedNrlClub.value ||
-              selectedNrlClub.value === 'ALL' ||
+              selectedNrlClub.value === "ALL" ||
               selectedNrlClub.value === p.nrl_club) &&
             (!selectedXrlTeam.value ||
-              selectedXrlTeam.value === 'ALL' ||
+              selectedXrlTeam.value === "ALL" ||
               selectedXrlTeam.value === p.xrl_team)
           );
         });
       };
 
       const getPlayers = async () => {
-        console.log('Calling getPlayers');
+        console.log("Calling getPlayers");
         loading.value = true;
         try {
           let playerRecords: Player[];
@@ -187,20 +190,23 @@ import { useXrlStore } from '../store';
         try {
           const roundNumber = Number(selectedRound.value);
           const year = Number(selectedYear.value);
-          if (currentDisplayedRound.value !== roundNumber || currentDisplayedYear.value !== year) {
+          if (
+            currentDisplayedRound.value !== roundNumber ||
+            currentDisplayedYear.value !== year
+          ) {
             const stats = await GetStatsByRound(roundNumber, year);
             roundStats.value = stats
               .filter(
-                p =>
+                (p) =>
                   allPlayers.value?.find(
-                    player => player.player_id === p.player_id
+                    (player) => player.player_id === p.player_id
                   ) !== undefined
               )
-              .map(p => {
+              .map((p) => {
                 return Object.assign(
                   {},
                   allPlayers.value?.find(
-                    player => player.player_id === p.player_id
+                    (player) => player.player_id === p.player_id
                   ),
                   p
                 );
@@ -215,7 +221,7 @@ import { useXrlStore } from '../store';
       };
 
       const getResults = () => {
-        if (selectedRound.value && selectedRound.value !== 'ALL') {
+        if (selectedRound.value && selectedRound.value !== "ALL") {
           getStats();
           isSpecificRound.value = true;
         } else {
@@ -226,22 +232,29 @@ import { useXrlStore } from '../store';
 
       const exportPlayerStats = (players: Player[]) => {
         const data = createPlayerExportData(players);
-        let fileName = 'XrlStats_' + selectedYear.value;
-        if (selectedNrlClub.value && selectedNrlClub.value !== 'ALL') fileName += '_' + selectedNrlClub.value;
-        if (selectedXrlTeam.value && selectedXrlTeam.value !== 'ALL') fileName += '_' + selectedXrlTeam.value;
-        if (selectedPosition.value && selectedPosition.value !== 'ALL') fileName += '_' + selectedPosition.value;
+        let fileName = "XrlStats_" + selectedYear.value;
+        if (selectedNrlClub.value && selectedNrlClub.value !== "ALL")
+          fileName += "_" + selectedNrlClub.value;
+        if (selectedXrlTeam.value && selectedXrlTeam.value !== "ALL")
+          fileName += "_" + selectedXrlTeam.value;
+        if (selectedPosition.value && selectedPosition.value !== "ALL")
+          fileName += "_" + selectedPosition.value;
         exportStatsAsCSV(data, fileName);
-      }
+      };
 
       const exportRoundStats = (players: (PlayerAppearanceStats & Player)[]) => {
         const data = createAppearanceExportData(players);
-        let fileName = 'XrlStats_' + selectedYear.value;
-        if (selectedRound.value && selectedRound.value !== 'ALL') fileName += '_R' + selectedRound.value;
-        if (selectedNrlClub.value && selectedNrlClub.value !== 'ALL') fileName += '_' + selectedNrlClub.value;
-        if (selectedXrlTeam.value && selectedXrlTeam.value !== 'ALL') fileName += '_' + selectedXrlTeam.value;
-        if (selectedPosition.value && selectedPosition.value !== 'ALL') fileName += '_' + selectedPosition.value;
+        let fileName = "XrlStats_" + selectedYear.value;
+        if (selectedRound.value && selectedRound.value !== "ALL")
+          fileName += "_R" + selectedRound.value;
+        if (selectedNrlClub.value && selectedNrlClub.value !== "ALL")
+          fileName += "_" + selectedNrlClub.value;
+        if (selectedXrlTeam.value && selectedXrlTeam.value !== "ALL")
+          fileName += "_" + selectedXrlTeam.value;
+        if (selectedPosition.value && selectedPosition.value !== "ALL")
+          fileName += "_" + selectedPosition.value;
         exportStatsAsCSV(data, fileName);
-      }
+      };
 
       onMounted(getPlayers);
 
@@ -262,7 +275,7 @@ import { useXrlStore } from '../store';
         selectedYear,
         getResults,
         exportPlayerStats,
-        exportRoundStats
+        exportRoundStats,
       };
     },
     components: {
