@@ -1,6 +1,6 @@
-import { Player, PlayerScoringStats, XrlPosition } from "../global";
-import { GetData, SetData } from "./session";
-import { GetActiveUserTeamShort, GetPlayersFromXrlTeam } from "./xrlApi";
+import { Player, PlayerScoringStats, XrlPosition } from '../global';
+import { GetData, SetData } from './session';
+import { GetActiveUserTeamShort, GetPlayersFromXrlTeam } from './xrlApi';
 
 export const NrlClubs = [
   'Broncos',
@@ -23,7 +23,7 @@ export const NrlClubs = [
 
 export const XrlTeams = [
   'BOX',
-  'BWS', 
+  'BWS',
   'CBT',
   'COU',
   'DRU',
@@ -37,7 +37,7 @@ export const XrlTeams = [
   'XIII',
   'None',
   'On Waivers',
-  'Pre-Waivers'
+  'Pre-Waivers',
 ] as const;
 
 export async function GetUserSquad() {
@@ -53,11 +53,22 @@ export const PositionOrder = ['Back', 'Playmaker', 'Forward'];
 
 export function DefaultPlayerSort(p1: Player, p2: Player) {
   if (p1.position == p2.position) {
-      return p1.player_name.split(' ')[1] > p2.player_name.split(' ')[1] ? 1 : -1;
+    return p1.player_name.split(' ')[1] > p2.player_name.split(' ')[1] ? 1 : -1;
   }
-  return PositionOrder.indexOf(p1.position) - PositionOrder.indexOf(p2.position);
+  return (
+    PositionOrder.indexOf(p1.position) - PositionOrder.indexOf(p2.position)
+  );
 }
 
-export function SortByTotalXrlScore<T extends { scoring_stats: PlayerScoringStats, position: XrlPosition }>(p1: T, p2: T) {    
-  return ((p2.scoring_stats[p2.position]?.points || 0) + (p2.scoring_stats.kicker.points || 0)) - ((p1.scoring_stats[p1.position]?.points || 0) + (p1.scoring_stats.kicker.points || 0));
+export function SortByTotalXrlScore<
+  T extends { scoring_stats: PlayerScoringStats; position: XrlPosition }
+>(p1: T, p2: T) {
+  if (!p1.scoring_stats?.kicker) console.log(p1);
+  if (!p2.scoring_stats?.kicker) console.log(p2);
+  return (
+    (p2.scoring_stats[p2.position]?.points ?? 0) +
+    (p2.scoring_stats.kicker?.points ?? 0) -
+    ((p1.scoring_stats[p1.position]?.points ?? 0) +
+      (p1.scoring_stats.kicker?.points ?? 0))
+  );
 }

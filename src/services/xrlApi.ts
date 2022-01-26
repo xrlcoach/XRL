@@ -100,9 +100,9 @@ export async function GetActiveUserInfo() {
 /**
  * Calls the Players lambda to scan the whole players table
  */
-export async function GetAllPlayers() {
+export async function GetAllPlayers(year: number = new Date().getFullYear()) {
   const response = await fetch(
-    import.meta.env['VITE_XRL_API_ROUTE'] + '/players',
+    import.meta.env['VITE_XRL_API_ROUTE'] + '/players?year=' + year,
     {
       method: 'GET',
       headers: {
@@ -596,9 +596,9 @@ export async function GetAllStats() {
  * Retrieves a round's stats from the database
  * @param {String} roundNumber
  */
-export async function GetStatsByRound(roundNumber: string | number) {
+export async function GetStatsByRound(roundNumber: string | number, year: number = new Date().getFullYear()) {
   const response = await fetch(
-    import.meta.env['VITE_XRL_API_ROUTE'] + '/stats?round=' + roundNumber,
+    import.meta.env['VITE_XRL_API_ROUTE'] + `/stats?round=${roundNumber}&year=${year}`,
     {
       method: 'GET',
       headers: {

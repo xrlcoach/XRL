@@ -34,6 +34,9 @@
             <span style="margin-left: 20px">
               <TextInput v-model="searchTerm" placeholder="Search" />
             </span>
+            <span style="margin-left: 20px">
+              <Button label="Export" icon="pi pi-download" iconPos="right" @click="exportPlayerStats" />
+            </span>
           </div>
           <div style="display: flex; align-items: center; gap: 10px;">
             <span>Include kicking points in total</span>
@@ -75,13 +78,14 @@ import { SortByTotalXrlScore } from '../services/players';
   import PlayerProfile from './PlayerProfile.vue';
 
   export default defineComponent({
+    emits: ['export'],
     props: {
       players: {
         type: Array as PropType<Player[]>,
         required: true,
       },
     },
-    setup(props) {
+    setup(props, { emit }) {
       const players = computed(() => props.players);
       players.value.sort(SortByTotalXrlScore);
 
@@ -131,6 +135,11 @@ import { SortByTotalXrlScore } from '../services/players';
         );
       });
 
+      const exportPlayerStats = () => {
+        const playerRecords = players.value;
+        emit('export', playerRecords);        
+      }
+
       return {
         selectedPlayer,
         onSelectPlayer,
@@ -138,7 +147,8 @@ import { SortByTotalXrlScore } from '../services/players';
         clearSearch,
         filteredPlayers,
         showPlayer,
-        includeKickingPoints
+        includeKickingPoints,
+        exportPlayerStats
       };
     },
     components: {

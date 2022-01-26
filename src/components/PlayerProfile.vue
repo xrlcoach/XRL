@@ -179,6 +179,12 @@
           class="p-button-warning"
           @click="confirmDropClaim"
         />
+        <Button
+          v-if="player.xrl_team !== 'None'"
+          label="Offer Trade"
+          class="p-button-warning"
+          @click="openTradeForm"
+        />
       </AccordionTab>
     </Accordion>
   </div>
@@ -319,6 +325,10 @@ export default defineComponent({
           });
         }
       })
+    }
+
+    const openTradeForm = () => {
+      
     }
 
     return {

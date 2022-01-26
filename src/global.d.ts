@@ -13,7 +13,8 @@ export type Player = {
   nrl_club: NrlClub;
   xrl_team: XrlTeam;
   position: XrlPosition;
-  position2: XrlPosition;
+  position2: XrlPosition | null;
+  position3: XrlPosition | null;
   search_name: string;
   stats: PlayerProfileStats;
   scoring_stats: PlayerScoringStats;
@@ -113,6 +114,47 @@ export type PlayerScoringStats = {
   Forward?: ScoringStats;
   kicker: KickingStats;
 };
+
+export type PlayerExportData = {
+  'Name': string;
+  'Position': string;
+  'Position 2': string | null;
+  'Position 3': string | null;
+  'Appearances': number;
+  'Tries': number;
+  'Goals': number;
+  'Field Goals': number;
+  '2pt Field Goals': number;
+  'IT': number;
+  'PT': number;
+  'MIA': number;
+  'Concede': number;
+  'Sin Bins': number;
+  'Send Offs': number;
+  'Points (NK)': number;
+  'Points (K)': number;
+  'Points Per Game': number;
+}
+
+export type AppearanceExportData = {
+  'Name': string;
+  'Club': NrlClub,
+  'Opponent': NrlClub,
+  'Position Played': string,
+  'Mins': number,
+  'Tries': number;
+  'Goals': number;
+  'Field Goals': number;
+  '2pt Field Goals': number;
+  'IT': number;
+  'PT': number;
+  'MIA': number;
+  'Concede': number;
+  'Sin Bin': number;
+  'Sent Off': number;
+  'Points (NK)': number;
+  'Points (K)': number;
+}
 
 export type PlayerLineupEntry = {
   pk: string; // PLAYER#{{player_id}}

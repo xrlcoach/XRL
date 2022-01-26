@@ -34,6 +34,9 @@
             <span style="margin-left: 20px">
               <TextInput v-model="searchTerm" placeholder="Search" />
             </span>
+            <span style="margin-left: 20px">
+              <Button label="Export" icon="pi pi-download" iconPos="right" @click="exportRoundStats" />
+            </span>
           </div>
           <div style="display: flex; align-items: center; gap: 10px">
             <span>Include kicking points in total</span>
@@ -77,13 +80,14 @@
 
   export default defineComponent({
     components: { PlayerProfile },
+    emits: ['export'],
     props: {
       stats: {
         type: Array as PropType<(Player & PlayerAppearanceStats)[]>,
         required: true,
       },
     },
-    setup({ stats }) {
+    setup({ stats }, { emit }) {
       console.log(stats[0]);
 
       const displayData = computed(() => {
@@ -138,6 +142,11 @@
         );
       });
 
+      const exportRoundStats = () => {
+        const records = stats;
+        emit('export', records);
+      }
+
       return {
         selectedPlayer,
         onSelectPlayer,
@@ -146,6 +155,7 @@
         filteredPlayers,
         showPlayer,
         includeKickingPoints,
+        exportRoundStats
       };
     },
   });
