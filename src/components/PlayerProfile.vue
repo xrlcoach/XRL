@@ -51,7 +51,7 @@
       </div>
     </div>
     <Divider />
-    <Accordion :multiple="true">
+    <Accordion :multiple="true" v-model:activeIndex="expandedTabs">
       <AccordionTab header="Stats">
         <div id="playerStats">
           <TabView v-model:activeIndex="activeIndex">
@@ -155,36 +155,38 @@
         </div>
       </AccordionTab>
       <AccordionTab header="Actions">
-        <Button
-          v-if="player.xrl_team === user?.team_short"
-          label="Drop"
-          class="p-button-danger"
-          @click="confirmDropPlayer"
-        />
-        <Button
-          v-if="player.xrl_team === 'None' && roundInfo?.scooping"
-          label="Scoop"
-          class="p-button-primary"
-          @click="confirmScoopPlayer"
-        />
-        <Button
-          v-if="player.xrl_team === 'None' && !roundInfo?.scooping && !user?.waiver_preferences.includes(player.player_id)"
-          label="Make Claim"
-          class="p-button-success"
-          @click="confirmMakeClaim"
-        />
-        <Button
-          v-if="player.xrl_team === 'None' && user?.waiver_preferences.includes(player.player_id)"
-          label="Drop Claim"
-          class="p-button-warning"
-          @click="confirmDropClaim"
-        />
-        <Button
-          v-if="player.xrl_team !== 'None'"
-          label="Offer Trade"
-          class="p-button-warning"
-          @click="openTradeForm"
-        />
+        <div class="player-actions">
+          <Button
+            v-if="player.xrl_team === user?.team_short"
+            label="Drop"
+            class="p-button-danger"
+            @click="confirmDropPlayer"
+          />
+          <Button
+            v-else-if="player.xrl_team === 'None' && roundInfo?.scooping"
+            label="Scoop"
+            class="p-button-primary"
+            @click="confirmScoopPlayer"
+          />
+          <Button
+            v-else-if="player.xrl_team === 'None' && !roundInfo?.scooping && !user?.waiver_preferences.includes(player.player_id)"
+            label="Make Claim"
+            class="p-button-success"
+            @click="confirmMakeClaim"
+          />
+          <Button
+            v-else-if="player.xrl_team === 'None' && user?.waiver_preferences.includes(player.player_id)"
+            label="Drop Claim"
+            class="p-button-warning"
+            @click="confirmDropClaim"
+          />
+          <Button
+            v-else-if="player.xrl_team !== 'None'"
+            label="Offer Trade"
+            class="p-button-warning"
+            @click="openTradeForm"
+          />
+        </div>
       </AccordionTab>
     </Accordion>
     <Dialog v-model:visible="tradeFormVisible" header="Trade Offer" style="width: 450px" :breakpoints="{ '450px': '100vw' }">
@@ -249,6 +251,7 @@ export default defineComponent({
     const confirm = useConfirm();
     const toast = useToast();
     const tradeFormVisible = ref(false);
+    const expandedTabs = ref([0, 1]);
 
     const confirmDropPlayer = () => {
       confirm.require({
@@ -351,6 +354,7 @@ export default defineComponent({
       roundInfo,
       openTradeForm,
       tradeFormVisible,
+      expandedTabs
     };
   },
   components: {
@@ -375,6 +379,10 @@ h1 {
 }
 #playerStats {
   width: 100%;
+}
+.player-actions {
+  display: flex;
+  gap: 1rem;
 }
 .row {
   display: flex;
