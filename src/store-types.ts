@@ -3,6 +3,7 @@ import {
   Player,
   PlayerLineupEntry,
   PlayerNews,
+  TradeOffer,
   TradeOfferBuilder,
   Transfer,
   WaiverReport,
@@ -28,6 +29,7 @@ export interface State {
   allPlayers: Player[] | null;
   waiverReports: WaiverReport[] | null;
   transfers: Transfer[] | null;
+  tradeOffers: TradeOffer[] | null;
   news: PlayerNews[] | null;
   selectedPlayer: Player | null,
   playerProfileVisible: boolean,
@@ -57,6 +59,7 @@ export enum MutationTypes {
   SET_ALL_PLAYERS = 'SET_ALL_PLAYERS',
   SET_WAIVER_REPORTS = 'SET_WAIVER_REPORTS',
   SET_TRANSFERS = 'SET_TRANSFERS',
+  SET_TRADE_OFFERS = 'SET_TRADE_OFFERS',
   SET_NEWS = 'SET_NEWS',
   UPDATE_PLAYERS_XRL_TEAM = 'UPDATE_PLAYERS_XRL_TEAM',
   CLEAR_SESSION_DATA = 'CLEAR_SESSION_DATA',
@@ -75,6 +78,7 @@ export type Mutations<S = State> = {
   [MutationTypes.SET_ALL_PLAYERS](state: S, players: Player[]): void;
   [MutationTypes.SET_WAIVER_REPORTS](state: S, reports: WaiverReport[]): void;
   [MutationTypes.SET_TRANSFERS](state: S, transfers: Transfer[]): void;
+  [MutationTypes.SET_TRADE_OFFERS](state: S, offers: TradeOffer[]): void;
   [MutationTypes.SET_NEWS](state: S, news: PlayerNews[]): void;
   [MutationTypes.CLEAR_SESSION_DATA](state: S): void;
   [MutationTypes.UPDATE_PLAYERS_XRL_TEAM](state: S, { players, team }: { players: Player[], team: XrlTeam }): void;
@@ -100,6 +104,7 @@ export enum ActionTypes {
   GetAllFixtures = 'GetAllFixtures',
   GetUserLineup = 'GetUserLineup',
   GetTransferHistory = 'GetTransferHistory',
+  GetTradeOffers = 'GetTradeOffers',
   GetWaiverReports = 'GetWaiverReports',
   GetPlayerNews = 'GetPlayerNews',
   SetLineup = 'SetLineup',
@@ -136,6 +141,9 @@ export interface Actions {
   [ActionTypes.GetTransferHistory]({
     commit,
   }: AugmentedActionContext): Promise<Transfer[]>;
+  [ActionTypes.GetTradeOffers]({
+    commit,
+  }: AugmentedActionContext): Promise<TradeOffer[]>;
   [ActionTypes.GetPlayerNews]({
     commit,
   }: AugmentedActionContext): Promise<PlayerNews[]>;

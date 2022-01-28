@@ -334,6 +334,18 @@ export type TradeOffer = {
   year: number;
 }
 
+export type MappedTradeOffer = {
+  offeredBy: XrlUser | undefined;
+  userOffer: boolean;
+  offeredTo: XrlUser | undefined;
+  playersOffered: (Player | undefined)[];
+  playersWanted: (Player | undefined)[];
+  powerplaysOffered: number;
+  powerplaysWanted: number;
+  date: string;
+  status: string;
+}
+
 
 
 export type PlayerNews = {

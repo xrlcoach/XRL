@@ -12,6 +12,7 @@ import TeamScore from './TeamScore.vue';
 import XrlLadder from './XrlLadder.vue';
 import Waivers from './Waivers.vue';
 import TransferHistory from './TransferHistory.vue';
+import UserTradeOffers from './UserTradeOffers.vue';
 import PlayerProfile from './PlayerProfile.vue';
 import PlayerAppearance from './PlayerAppearance.vue';
 import PlayerStatsTable from './PlayerStatsTable.vue';
@@ -33,6 +34,7 @@ export {
   XrlLadder,
   Waivers,
   TransferHistory,
+  UserTradeOffers,
   PlayerProfile,
   PlayerAppearance,
   PlayerStatsTable,

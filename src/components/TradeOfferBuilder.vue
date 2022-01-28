@@ -1,6 +1,6 @@
 <template>
   <div id="offerBuilderContainer">
-    <section id="targetUser">
+    <section id="targetUser" class="input-field">
       <label for="targetUserSelect">Offer trade to</label>
       <Dropdown
         id="targetUserSelect"
@@ -8,48 +8,157 @@
         :options="xrlTeams"
       />
     </section>
-    <section id="tradeOffer">
+    <form ref="tradeOfferForm" @submit.prevent="sendOffer" id="tradeOffer">
       <section id="offering">
-        <div>
-          <label for="offeredPlayersSelect">Offer</label>
-          <Dropdown
-            id="offeredPlayersSelect"
-            v-model="offeredPlayers[0]"
-            :options="userSquad"
-            optionLabel="player_name"
-          />
-        </div>
-        <div>
-          <Button class="p-button-link" label="Add Player" icon="pi pi-plus" @click="desiredPlayers.push(null)" />
-        </div>
-        <div>
-          <Button
-            label="Powerplay"
-            @click="addPowerplayToOffer"
-            icon="pi pi-plus"
-          />
-        </div>
+        <Panel header="Offer">
+          <div class="trade-content">
+            <div class="trade-players">
+              <article v-if="!offeredPlayers.length">
+                No players offered
+              </article>
+              <article
+                class="trade-player"
+                v-for="(player, index) in offeredPlayers"
+                :key="player.player_id"
+              >
+                <div class="trade-player-left">
+                  <img
+                    :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${player.nrl_club}.svg`"
+                    :alt="player.nrl_club"
+                    :height="30"
+                    :width="30"
+                  />
+                  <span>{{ player.player_name }}</span>
+                </div>
+                <div class="trade-player-right">
+                  <Button
+                    v-if="!offerSent"
+                    class="p-button-danger"
+                    icon="pi pi-times"
+                    @click="offeredPlayers.splice(index, 1)"
+                  />
+                </div>
+              </article>
+            </div>
+            <div class="trade-powerplays">
+              <label>Powerplays</label>
+              <div class="p-inputgroup">
+                <InputNumber
+                  v-model="offeredPowerplays"
+                  :disabled="offerSent"
+                  mode="decimal"
+                  showButtons
+                  buttonLayout="horizontal"
+                  :min="0"
+                  :max="user.powerplays"
+                  decrementButtonClass="p-button-danger"
+                  incrementButtonClass="p-button-primary"
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus"
+                />
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <div class="offer-actions">
+            <div class="add-player p-inputgroup">
+              <Dropdown
+                id="offeredPlayersSelect"
+                v-model="selectedOffer"
+                :options="offerOptions"
+                :disabled="offerSent"
+                optionLabel="player_name"
+              />
+              <Button
+                label="Add Player"
+                icon="pi pi-plus"
+                iconPos="right"
+                :disabled="!selectedOffer || offerSent"
+                @click="offeredPlayers.push(selectedOffer)"
+              />
+            </div>
+          </div>
+        </Panel>
       </section>
       <section id="for">
-        <div>
-          <label for="desiredPlayersSelect">For</label>
-          <Dropdown
-            id="desiredPlayersSelect"
-            v-model="desiredPlayers[0]"
-            :options="targetUserSquad"
-            optionLabel="player_name"
-          />
-        </div>
-        <div>
-          <Button
-            label="Powerplay"
-            @click="addPowerplayToRequest"
-            icon="pi pi-plus"
-          />
-        </div>
+        <Panel header="For">
+          <div class="trade-content">
+            <div class="trade-players">
+              <article v-if="!desiredPlayers.length">No players wanted</article>
+              <article
+                class="trade-player"
+                v-for="(player, index) in desiredPlayers"
+                :key="player.player_id"
+              >
+                <div class="trade-player-left">
+                  <img
+                    :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${player.nrl_club}.svg`"
+                    :alt="player.nrl_club"
+                    :height="30"
+                    :width="30"
+                  />
+                  <span>{{ player.player_name }}</span>
+                </div>
+                <div class="trade-player-right">
+                  <Button
+                    v-if="!offerSent"
+                    class="p-button-danger"
+                    icon="pi pi-times"
+                    @click="desiredPlayers.splice(index, 1)"
+                  />
+                </div>
+              </article>
+            </div>
+            <div class="trade-powerplays">
+              <label>Powerplays</label>
+              <div class="p-inputgroup">
+                <InputNumber
+                  v-model="desiredPowerplays"
+                  :disabled="offerSent"
+                  mode="decimal"
+                  showButtons
+                  buttonLayout="horizontal"
+                  :min="0"
+                  :max="targetUser.powerplays"
+                  decrementButtonClass="p-button-danger"
+                  incrementButtonClass="p-button-primary"
+                  incrementButtonIcon="pi pi-plus"
+                  decrementButtonIcon="pi pi-minus"
+                />
+              </div>
+            </div>
+          </div>
+          <Divider />
+          <div class="offer-actions">
+            <div class="add-player p-inputgroup">
+              <Dropdown
+                id="offeredPlayersSelect"
+                v-model="selectedDesire"
+                :disabled="offerSent"
+                :options="desiredOptions"
+                optionLabel="player_name"
+              />
+              <Button
+                label="Add Player"
+                icon="pi pi-plus"
+                iconPos="right"
+                :disabled="!selectedDesire || offerSent"
+                @click="desiredPlayers.push(selectedDesire)"
+              />
+            </div>
+          </div>
+        </Panel>
       </section>
+    </form>
+    <section class="offer-submit">
+      <Button
+        type="button"
+        label="Submit Offer"
+        :loading="sendingOffer"
+        @click="confirmOffer"
+        :disabled="offerSent"
+      />
     </section>
-    <section id="tradePowerplays"></section>
   </div>
 </template>
 
@@ -59,9 +168,11 @@
   import { computed, defineComponent, PropType, ref, watch } from "vue";
   import { Player, XrlTeam, XrlUser } from "../global";
   import { XrlTeams } from "../services/players";
+  import { SendTradeOffer } from "../services/xrlApi";
   import { useXrlStore } from "../store";
 
   export default defineComponent({
+    emits: ["complete"],
     props: {
       player: {
         type: Object as PropType<Player>,
@@ -73,6 +184,7 @@
 
       const user = computed(() => store.state.user);
       const userSquad = computed(() => store.getters.squad);
+
       const targetUser = ref<XrlUser | null>(
         player ? store.getters.getUserByTeamShort(player.xrl_team) : null
       );
@@ -94,23 +206,17 @@
         }
       });
 
-      const desiredPlayers = ref(player ? [player] : [] as Player[]);
-      if (player) desiredPlayers.value.push(player);
+      const desiredPlayers = ref(player ? [player] : ([] as Player[]));
       const offeredPlayers = ref([] as Player[]);
-      const selectedPlayer = ref<Player>();
-
-      watch(selectedPlayer, (p) => {
-        if (p) {
-          if (p?.xrl_team === user.value?.team_short) {
-            if (!offeredPlayers.value.includes(p)) {
-              offeredPlayers.value.push(p);
-            }
-          } else {
-            if (!desiredPlayers.value.includes(p)) {
-              desiredPlayers.value.push(p);
-            }
-          }
-        }
+      const selectedOffer = ref<Player>();
+      const selectedDesire = ref<Player>();
+      const offerOptions = computed(() => {
+        return userSquad.value.filter((p) => !offeredPlayers.value.includes(p));
+      });
+      const desiredOptions = computed(() => {
+        return targetUserSquad.value.filter(
+          (p) => !desiredPlayers.value.includes(p)
+        );
       });
 
       const desiredPowerplays = ref(0);
@@ -137,18 +243,49 @@
 
       const confirm = useConfirm();
       const toast = useToast();
-      const sendOffer = () => {
+      const sendingOffer = ref(false);
+      const offerSent = ref(false);
+      const sendOffer = async () => {
+        sendingOffer.value = true;
+        if (!user.value || !targetUser.value) return;
+        const username = user.value.username;
+        const targetUsername = targetUser.value.username;
+        const playersOffered = offeredPlayers.value.map((p) => p.player_id);
+        const playersWanted = desiredPlayers.value.map((p) => p.player_id);
+        const powerplaysOffered = offeredPowerplays.value;
+        const powerplaysWanted = desiredPowerplays.value;
+        try {
+          const response = await SendTradeOffer(
+            username,
+            targetUsername,
+            playersOffered,
+            playersWanted,
+            powerplaysOffered,
+            powerplaysWanted
+          );
+          toast.add({
+            severity: "success",
+            summary: "Success",
+            detail: "Trade offer sent",
+          });
+          offerSent.value = true;
+        } catch (error) {
+          toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: String(error),
+          });
+        } finally {
+          sendingOffer.value = false;
+        }
+      };
+      const confirmOffer = () => {
         confirm.require({
           header: "Confirm",
           message: `Send trade offer to ${targetUser.value?.team_name}?`,
           icon: "pi pi-send",
           accept: () => {
-            toast.add({
-              severity: "info",
-              summary: "Success",
-              detail: "Trade offer sent",
-              life: 3000,
-            });
+            sendOffer();
           },
         });
       };
@@ -162,17 +299,72 @@
         selectedTeam,
         desiredPlayers,
         offeredPlayers,
-        selectedPlayer,
+        selectedOffer,
+        selectedDesire,
+        offerOptions,
+        desiredOptions,
         desiredPowerplays,
         addPowerplayToRequest,
         removePowerplayFromRequest,
         addPowerplayToOffer,
         removePowerplayFromOffer,
         offeredPowerplays,
+        confirmOffer,
         sendOffer,
+        sendingOffer,
+        offerSent,
       };
     },
   });
 </script>
 
-<style scoped></style>
+<style scoped>
+  #offerBuilderContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  #tradeOffer {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #offering,
+  #for {
+    flex: 1 1 400px;
+    min-width: 350px;
+  }
+  .trade-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .trade-player {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .trade-player-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .trade-powerplays {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .trade-powerplays .p-inputgroup {
+    width: 120px;
+  }
+  .trade-powerplays :deep(.p-inputtext) {
+    text-align: center;
+  }
+  .input-field {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+</style>

@@ -189,7 +189,7 @@
         </div>
       </AccordionTab>
     </Accordion>
-    <Dialog v-model:visible="tradeFormVisible" header="Trade Offer" style="width: 450px" :breakpoints="{ '450px': '100vw' }">
+    <Dialog v-model:visible="tradeFormVisible" header="Trade Offer" :breakpoints="{'960px': '100vw'}" :style="{width: '80vw'}">
       <TradeOfferBuilder :player="player" />
     </Dialog>
   </div>

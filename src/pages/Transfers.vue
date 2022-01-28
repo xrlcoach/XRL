@@ -2,6 +2,7 @@
   <div>
     <section>
       <Waivers />
+      <UserTradeOffers />
       <TransferHistory />
       <PlayerNews />
     </section>
@@ -10,7 +11,7 @@
 
 <script lang="ts">
   import { defineComponent } from 'vue';
-  import { Waivers, TransferHistory, PlayerNews } from '../components';
+  import { Waivers, TransferHistory, UserTradeOffers, PlayerNews } from '../components';
 
   export default defineComponent({
     setup() {
@@ -19,7 +20,8 @@
     components: {
       Waivers,
       TransferHistory,
-      PlayerNews
+      PlayerNews,
+      UserTradeOffers
     }
   });
 </script>

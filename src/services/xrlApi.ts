@@ -744,9 +744,9 @@ export async function UpdateUserWaiverPreferences(
 /**
  * Retrieves transfer records for the entire season
  */
-export async function GetTransferHistory() {
+export async function GetTransferHistory(year = 2022) {
   const response = await fetch(
-    import.meta.env['VITE_XRL_API_ROUTE'] + '/transfers',
+    import.meta.env['VITE_XRL_API_ROUTE'] + '/transfers?year=' + year,
     {
       method: 'GET',
       headers: {

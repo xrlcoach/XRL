@@ -1,10 +1,10 @@
 import { InjectionKey } from 'vue';
 import { ActionTree, createStore, GetterTree, MutationTree, Store, useStore as baseUseStore } from 'vuex';
-import { NrlClub, Player, PlayerLineupEntry, PlayerNews, TradeOfferBuilder, Transfer, WaiverReport, XrlRoundWithFixtures, XrlTeam, XrlUser } from './global';
+import { NrlClub, Player, PlayerLineupEntry, PlayerNews, TradeOffer, TradeOfferBuilder, Transfer, WaiverReport, XrlRoundWithFixtures, XrlTeam, XrlUser } from './global';
 import { SortLeageTable } from './services/users';
 import { ActionTypes, MutationTypes } from './store-types';
 import type { Getters, Mutations, State, Actions, XrlStore } from './store-types';
-import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetWaiverReports, ScoopPlayers, SetLineup } from './services/xrlApi';
+import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetUserTradeOffers, GetWaiverReports, ScoopPlayers, SetLineup } from './services/xrlApi';
 import { GetActiveRoundInfo, GetNextRoundNotInProgress, GetUserActiveFixture, GetUserLastFixture } from './services/rounds';
 
 const state = {
@@ -15,6 +15,7 @@ const state = {
   allPlayers: null,
   waiverReports: null,
   transfers: null,
+  tradeOffers: null,
   news: null,
   selectedPlayer: null,
   playerProfileVisible: false,
@@ -61,6 +62,9 @@ const mutations: MutationTree<State> & Mutations = {
   },
   [MutationTypes.SET_TRANSFERS](state, transfers) {
     state.transfers = transfers;
+  },
+  [MutationTypes.SET_TRADE_OFFERS](state, offers) {
+    state.tradeOffers = offers;
   },
   [MutationTypes.SET_NEWS](state, news) {
     state.news = news;
@@ -159,6 +163,15 @@ const actions: ActionTree<State, State> & Actions = {
       let transfers = await GetTransferHistory();
       commit(MutationTypes.SET_TRANSFERS, transfers);
       return transfers;
+    }
+  },
+  async [ActionTypes.GetTradeOffers]({ commit, state, getters}): Promise<TradeOffer[]> {
+    if (state.tradeOffers) {
+      return state.tradeOffers;
+    } else {
+      let offers = await GetUserTradeOffers(state.user?.username ?? '');
+      commit(MutationTypes.SET_TRADE_OFFERS, offers);
+      return offers;
     }
   },
   async [ActionTypes.GetPlayerNews]({ commit, state, getters}): Promise<PlayerNews[]> {
