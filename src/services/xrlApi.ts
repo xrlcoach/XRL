@@ -5,6 +5,7 @@ import {
   PlayerNews,
   PlayerRawStats,
   UserMessage,
+  WaiverPreference,
   WaiverReport,
   XrlFixture,
   XrlRound,
@@ -715,8 +716,7 @@ export async function GetPlayerAppearanceStats(
  */
 export async function UpdateUserWaiverPreferences(
   username: string,
-  preferences: string[],
-  provisionalDrop: string
+  preferences: WaiverPreference[]
 ) {
   const response = await fetch(
     import.meta.env['VITE_XRL_API_ROUTE'] + '/transfers',
@@ -730,7 +730,6 @@ export async function UpdateUserWaiverPreferences(
         operation: 'update_preferences',
         username: username,
         preferences: preferences,
-        provisional_drop: provisionalDrop,
       }),
     }
   );

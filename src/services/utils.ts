@@ -149,7 +149,7 @@ export async function RefreshSession() {
 }
 
 export function isPlayer(object: any): object is Player {
-  if (object.player_id) return true;
+  if (object?.player_id) return true;
   return false;
 }
 

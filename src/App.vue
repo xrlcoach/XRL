@@ -3,7 +3,8 @@
   <ConfirmDialog></ConfirmDialog>
   <header>
     <Header />
-    <TabMenu :model="tabs" />
+    <TabMenu :model="tabs" v-if="!isMobile" />
+    <Dropdown id="dropdown-menu" v-else :modelValue="activeRoute" :options="tabs" optionLabel="label" @change="onDropdownNavigate" />
   </header>
   <main>
     <div class="page-loader" v-if="loading">
@@ -26,7 +27,7 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, ref, watch } from 'vue';
+  import { computed, defineComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue';
   import Header from './components/Header.vue';
   import Footer from './components/Footer.vue';
   import PlayerProfile from './components/PlayerProfile.vue';
@@ -40,6 +41,7 @@ import { useXrlStore } from './store';
 import { ActionTypes, MutationTypes } from './store-types';
 import { useRoute } from 'vue-router';
 import { GetIdToken } from './services/xrlApi';
+import router from './router';
 
   export default defineComponent({
     name: 'App',
@@ -101,11 +103,37 @@ import { GetIdToken } from './services/xrlApi';
           to: '/transfers',
         },
       ]);
+
+      const isMobile = computed(() => store.state.isMobile);
+      const checkIsMobile = () => {
+        const isMobile = window.innerWidth < 960;
+        store.commit(MutationTypes.SET_IS_MOBILE, isMobile);
+      }
+      const activeRoute = computed(() => {
+        return tabs.value.find(item => item.to === router.currentRoute.value.path);
+      });
+      const onDropdownNavigate = (event: any) => {
+        if (event.value) {
+          router.push(event.value.to);
+        }
+      }
+
+      onMounted(() => {
+        window.addEventListener('resize', checkIsMobile);
+      });
+
+      onBeforeUnmount(() => {
+        window.removeEventListener('resize', checkIsMobile);
+      });
+
       return {
         loading,
         tabs,
         selectedPlayer,
         showSidebar,
+        isMobile,
+        activeRoute,
+        onDropdownNavigate,
         onSidebarHide
       };
     },
@@ -131,6 +159,10 @@ import { GetIdToken } from './services/xrlApi';
   main {
     padding: 50px 10px;
     background-color: var(--surface-b);
+  }
+
+  #dropdown-menu {
+    width: 100%;
   }
 
   .page-loader {

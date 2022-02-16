@@ -169,13 +169,13 @@
             @click="confirmScoopPlayer"
           />
           <Button
-            v-else-if="player.xrl_team === 'None' && !roundInfo?.scooping && !user?.waiver_preferences.includes(player.player_id)"
+            v-else-if="player.xrl_team === 'None' && !roundInfo?.scooping && !userWaiverPicks.includes(player.player_id)"
             label="Make Claim"
             class="p-button-success"
             @click="confirmMakeClaim"
           />
           <Button
-            v-else-if="player.xrl_team === 'None' && user?.waiver_preferences.includes(player.player_id)"
+            v-else-if="player.xrl_team === 'None' && userWaiverPicks.includes(player.player_id)"
             label="Drop Claim"
             class="p-button-warning"
             @click="confirmDropClaim"
@@ -192,6 +192,7 @@
     <Dialog v-model:visible="tradeFormVisible" header="Trade Offer" :breakpoints="{'960px': '100vw'}" :style="{width: '80vw'}">
       <TradeOfferBuilder :player="player" />
     </Dialog>
+    <ConfirmDialog group="playerConfirm"></ConfirmDialog>
   </div>
 </template>
 
@@ -248,6 +249,8 @@ export default defineComponent({
     );
     const activeIndex = ref(0);
 
+    const userWaiverPicks = computed(() => user.value?.waiver_preferences.map(p => p.pick) ?? []);
+
     const confirm = useConfirm();
     const toast = useToast();
     const tradeFormVisible = ref(false);
@@ -255,6 +258,7 @@ export default defineComponent({
 
     const confirmDropPlayer = () => {
       confirm.require({
+        group: 'playerConfirm',
         header: 'Confirm',
         message: `Are you sure you want to drop ${player.player_name} from your squad?`,
         icon: 'pi pi-trash',
@@ -274,6 +278,7 @@ export default defineComponent({
 
     const confirmScoopPlayer = () => {
       confirm.require({
+        group: 'playerConfirm',
         header: 'Confirm',
         message: `Are you sure you want to give a lifeline to ${player.player_name}?`,
         icon: 'pi pi-user',
@@ -293,15 +298,16 @@ export default defineComponent({
 
     const confirmMakeClaim = () => {
       confirm.require({
+        group: 'playerConfirm',
         header: 'Confirm',
         message: `Are you sure you want to make a claim for ${player.player_name}?`,
         icon: 'pi pi-volume-up',
         accept: async () => {
           const prefs = [...(user.value?.waiver_preferences ?? [])];
-          prefs.push(player.player_id);
+          prefs.push({ pick: player.player_id, drop: [] });
           try {
             if (!user.value) throw "User data unavailable";
-            await UpdateUserWaiverPreferences(user.value?.username, prefs, user.value?.provisional_drop ?? 'None');
+            await store.dispatch(ActionTypes.UpdateUserWaiverPreferences, { preferences: prefs });
             toast.add({
               severity: 'success',
               summary: 'Confirmed',
@@ -321,16 +327,30 @@ export default defineComponent({
 
     const confirmDropClaim = () => {
       confirm.require({
+        group: 'playerConfirm',
         header: 'Confirm',
         message: `Are you sure you want to remove your claim for ${player.player_name}?`,
         icon: 'pi pi-undo',
-        accept: () => {
-          toast.add({
-            severity: 'info',
-            summary: 'Confirmed',
-            detail: `Your claim for ${player.player_name} has been rescinded`,
-            life: 3000,
-          });
+        accept: async () => {
+          const prefs = [...(user.value?.waiver_preferences ?? [])];
+          const index = prefs.findIndex(p => p.pick === player.player_id);
+          prefs.splice(index, 1);
+          try {
+            if (!user.value) throw "User data unavailable";
+            await store.dispatch(ActionTypes.UpdateUserWaiverPreferences, { preferences: prefs });
+            toast.add({
+              severity: 'success',
+              summary: 'Confirmed',
+              detail: `Your claim for ${player.player_name} has been rescinded.`,
+              life: 3000,
+            });
+          } catch (err) {
+            toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: String(err),
+            });
+          }
         }
       })
     }
@@ -354,7 +374,8 @@ export default defineComponent({
       roundInfo,
       openTradeForm,
       tradeFormVisible,
-      expandedTabs
+      expandedTabs,
+      userWaiverPicks
     };
   },
   components: {

@@ -28,6 +28,8 @@ import ProgressSpinner from 'primevue/progressspinner';
 import { key, store } from './store';
 import { XrlStore } from './store-types';
 
+import 'primeflex/primeflex.css';
+
 const app = createApp(App);
 app.use(router);
 app.use(store as XrlStore, key);

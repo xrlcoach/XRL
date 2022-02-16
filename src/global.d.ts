@@ -207,12 +207,12 @@ export type XrlUser = {
   inbox: UserMessage[];
   players_picked: number;
   powerplays: number;
-  provisional_drop: string | null;
+  provisional_drop: string[] | null;
   stats: XrlUserStats;
   team_name: string;
   team_short: XrlTeam;
   username: string;
-  waiver_preferences: string[];
+  waiver_preferences: WaiverPreference[];
   waiver_rank: number;
 };
 
@@ -288,6 +288,16 @@ export type UserMessage = {
   subject: string;
   message: string;
 };
+
+export type WaiverPreference = {
+  pick: string;
+  drop: string[]
+}
+
+export type LoadedWaiverPreference = {
+  pick: Player,
+  drop: Player[]
+}
 
 export type WaiverReport = {
   pk: string; // WAIVER

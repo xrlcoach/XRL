@@ -1,5 +1,7 @@
 <template>
   <div class="headerContainer">
+    <div id="headerOffset">
+    </div>
     <h1>XRL</h1>    
     <div id="headerActions">
       <Button label="Refresh Data" @click="refresh" class="p-button-text" icon="pi pi-refresh" loadingIcon="pi pi-spin pi-spinner" :loading="loading" />
@@ -41,15 +43,10 @@ export default defineComponent({
 <style scoped>
   .headerContainer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     position: relative;
     width: 100%;
     margin-bottom: 20px;
-  }
-  #headerActions {
-    position: absolute;
-    right: 10px;
-    top: 0px;
   }
   h1 {
     color: var(--primary-color);

@@ -1,10 +1,10 @@
 import { InjectionKey } from 'vue';
 import { ActionTree, createStore, GetterTree, MutationTree, Store, useStore as baseUseStore } from 'vuex';
-import { NrlClub, Player, PlayerLineupEntry, PlayerNews, TradeOffer, TradeOfferBuilder, Transfer, WaiverReport, XrlRoundWithFixtures, XrlTeam, XrlUser } from './global';
+import { NrlClub, Player, PlayerLineupEntry, PlayerNews, TradeOffer, TradeOfferBuilder, Transfer, WaiverPreference, WaiverReport, XrlRoundWithFixtures, XrlTeam, XrlUser } from './global';
 import { SortLeageTable } from './services/users';
 import { ActionTypes, MutationTypes } from './store-types';
 import type { Getters, Mutations, State, Actions, XrlStore } from './store-types';
-import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetUserTradeOffers, GetWaiverReports, ScoopPlayers, SetLineup } from './services/xrlApi';
+import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetUserTradeOffers, GetWaiverReports, ScoopPlayers, SetLineup, UpdateUserWaiverPreferences } from './services/xrlApi';
 import { GetActiveRoundInfo, GetNextRoundNotInProgress, GetUserActiveFixture, GetUserLastFixture } from './services/rounds';
 
 const state = {
@@ -19,6 +19,7 @@ const state = {
   news: null,
   selectedPlayer: null,
   playerProfileVisible: false,
+  isMobile: false
 };
 
 const getters: GetterTree<State, State> & Getters = {
@@ -81,6 +82,10 @@ const mutations: MutationTree<State> & Mutations = {
       player.xrl_team = team;
     }
   },
+  [MutationTypes.UPDATE_WAIVER_PREFERENCES](state, { preferences }) {
+    if (!state.user) return;
+    state.user.waiver_preferences = preferences;
+  },
   [MutationTypes.SHOW_SELECTED_PLAYER] (state, player) {
     state.selectedPlayer = player;
     state.playerProfileVisible = true;
@@ -88,6 +93,9 @@ const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.HIDE_PLAYER_TAB] (state) {
     state.playerProfileVisible = false;
     state.selectedPlayer = null;
+  },
+  [MutationTypes.SET_IS_MOBILE] (state, value) {
+    state.isMobile = value;
   }
 };
 
@@ -214,8 +222,15 @@ const actions: ActionTree<State, State> & Actions = {
       throw err;
     }
   },
-  [ActionTypes.UpdateUserWaiverPreferences]({ commit, state, getters }): void {
-    
+  async [ActionTypes.UpdateUserWaiverPreferences]({ commit, state, getters }, { preferences }: { preferences: WaiverPreference[], provisionalDrop: string[] }): Promise<boolean> {
+    try {
+      if (!state.user) throw 'User data not found';
+      await UpdateUserWaiverPreferences(state.user.username, preferences);
+      commit(MutationTypes.UPDATE_WAIVER_PREFERENCES, { preferences });
+      return true;
+    } catch (err) {
+      throw err;
+    }
   },
   [ActionTypes.SendTradeOffer]({ commit, state, getters}, offer: TradeOfferBuilder): void {
     

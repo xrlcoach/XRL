@@ -6,6 +6,7 @@ import {
   TradeOffer,
   TradeOfferBuilder,
   Transfer,
+  WaiverPreference,
   WaiverReport,
   XrlFixture,
   XrlRound,
@@ -31,8 +32,9 @@ export interface State {
   transfers: Transfer[] | null;
   tradeOffers: TradeOffer[] | null;
   news: PlayerNews[] | null;
-  selectedPlayer: Player | null,
-  playerProfileVisible: boolean,
+  selectedPlayer: Player | null;
+  playerProfileVisible: boolean;
+  isMobile: Boolean,
 }
 
 export type Getters = {
@@ -47,7 +49,9 @@ export type Getters = {
   getNrlSquad(state: State): (club: NrlClub) => Player[];
   getXrlSquad(state: State): (team: XrlTeam) => Player[];
   getPlayerById(state: State): (playerId: string) => Player | null;
-  getRoundInfo(state: State): (roundNumber: number) => XrlRoundWithFixtures | null;
+  getRoundInfo(
+    state: State
+  ): (roundNumber: number) => XrlRoundWithFixtures | null;
   getUserByTeamShort(state: State): (teamShort: XrlTeam) => XrlUser | null;
 };
 
@@ -62,9 +66,11 @@ export enum MutationTypes {
   SET_TRADE_OFFERS = 'SET_TRADE_OFFERS',
   SET_NEWS = 'SET_NEWS',
   UPDATE_PLAYERS_XRL_TEAM = 'UPDATE_PLAYERS_XRL_TEAM',
+  UPDATE_WAIVER_PREFERENCES = 'UPDATE_WAIVER_PREFERENCES',
   CLEAR_SESSION_DATA = 'CLEAR_SESSION_DATA',
   SHOW_SELECTED_PLAYER = 'SHOW_SELECTED_PLAYER',
-  HIDE_PLAYER_TAB = 'HIDE_PLAYER_TAB'
+  HIDE_PLAYER_TAB = 'HIDE_PLAYER_TAB',
+  SET_IS_MOBILE = 'SET_IS_MOBILE',
 }
 
 export type Mutations<S = State> = {
@@ -81,9 +87,14 @@ export type Mutations<S = State> = {
   [MutationTypes.SET_TRADE_OFFERS](state: S, offers: TradeOffer[]): void;
   [MutationTypes.SET_NEWS](state: S, news: PlayerNews[]): void;
   [MutationTypes.CLEAR_SESSION_DATA](state: S): void;
-  [MutationTypes.UPDATE_PLAYERS_XRL_TEAM](state: S, { players, team }: { players: Player[], team: XrlTeam }): void;
+  [MutationTypes.UPDATE_PLAYERS_XRL_TEAM](
+    state: S,
+    { players, team }: { players: Player[]; team: XrlTeam }
+  ): void;
+  [MutationTypes.UPDATE_WAIVER_PREFERENCES](state: S, data: { preferences: WaiverPreference[] }): void,
   [MutationTypes.SHOW_SELECTED_PLAYER](state: S, player: Player): void;
   [MutationTypes.HIDE_PLAYER_TAB](state: S): void;
+  [MutationTypes.SET_IS_MOBILE](state: S, value: boolean): void;
 };
 
 type AugmentedActionContext = {
@@ -117,9 +128,7 @@ export enum ActionTypes {
 
 export interface Actions {
   // #region DATA
-  [ActionTypes.LoadAppData]({
-    commit,
-  }: AugmentedActionContext): void;
+  [ActionTypes.LoadAppData]({ commit }: AugmentedActionContext): void;
   [ActionTypes.GetActiveUser]({
     commit,
   }: AugmentedActionContext): Promise<XrlUser>;
@@ -150,21 +159,28 @@ export interface Actions {
   // #endregion
 
   // #region UPDATES
-  [ActionTypes.SetLineup]({
-    commit,
-  }: AugmentedActionContext, lineup: PlayerLineupEntry[]): Promise<boolean>;
-  [ActionTypes.ScoopPlayers]({
-    commit,
-  }: AugmentedActionContext, players: Player[]): Promise<boolean>;
-  [ActionTypes.DropPlayers]({
-    commit,
-  }: AugmentedActionContext, players: Player[]): Promise<boolean>;
-  [ActionTypes.UpdateUserWaiverPreferences]({
-    commit,
-  }: AugmentedActionContext): void;
-  [ActionTypes.SendTradeOffer]({
-    commit,
-  }: AugmentedActionContext, offer: TradeOfferBuilder): void;
+  [ActionTypes.SetLineup](
+    { commit }: AugmentedActionContext,
+    lineup: PlayerLineupEntry[]
+  ): Promise<boolean>;
+  [ActionTypes.ScoopPlayers](
+    { commit }: AugmentedActionContext,
+    players: Player[]
+  ): Promise<boolean>;
+  [ActionTypes.DropPlayers](
+    { commit }: AugmentedActionContext,
+    players: Player[]
+  ): Promise<boolean>;
+  [ActionTypes.UpdateUserWaiverPreferences](
+    { commit }: AugmentedActionContext,
+    {
+      preferences,
+    }: { preferences: WaiverPreference[]; }
+  ): Promise<boolean>;
+  [ActionTypes.SendTradeOffer](
+    { commit }: AugmentedActionContext,
+    offer: TradeOfferBuilder
+  ): void;
   // #endregion
 }
 
@@ -176,13 +192,13 @@ export type XrlStore = Omit<
     key: K,
     payload?: P,
     options?: CommitOptions
-  ): ReturnType<Mutations[K]>,
+  ): ReturnType<Mutations[K]>;
   dispatch<K extends keyof Actions>(
     key: K,
     payload?: Parameters<Actions[K]>[1],
     options?: DispatchOptions
-  ): ReturnType<Actions[K]>,
+  ): ReturnType<Actions[K]>;
   getters: {
-    [K in keyof Getters]: ReturnType<Getters[K]>
+    [K in keyof Getters]: ReturnType<Getters[K]>;
   };
 };
