@@ -8,6 +8,7 @@ import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUs
 import { GetActiveRoundInfo, GetNextRoundNotInProgress, GetUserActiveFixture, GetUserLastFixture } from './services/rounds';
 
 const state = {
+  loggedIn: false,
   user: null,
   allUsers: null,
   allRounds: null,
@@ -43,6 +44,11 @@ const getters: GetterTree<State, State> & Getters = {
 };
 
 const mutations: MutationTree<State> & Mutations = {
+  [MutationTypes.SET_LOGGED_IN](state) {
+    const idToken = GetIdToken();
+    if (idToken) state.loggedIn = true;
+    else state.loggedIn = false;
+  },
   [MutationTypes.SET_ACTIVE_USER](state, user) {
     state.user = user;
   },
@@ -76,6 +82,7 @@ const mutations: MutationTree<State> & Mutations = {
     state.allPlayers = null;
     state.allRounds = null;
     state.lineup = null;
+    state.loggedIn = false;
   },
   [MutationTypes.UPDATE_PLAYERS_XRL_TEAM](state, { players, team }) {
     for (let player of players) {

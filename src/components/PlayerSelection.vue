@@ -2,7 +2,11 @@
   <div class="player">
     <div
       class="jersey"
+      :class="selectedPlayerId === 'None' ? '' : 'jerseyFilled'"
       :style="`background: url(${jerseyUrl}) no-repeat center; background-size: contain;`"
+      draggable="true"
+      @dragstart.stop="onPlayerDragStart"
+      @dragend.stop="onPlayerDragEnd"
     ></div>
     <p>{{ number }}</p>
     <Dropdown
@@ -28,6 +32,7 @@
   import { computed, defineComponent, ref, watch } from 'vue';
   import { Player } from '../global';
   import { DropdownChangeEvent } from 'primevue/dropdown/Dropdown';
+import { getJerseyUrl } from '../services/utils';
 
   export default defineComponent({
     props: {
@@ -39,7 +44,7 @@
       selectedPlayerId: String,
       position: String,
     },
-    emits: ['update:selectedPlayerId', 'update:position'],
+    emits: ['update:selectedPlayerId', 'update:position', 'dragstart', 'dragend'],
     setup(props, { emit }) {
       // if (props.number === 1) console.log(props);
       const selectedPlayerId = computed(() => props.selectedPlayerId || 'None');
@@ -72,12 +77,7 @@
       });
 
       const jerseyUrl = computed(() => {
-        return encodeURI(
-          `https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/jerseys/${
-            options.find(p => p.player_id == selectedPlayerId.value)
-              ?.nrl_club || 'default'
-          }_jersey.png`
-        );
+        return getJerseyUrl(options.find(p => p.player_id == selectedPlayerId.value)?.nrl_club);
       });
 
       const onSelectionChange = (event: any) => {
@@ -90,6 +90,13 @@
         emit('update:position', value);
       }
 
+      const onPlayerDragStart = () => {
+        emit('dragstart', selectedPlayerId.value);
+      }
+      const onPlayerDragEnd = () => {
+        emit('dragend');
+      }
+
       return {
         selectedPlayerId,
         number: props.number,
@@ -98,7 +105,9 @@
         position,
         positionOptions,
         onSelectionChange,
-        onPositionChange
+        onPositionChange,
+        onPlayerDragStart,
+        onPlayerDragEnd
       };
     },
   });
@@ -112,12 +121,16 @@
     align-items: center;
   }
   .jersey {
-    height: 150px;
+    height: 80px;
     width: 100px;
     background-size: contain;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 10px;
+  }
+  .jerseyFilled {
+    cursor: grab;
   }
   p {
     font-size: 18;

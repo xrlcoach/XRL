@@ -1,6 +1,8 @@
 import { NrlClubs, XrlTeams } from './services/players';
+import { LineupPositions } from './services/utils';
 
 export type XrlPosition = 'Back' | 'Forward' | 'Playmaker';
+export type LineupPositionType = typeof LineupPositions[number];
 export type NrlClub = typeof NrlClubs[number];
 export type XrlTeam = typeof XrlTeams[number];
 

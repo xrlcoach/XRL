@@ -23,6 +23,7 @@ import {
 } from 'vuex';
 
 export interface State {
+  loggedIn: boolean;
   user: XrlUser | null;
   allUsers: XrlUser[] | null;
   allRounds: XrlRoundWithFixtures[] | null;
@@ -56,6 +57,7 @@ export type Getters = {
 };
 
 export enum MutationTypes {
+  SET_LOGGED_IN = 'SET_LOGGED_IN',
   SET_ACTIVE_USER = 'SET_ACTIVE_USER',
   SET_ALL_ROUNDS = 'SET_ALL_ROUNDS',
   SET_ALL_USERS = 'SET_ALL_USERS',
@@ -74,6 +76,7 @@ export enum MutationTypes {
 }
 
 export type Mutations<S = State> = {
+  [MutationTypes.SET_LOGGED_IN](state: S): void;
   [MutationTypes.SET_ACTIVE_USER](state: S, user: XrlUser): void;
   [MutationTypes.SET_ALL_ROUNDS](
     state: S,

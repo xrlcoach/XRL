@@ -1,8 +1,9 @@
 <template>
   <div class="headerContainer">
     <div id="headerOffset">
+      &nbsp;
     </div>
-    <h1>XRL</h1>    
+    <h1>XRL 2022</h1>    
     <div id="headerActions">
       <Button label="Refresh Data" @click="refresh" class="p-button-text" icon="pi pi-refresh" loadingIcon="pi pi-spin pi-spinner" :loading="loading" />
       <Button label="Logout" @click="logout" class="p-button-text p-button-danger" />
@@ -47,6 +48,9 @@ export default defineComponent({
     position: relative;
     width: 100%;
     margin-bottom: 20px;
+  }
+  #headerOffset, #headerActions {
+    flex: 0 1 250px;
   }
   h1 {
     color: var(--primary-color);

@@ -47,11 +47,12 @@ import router from './router';
     name: 'App',
     setup() {
       const store = useXrlStore();
-      const loggedIn = !!GetIdToken();
-      if (loggedIn) {
+      store.commit(MutationTypes.SET_LOGGED_IN);
+      const loggedIn = computed(() => store.state.loggedIn);
+      if (loggedIn.value) {
         store.dispatch(ActionTypes.LoadAppData);
       }
-      const loading = computed(() => loggedIn && (!store.state.user || !store.getters.currentRound || !store.state.allPlayers));
+      const loading = computed(() => loggedIn.value && (!store.state.user || !store.getters.currentRound || !store.state.allPlayers));
       const selectedPlayer = computed(() => store.state.selectedPlayer);
       const playerProfileVisible = computed(() => store.state.playerProfileVisible);
       const showSidebar = ref(false);

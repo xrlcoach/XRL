@@ -169,13 +169,13 @@
             @click="confirmScoopPlayer"
           />
           <Button
-            v-else-if="player.xrl_team === 'None' && !roundInfo?.scooping && !userWaiverPicks.includes(player.player_id)"
+            v-else-if="['None', 'On Waivers', 'Pre-Waivers'].includes(player.xrl_team) && !roundInfo?.scooping && !userWaiverPicks.includes(player.player_id)"
             label="Make Claim"
             class="p-button-success"
             @click="confirmMakeClaim"
           />
           <Button
-            v-else-if="player.xrl_team === 'None' && userWaiverPicks.includes(player.player_id)"
+            v-else-if="['None', 'On Waivers', 'Pre-Waivers'].includes(player.xrl_team) && userWaiverPicks.includes(player.player_id)"
             label="Drop Claim"
             class="p-button-warning"
             @click="confirmDropClaim"

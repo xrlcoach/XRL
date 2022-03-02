@@ -4,24 +4,26 @@ import { DomHandler } from 'primevue/utils';
 
 export const CURRENT_YEAR = 2022;
 
+export const LineupPositions = ['Back', 'Forward', 'Playmaker', 'Interchange'] as const;
+
 export const PositionMap = {
-  fullback: 'Back',
-  winger1: 'Back',
-  winger2: 'Back',
-  centre1: 'Back',
-  centre2: 'Back',
-  five_eighth: 'Playmaker',
-  halfback: 'Playmaker',
-  hooker: 'Playmaker',
-  prop1: 'Forward',
-  prop2: 'Forward',
-  row1: 'Forward',
-  row2: 'Forward',
-  lock: 'Forward',
-  int1: 'Interchange',
-  int2: 'Interchange',
-  int3: 'Interchange',
-  int4: 'Interchange',
+  fullback: LineupPositions[0],
+  winger1: LineupPositions[0],
+  winger2: LineupPositions[0],
+  centre1: LineupPositions[0],
+  centre2: LineupPositions[0],
+  five_eighth: LineupPositions[2],
+  halfback: LineupPositions[2],
+  hooker: LineupPositions[2],
+  prop1: LineupPositions[1],
+  prop2: LineupPositions[1],
+  row1: LineupPositions[1],
+  row2: LineupPositions[1],
+  lock: LineupPositions[1],
+  int1: LineupPositions[3],
+  int2: LineupPositions[3],
+  int3: LineupPositions[3],
+  int4: LineupPositions[3],
 };
 
 export const PositionNumbers = {
@@ -253,4 +255,12 @@ export function exportStatsAsCSV(data: any[], fileName: string) {
     });
   }
   DomHandler.exportCSV(csv, fileName ?? 'xrlstats');
+}
+
+export function getJerseyUrl(club: string | undefined): string {
+  return encodeURI(
+    `https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/jerseys/${
+      club || 'default'
+    }_jersey.png`
+  ); 
 }
