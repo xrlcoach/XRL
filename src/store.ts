@@ -4,7 +4,7 @@ import { NrlClub, Player, PlayerLineupEntry, PlayerNews, TradeOffer, TradeOfferB
 import { SortLeageTable } from './services/users';
 import { ActionTypes, MutationTypes } from './store-types';
 import type { Getters, Mutations, State, Actions, XrlStore } from './store-types';
-import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetUserTradeOffers, GetWaiverReports, ScoopPlayers, SetLineup, UpdateUserWaiverPreferences } from './services/xrlApi';
+import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetUserTradeOffers, GetWaiverReports, ProcessTradeOffer, ScoopPlayers, SendTradeOffer, SetLineup, UpdateUserWaiverPreferences, WithdrawTradeOffer } from './services/xrlApi';
 import { GetActiveRoundInfo, GetNextRoundNotInProgress, GetUserActiveFixture, GetUserLastFixture } from './services/rounds';
 
 const state = {
@@ -92,6 +92,17 @@ const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.UPDATE_WAIVER_PREFERENCES](state, { preferences }) {
     if (!state.user) return;
     state.user.waiver_preferences = preferences;
+  },
+  [MutationTypes.UPSERT_TRADE_OFFER](state, { offer }) {
+    if (!state.user) return;
+    const tradeOffers = [ ...(state.tradeOffers || []) ];
+    const existingOffer = tradeOffers.find(o => o.pk === offer.pk);
+    if (existingOffer) {
+      existingOffer.offer_status = offer.offer_status;
+    } else {
+      tradeOffers.unshift(offer);
+    }
+    state.tradeOffers = tradeOffers;
   },
   [MutationTypes.SHOW_SELECTED_PLAYER] (state, player) {
     state.selectedPlayer = player;
@@ -239,9 +250,38 @@ const actions: ActionTree<State, State> & Actions = {
       throw err;
     }
   },
-  [ActionTypes.SendTradeOffer]({ commit, state, getters}, offer: TradeOfferBuilder): void {
-    
-  }
+  async [ActionTypes.SendTradeOffer]({ commit, state, getters}, offer: TradeOfferBuilder): Promise<boolean> {
+    try {
+      if (!offer.targetUser) throw 'No target team for offer';
+      const offerRecord = await SendTradeOffer(offer.sendingUser.username, offer.targetUser?.username, offer.playersOffered.map(p => p.player_id), offer.playersWanted.map(p => p.player_id), offer.powerplaysOffered, offer.powerplaysOffered);
+      commit(MutationTypes.UPSERT_TRADE_OFFER, { offer: offerRecord });
+      return true;
+    } catch (err) {
+      throw err;
+    }
+  },
+  async [ActionTypes.WithdrawTradeOffer]({ commit, state, getters}, offer: TradeOffer): Promise<boolean> {
+    try {
+      await WithdrawTradeOffer(offer.pk);
+      const updatedOffer = { ...offer };
+      updatedOffer.offer_status = 'Withdrawn';
+      commit(MutationTypes.UPSERT_TRADE_OFFER, { offer: updatedOffer });
+      return true;
+    } catch (err) {
+      throw err;
+    }
+  },
+  async [ActionTypes.ProcessTradeOffer]({ commit, state, getters}, { offer, accepted = false }): Promise<boolean> {
+    try {
+      await ProcessTradeOffer(offer.pk, accepted);
+      const updatedOffer = { ...offer };
+      updatedOffer.offer_status = accepted ? 'Accepted' : 'Rejected';
+      commit(MutationTypes.UPSERT_TRADE_OFFER, { offer: updatedOffer });
+      return true;
+    } catch (err) {
+      throw err;
+    }
+  },
   // #endregion
 };
 

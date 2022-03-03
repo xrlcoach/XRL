@@ -347,6 +347,7 @@ export type TradeOffer = {
 }
 
 export type MappedTradeOffer = {
+  pk: string,
   offeredBy: XrlUser | undefined;
   userOffer: boolean;
   offeredTo: XrlUser | undefined;

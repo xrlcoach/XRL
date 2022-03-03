@@ -1,4 +1,5 @@
 import {
+  MappedTradeOffer,
   NrlClub,
   Player,
   PlayerLineupEntry,
@@ -35,7 +36,7 @@ export interface State {
   news: PlayerNews[] | null;
   selectedPlayer: Player | null;
   playerProfileVisible: boolean;
-  isMobile: Boolean,
+  isMobile: Boolean;
 }
 
 export type Getters = {
@@ -70,6 +71,7 @@ export enum MutationTypes {
   UPDATE_PLAYERS_XRL_TEAM = 'UPDATE_PLAYERS_XRL_TEAM',
   UPDATE_WAIVER_PREFERENCES = 'UPDATE_WAIVER_PREFERENCES',
   CLEAR_SESSION_DATA = 'CLEAR_SESSION_DATA',
+  UPSERT_TRADE_OFFER = 'UPSERT_TRADE_OFFER',
   SHOW_SELECTED_PLAYER = 'SHOW_SELECTED_PLAYER',
   HIDE_PLAYER_TAB = 'HIDE_PLAYER_TAB',
   SET_IS_MOBILE = 'SET_IS_MOBILE',
@@ -94,7 +96,14 @@ export type Mutations<S = State> = {
     state: S,
     { players, team }: { players: Player[]; team: XrlTeam }
   ): void;
-  [MutationTypes.UPDATE_WAIVER_PREFERENCES](state: S, data: { preferences: WaiverPreference[] }): void,
+  [MutationTypes.UPDATE_WAIVER_PREFERENCES](
+    state: S,
+    data: { preferences: WaiverPreference[] }
+  ): void;
+  [MutationTypes.UPSERT_TRADE_OFFER](
+    state: S,
+    data: { offer: TradeOffer }
+  ): void;
   [MutationTypes.SHOW_SELECTED_PLAYER](state: S, player: Player): void;
   [MutationTypes.HIDE_PLAYER_TAB](state: S): void;
   [MutationTypes.SET_IS_MOBILE](state: S, value: boolean): void;
@@ -127,6 +136,8 @@ export enum ActionTypes {
   ScoopPlayers = 'ScoopPlayers',
   DropPlayers = 'DropPlayers',
   SendTradeOffer = 'SendTradeOffer',
+  WithdrawTradeOffer = 'WithdrawTradeOffer',
+  ProcessTradeOffer = 'ProcessTradeOffer',
 }
 
 export interface Actions {
@@ -176,14 +187,20 @@ export interface Actions {
   ): Promise<boolean>;
   [ActionTypes.UpdateUserWaiverPreferences](
     { commit }: AugmentedActionContext,
-    {
-      preferences,
-    }: { preferences: WaiverPreference[]; }
+    { preferences }: { preferences: WaiverPreference[] }
   ): Promise<boolean>;
   [ActionTypes.SendTradeOffer](
     { commit }: AugmentedActionContext,
     offer: TradeOfferBuilder
-  ): void;
+  ): Promise<boolean>;
+  [ActionTypes.WithdrawTradeOffer](
+    { commit }: AugmentedActionContext,
+    offer: TradeOffer
+  ): Promise<boolean>;
+  [ActionTypes.ProcessTradeOffer](
+    { commit }: AugmentedActionContext,
+    { offer, accepted }: { offer: TradeOffer; accepted: boolean }
+  ): Promise<boolean>;
   // #endregion
 }
 

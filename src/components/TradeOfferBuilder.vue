@@ -170,6 +170,7 @@
   import { XrlTeams } from "../services/players";
   import { SendTradeOffer } from "../services/xrlApi";
   import { useXrlStore } from "../store";
+import { ActionTypes } from "../store-types";
 
   export default defineComponent({
     emits: ["complete"],
@@ -248,21 +249,15 @@
       const sendOffer = async () => {
         sendingOffer.value = true;
         if (!user.value || !targetUser.value) return;
-        const username = user.value.username;
-        const targetUsername = targetUser.value.username;
-        const playersOffered = offeredPlayers.value.map((p) => p.player_id);
-        const playersWanted = desiredPlayers.value.map((p) => p.player_id);
-        const powerplaysOffered = offeredPowerplays.value;
-        const powerplaysWanted = desiredPowerplays.value;
         try {
-          const response = await SendTradeOffer(
-            username,
-            targetUsername,
-            playersOffered,
-            playersWanted,
-            powerplaysOffered,
-            powerplaysWanted
-          );
+          await store.dispatch(ActionTypes.SendTradeOffer, {
+            sendingUser: user.value,
+            targetUser: targetUser.value,
+            playersOffered: offeredPlayers.value,
+            playersWanted: desiredPlayers.value,
+            powerplaysOffered: offeredPowerplays.value,
+            powerplaysWanted: desiredPowerplays.value,
+          });
           toast.add({
             severity: "success",
             summary: "Success",

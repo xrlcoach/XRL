@@ -4,6 +4,7 @@ import {
   PlayerLineupEntry,
   PlayerNews,
   PlayerRawStats,
+  TradeOffer,
   UserMessage,
   WaiverPreference,
   WaiverReport,
@@ -821,7 +822,7 @@ export async function SendTradeOffer(
   if (data.error) {
     throw data.error;
   }
-  return data;
+  return data as TradeOffer;
 }
 
 /**
