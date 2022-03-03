@@ -1,6 +1,6 @@
 <template>
   <section>
-    <Panel header="Filters" :toggleable="true" :collapsed="true">
+    <Panel header="Filters" :toggleable="true" :collapsed="false">
       <div class="row">
         <div class="cell">
           <span class="p-float-label">
