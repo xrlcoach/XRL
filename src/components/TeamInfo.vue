@@ -1,7 +1,7 @@
 <template>
   <div>
     <section>
-      <Splitter style="height: 350px">
+      <Splitter :layout="isMobile ? 'vertical' : 'horizontal'" id="teamInfoContainer">
         <SplitterPanel id="logoContainer" :size="20" :minSize="10">
           <div v-if="imgSrc">
             <img :src="imgSrc" alt="Club Logo" :width="200" :height="200" />
@@ -13,9 +13,9 @@
               <h3>{{ activeUser?.team_name }}</h3>
             </SplitterPanel>
             <SplitterPanel :size="85">
-              <Splitter>
+              <Splitter :layout="isMobile ? 'vertical' : 'horizontal'">
                 <SplitterPanel id="positionContainer" :size="20">
-                  <div style="font-size: 62px">
+                  <div>
                     <p>{{ position }}</p>
                     <p>{{ activeUser?.stats.points }}pts</p>
                   </div>
@@ -58,6 +58,7 @@ import { useXrlStore } from "../store";
   export default defineComponent({
     setup() {
       const store = useXrlStore();
+      const isMobile = computed(() => store.state.isMobile);
       const activeUser = computed(() => store.state.user);
       const ladder = computed(() => store.getters.xrlLadder);
       const loading = computed(() => !activeUser.value || !ladder.value);
@@ -139,6 +140,7 @@ import { useXrlStore } from "../store";
       };
       return {
         loading,
+        isMobile,
         activeUser,
         ladder,
         position,
@@ -155,7 +157,7 @@ import { useXrlStore } from "../store";
   });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   #logoContainer,
   #teamNameContainer,
   #positionContainer,
@@ -165,7 +167,24 @@ import { useXrlStore } from "../store";
     justify-content: center;
     align-items: center;
   }
+  #positionContainer {
+    > div {
+      font-size: 68px;
+    }
+  }
   #statsContainer {
     justify-content: space-evenly;
+  }
+  @media screen and (max-width: 960px) {
+    #statsContainer {
+      flex-direction: column;
+    }
+    #positionContainer {
+      > div {
+        font-size: 40px;
+        display: flex;
+        gap: 1rem;
+      }
+    }
   }
 </style>

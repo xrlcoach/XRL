@@ -18,6 +18,7 @@
             v-if="fixtures.length > 0" 
             :value="fixtures"
             selectionMode="single"
+            responsiveLayout="scroll"
             @rowSelect="goToMatch"
           >
             <Column>
@@ -41,7 +42,7 @@
               <template #body="slotProps">
                 <div style="text-align: center">
                   {{
-                    allUsers?.find(u => u.team_short === slotProps.data.home)
+                    isMobile ? slotProps.data.home : allUsers?.find(u => u.team_short === slotProps.data.home)
                       ?.team_name
                   }}
                 </div>
@@ -65,7 +66,7 @@
               <template #body="slotProps">
                 <div style="text-align: center">
                   {{
-                    allUsers?.find(u => u.team_short === slotProps.data.away)
+                    isMobile ? slotProps.data.away : allUsers?.find(u => u.team_short === slotProps.data.away)
                       ?.team_name
                   }}
                 </div>
@@ -101,6 +102,9 @@ import { useXrlStore } from '../store';
   export default defineComponent({
     setup() {
       const store = useXrlStore();
+
+      const isMobile = computed(() => store.state.isMobile);
+
       const allRounds = computed(() => store.state.allRounds);
       const currentRound = computed(() => store.getters.activeRoundNumber);
       const selectedRound = ref(String(store.getters.activeRoundNumber));
@@ -195,6 +199,7 @@ import { useXrlStore } from '../store';
       });
 
       return {
+        isMobile,
         roundNumbers,
         selectedRound,
         allUsers,
@@ -214,5 +219,18 @@ import { useXrlStore } from '../store';
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+  }
+  @media screen and (max-width: 960px) {
+    :deep(.p-datatable) {
+      .p-datatable-wrapper {
+        .p-datatable-thead, .p-datatable-tbody {
+          > tr {
+            > td, > th {
+              padding: 0.5rem 0.2rem;
+            }
+          }
+        }
+      }
+    }
   }
 </style>

@@ -3,7 +3,7 @@
     <Splitter>
       <SplitterPanel>
         <h3>Inbox</h3>
-        <DataTable :value="inbox" dataKey="datetime" responsiveLayout="scroll">
+        <DataTable :value="inbox" dataKey="datetime">
           <Column field="datetime" header="Received"></Column>
           <Column field="sender" header="From"></Column>
           <Column field="subject" header="Subject"></Column>

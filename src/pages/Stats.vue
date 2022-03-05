@@ -309,4 +309,13 @@
   .flip-list-move {
     transition: transform 0.8s ease;
   }
+  @media screen and (max-width: 960px) {
+    .row {
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .cell {
+      margin-bottom: 1.5rem;
+    }
+  }
 </style>

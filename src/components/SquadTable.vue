@@ -1,7 +1,7 @@
 <template>
   <div>
     <Splitter>
-      <SplitterPanel>
+      <SplitterPanel style="max-width: 100%;">
         <h3>{{ name }}</h3>
         <DataTable
           :value="players"
@@ -13,7 +13,7 @@
         >
           <template #header>
             <div style="display: flex; justify-content: space-between">
-              <div>
+              <span class="p-inputgroup tableFilter">
                 <Button
                   type="button"
                   icon="pi pi-filter-slash"
@@ -21,11 +21,9 @@
                   class="p-button-outlined"
                   @click="clearSearch"
                 />
-                <span style="margin-left: 20px">
-                  <TextInput v-model="searchTerm" placeholder="Filter" />
+                <TextInput v-model="searchTerm" placeholder="Filter" />
                   <!-- <Button @click="searchTerm = input">Search</Button> -->
-                </span>
-              </div>
+              </span>
             </div>
           </template>
           <Column header="Club">
@@ -102,4 +100,21 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+  .tableFilter {
+    max-width: 500px;
+  }
+  @media screen and (max-width: 960px) {
+    :deep(.p-datatable) {
+      .p-datatable-wrapper {
+        .p-datatable-thead, .p-datatable-tbody {
+          > tr {
+            > td, > th {
+              padding: 0.5rem 0.2rem;
+            }
+          }
+        }
+      }
+    }
+  }
+</style>

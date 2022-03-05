@@ -11,22 +11,25 @@
       v-model:selection="selectedPlayer"
       selectionMode="single"
       @rowSelect="onSelectPlayer"
+      :scrollable="true"
+      scrollDirection="horizontal"
       responsiveLayout="scroll"
+      :showGridlines="isMobile"
     >
       <template #header>
-        <div style="display: flex; justify-content: space-between">
+        <div class="statsTableHeader">
           <div>
-            <Button
-              type="button"
-              icon="pi pi-filter-slash"
-              label="Clear"
-              class="p-button-outlined"
-              @click="clearSearch"
-            />
-            <span style="margin-left: 20px">
+            <span style="p-inputgroup">
+              <Button
+                type="button"
+                icon="pi pi-filter-slash"
+                label="Clear"
+                class="p-button-outlined"
+                @click="clearSearch"
+              />
               <TextInput v-model="searchTerm" placeholder="Search" />
             </span>
-            <span style="margin-left: 20px">
+            <span>
               <Button label="Export" icon="pi pi-download" iconPos="right" @click="exportPlayerStats" />
             </span>
           </div>
@@ -36,7 +39,7 @@
           </div>
         </div>
       </template>
-      <Column header="Club" :sortable="true">
+      <Column header="Club" :sortable="true" :frozen="true" alignFrozen="left">
         <template #body="slotProps">
           <img
             :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data.nrl_club}.svg`"
@@ -45,7 +48,7 @@
             :width="50"
           /> </template
       ></Column>
-      <Column field="player_name" header="Name" :sortable="true"> </Column>
+      <Column field="player_name" header="Name" :frozen="true" alignFrozen="left" :sortable="true" style="min-width: 150px;"></Column>
       <Column field="appearances" header="Apps" :sortable="true"></Column>
       <Column field="tries" header="Tries" :sortable="true"></Column>
       <Column
@@ -81,6 +84,8 @@ import { MutationTypes } from '../store-types';
     },
     setup(props, { emit }) {
       const store = useXrlStore();
+
+      const isMobile = computed(() => store.state.isMobile);
 
       const players = computed(() => props.players);
       players.value.sort(SortByTotalXrlScore);
@@ -136,6 +141,7 @@ import { MutationTypes } from '../store-types';
       }
 
       return {
+        isMobile,
         selectedPlayer,
         onSelectPlayer,
         searchTerm,
@@ -151,8 +157,35 @@ import { MutationTypes } from '../store-types';
   });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   div {
     font-size: 16px;
+  }
+  .statsTableHeader {
+    display: flex;
+    justify-content: space-between;
+    > div {
+        display: flex;
+        gap: 1rem;
+    }
+  }
+  @media screen and (max-width: 960px) {
+    .statsTableHeader {
+      flex-direction: column;
+      > div {
+        flex-wrap: wrap;
+      }
+    }
+    :deep(.p-datatable) {
+      .p-datatable-wrapper {
+        .p-datatable-thead, .p-datatable-tbody {
+          > tr {
+            > td, > th {
+              padding: 0.5rem 0.2rem;
+            }
+          }
+        }
+      }
+    }
   }
 </style>

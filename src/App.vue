@@ -17,7 +17,7 @@
         </keep-alive>
       </transition>
     </router-view>
-  <Sidebar v-model:visible="showSidebar" @hide="onSidebarHide" class="p-sidebar-lg">
+  <Sidebar v-model:visible="showSidebar" @hide="onSidebarHide" class="p-sidebar-lg profileSidebar">
     <PlayerProfile v-if="selectedPlayer" :player="selectedPlayer" />
   </Sidebar>
   </main>
@@ -120,6 +120,7 @@ import router from './router';
       }
 
       onMounted(() => {
+        checkIsMobile();
         window.addEventListener('resize', checkIsMobile);
       });
 
@@ -174,9 +175,14 @@ import router from './router';
     align-items: center;
   }
 
-  @media screen and (min-width: 928px) {
+  @media screen and (min-width: 960px) {
     main {
       padding: 50px 125px;
+    }
+  } 
+  @media screen and (max-width: 960px) {
+    .profileSidebar {
+      width: 100% !important;
     }
   } 
 </style>

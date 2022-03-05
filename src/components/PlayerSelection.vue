@@ -8,23 +8,28 @@
       @dragstart.stop="onPlayerDragStart"
       @dragend.stop="onPlayerDragEnd"
     ></div>
-    <p>{{ number }}</p>
-    <Dropdown
-      :options="options"
-      optionValue="player_id"
-      optionLabel="player_name"
-      v-model="selectedPlayerId"
-      @change="onSelectionChange"
-      placeholder="--"
-    />
-    <Dropdown 
-      v-if="number > 13"
-      :options="positionOptions"
-      v-model="position"
-      @change="onPositionChange"
-      placeholder="--"
-      style="margin-top: 5px;"
-    />
+    <div class="position-info">
+      <p>{{ number }}</p>
+      <p>{{ pos }}</p>
+    </div>
+    <div class="player-dropdowns">
+      <Dropdown
+        :options="options"
+        optionValue="player_id"
+        optionLabel="player_name"
+        v-model="selectedPlayerId"
+        @change="onSelectionChange"
+        placeholder="--"
+      />
+      <Dropdown 
+        v-if="number > 13"
+        :options="positionOptions"
+        v-model="position"
+        @change="onPositionChange"
+        placeholder="--"
+        style="margin-top: 5px;"
+      />
+    </div>
   </div>
 </template>
 
@@ -40,6 +45,7 @@ import { getJerseyUrl } from '../services/utils';
         type: Number,
         required: true,
       },
+      pos: String,
       options: Array,
       selectedPlayerId: String,
       position: String,
@@ -100,6 +106,7 @@ import { getJerseyUrl } from '../services/utils';
       return {
         selectedPlayerId,
         number: props.number,
+        pos: props.pos,
         options,
         jerseyUrl,
         position,
@@ -113,7 +120,7 @@ import { getJerseyUrl } from '../services/utils';
   });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .player {
     display: flex;
     flex-direction: column;
@@ -129,11 +136,38 @@ import { getJerseyUrl } from '../services/utils';
     align-items: center;
     margin: 10px;
   }
+  .position-info {
+    display: flex;
+  }
+  .player-dropdowns {
+    display: flex;
+    flex-direction: column;
+  }
   .jerseyFilled {
     cursor: grab;
   }
   p {
     font-size: 18;
     font-weight: bold;
+  }
+  @media screen and (max-width: 960px) {
+    .jersey {
+      display: none;
+    }
+    .player {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .position-info {
+      flex-direction: column;
+      justify-content: flex-start;
+      p {
+        text-align: left;
+      }
+    }
+    .player-dropdowns {
+      width: 70%;
+    }
   }
 </style>

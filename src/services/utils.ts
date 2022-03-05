@@ -65,6 +65,18 @@ export const PositionNames = {
   int3: 'Interchange',
   int4: 'Interchange',
 };
+export const PositionNamesReverse = {
+  'Fullback': 'fullback',
+  'Winger': 'winger1',
+  'Centre': 'centre1',
+  'Five-Eighth': 'five_eighth',
+  'Halfback': 'halfback',
+  'Hooker': 'hooker',
+  'Prop': 'prop1',
+  '2nd Row': 'row1',
+  'Lock': 'lock',
+  'Interchange': 'int1',
+};
 
 export const PositionOrder = ['Back', 'Playmaker', 'Forward'];
 

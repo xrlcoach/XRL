@@ -2,7 +2,7 @@
   <Dialog header="Player Appearance" v-model:visible="showPlayer" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '50vw'}" >
       <PlayerAppearance v-if="selectedAppearance" :appearance="selectedAppearance"  />
   </Dialog>
-    <Card style="width: 700px;">
+    <Card class="matchLineupCard">
       <template #title>
         <div class="teamScoreHeader">
           <div>

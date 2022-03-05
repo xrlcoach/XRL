@@ -1,6 +1,6 @@
 <template>
   <div class="headerContainer">
-    <div id="headerOffset">
+    <div id="headerOffset" v-if="!isMobile">
       &nbsp;
     </div>
     <h1>XRL 2022</h1>    
@@ -12,15 +12,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { LogoutUser } from '../services/auth'
 import { RefreshSession } from '../services/utils';
+import { useXrlStore } from '../store';
 
 export default defineComponent({
   setup() {
     const router = useRouter();
-    const route = useRoute();
+    const store = useXrlStore();
+    const isMobile = computed(() => store.state.isMobile);
     const loading = ref(false);
     const logout = () => {
       LogoutUser();
@@ -35,7 +37,8 @@ export default defineComponent({
     return {
       logout,
       refresh,
-      loading
+      loading,
+      isMobile
     }
   },
 })

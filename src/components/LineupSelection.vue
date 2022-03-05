@@ -22,8 +22,10 @@
             <div id="pitch">
               <div>
                 <div class="playerRow" id="forwards">
+                  <h4>Front Row</h4>
                   <PlayerSelection
                     :number="8"
+                    pos="Prop"
                     :options="forwards"
                     v-model:selectedPlayerId="selections.starters.prop1"
                     @dragstart="onSelectedPlayerDragStart"
@@ -33,6 +35,7 @@
                   />
                   <PlayerSelection
                     :number="9"
+                    pos="Hooker"
                     :options="playmakers"
                     v-model:selectedPlayerId="selections.starters.hooker"
                     @dragstart="onSelectedPlayerDragStart"
@@ -42,6 +45,7 @@
                   />
                   <PlayerSelection
                     :number="10"
+                    pos="Prop"
                     :options="forwards"
                     v-model:selectedPlayerId="selections.starters.prop2"
                     @dragstart="onSelectedPlayerDragStart"
@@ -51,8 +55,10 @@
                   />
                 </div>
                 <div class="playerRow" id="lockHooker">
+                  <h4>Back Row</h4>
                   <PlayerSelection
                     :number="11"
+                    pos="2nd Row"
                     :options="forwards"
                     v-model:selectedPlayerId="selections.starters.row1"
                     @dragstart="onSelectedPlayerDragStart"
@@ -62,6 +68,7 @@
                   />
                   <PlayerSelection
                     :number="13"
+                    pos="Lock"
                     :options="forwards"
                     v-model:selectedPlayerId="selections.starters.lock"
                     @dragstart="onSelectedPlayerDragStart"
@@ -71,6 +78,7 @@
                   />
                   <PlayerSelection
                     :number="12"
+                    pos="2nd Row"
                     :options="forwards"
                     v-model:selectedPlayerId="selections.starters.row2"
                     @dragstart="onSelectedPlayerDragStart"
@@ -80,8 +88,10 @@
                   />
                 </div>
                 <div class="playerRow" id="halves">
+                  <h4>Halves</h4>
                   <PlayerSelection
                     :number="6"
+                    pos="Five-Eighth"
                     :options="playmakers"
                     v-model:selectedPlayerId="selections.starters.five_eighth"
                     @dragstart="onSelectedPlayerDragStart"
@@ -91,6 +101,7 @@
                   />
                   <PlayerSelection
                     :number="7"
+                    pos="Halfback"
                     :options="playmakers"
                     v-model:selectedPlayerId="selections.starters.halfback"
                     @dragstart="onSelectedPlayerDragStart"
@@ -100,8 +111,10 @@
                   />
                 </div>
                 <div class="playerRow" id="backs">
+                  <h4>Backs</h4>
                   <PlayerSelection
                     :number="2"
+                    pos="Winger"
                     :options="backs"
                     v-model:selectedPlayerId="selections.starters.winger1"
                     @dragstart="onSelectedPlayerDragStart"
@@ -111,6 +124,7 @@
                   />
                   <PlayerSelection
                     :number="3"
+                    pos="Centre"
                     :options="backs"
                     v-model:selectedPlayerId="selections.starters.centre1"
                     @dragstart="onSelectedPlayerDragStart"
@@ -120,6 +134,7 @@
                   />
                   <PlayerSelection
                     :number="4"
+                    pos="Centre"
                     :options="backs"
                     v-model:selectedPlayerId="selections.starters.centre2"
                     @dragstart="onSelectedPlayerDragStart"
@@ -129,6 +144,7 @@
                   />
                   <PlayerSelection
                     :number="5"
+                    pos="Winger"
                     :options="backs"
                     v-model:selectedPlayerId="selections.starters.winger2"
                     @dragstart="onSelectedPlayerDragStart"
@@ -140,6 +156,7 @@
                 <div class="playerRow" id="fullBack">
                   <PlayerSelection
                     :number="1"
+                    pos="Fullback"
                     :options="backs"
                     v-model:selectedPlayerId="selections.starters.fullback"
                     @dragstart="onSelectedPlayerDragStart"
@@ -274,7 +291,7 @@
         </Splitter>
       </transition>
     </div>
-    <Card id="lineupRoster" @dragover="onListDragOver" @drop="onListDrop">
+    <Card v-if="!isMobile" id="lineupRoster" @dragover="onListDragOver" @drop="onListDrop">
       <template #header>
         <h3>Squad</h3>
       </template>
@@ -438,6 +455,7 @@
   export default defineComponent({
     setup() {
       const store = useXrlStore();
+      const isMobile = computed(() => store.state.isMobile);
 
       const loaded = ref(false);
       const error = ref("");
@@ -951,6 +969,7 @@
       return {
         loaded,
         error,
+        isMobile,
         fixture,
         opponent,
         roundNumber,
@@ -991,7 +1010,7 @@
   });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" scoped>  
   #lineupSelection {
     display: flex;
   }
@@ -1108,5 +1127,31 @@
     align-items: center;
     gap: 10px;
     margin-top: 20px;
+  }
+  @media screen and (max-width: 960px) {
+    #lineupContainer {
+      width: 100%;
+    }
+    .playerRow {
+      flex-direction: column;
+      gap: 1rem;
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+    }
+    #roles {
+      .playerRow {
+        > div {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+          width: 100%;
+        }
+        p {
+          text-align: left;
+        }
+      }
+    }
   }
 </style>

@@ -27,7 +27,7 @@
                 </div>
               </template>
             </Column>
-            <Column header="Team" field="team_name"></Column>
+            <Column header="Team" :field="isMobile ? 'team_short' : 'team_name'"></Column>
             <Column header="Wins" field="stats.wins"></Column>
             <Column header="Draws" field="stats.draws"></Column>
             <Column header="Losses" field="stats.losses"></Column>
@@ -58,6 +58,7 @@ import { GetAllUsers } from '../services/xrlApi';
   export default defineComponent({
     setup() {
       const store = useXrlStore();
+      const isMobile = computed(() => store.state.isMobile);
       
       const currentYear = new Date().getFullYear();
       const selectedYear = ref(currentYear);
@@ -88,7 +89,8 @@ import { GetAllUsers } from '../services/xrlApi';
         selectedYear,
         ladder,
         onSelectTeam,
-        tableLoading
+        tableLoading,
+        isMobile
       };
     },
   });
@@ -102,6 +104,19 @@ import { GetAllUsers } from '../services/xrlApi';
     padding: 1rem;
     h3 {
       margin-right: 1rem;
+    }
+  }
+  @media screen and (max-width: 960px) {
+    :deep(.p-datatable) {
+      .p-datatable-wrapper {
+        .p-datatable-thead, .p-datatable-tbody {
+          > tr {
+            > td, > th {
+              padding: 0.5rem;
+            }
+          }
+        }
+      }
     }
   }
 </style>
