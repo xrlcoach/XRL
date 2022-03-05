@@ -1102,14 +1102,18 @@
   #pitch {
     display: flex;
     flex-direction: column;
-    background-color: var(--green-700);
-    object-fit: contain;
-    object-position: center;
+    //background-color: var(--green-700);
+    background: url('/src/assets/allianz_arena2.png');
+    background-position: center;
+    background-size: cover;
     padding: 20px 10px;
   }
   .playerRow {
     display: flex;
     justify-content: space-evenly;
+    h4 {
+      display: none;
+    }
   }
   #bench {
     padding: 20px 10px;
@@ -1133,6 +1137,9 @@
       width: 100%;
     }
     .playerRow {
+      h4 {
+        display: block;
+      }
       flex-direction: column;
       gap: 1rem;
       &:not(:last-child) {

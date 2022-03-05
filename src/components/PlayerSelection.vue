@@ -138,10 +138,14 @@ import { getJerseyUrl } from '../services/utils';
   }
   .position-info {
     display: flex;
+    gap: 1rem;
   }
   .player-dropdowns {
     display: flex;
     flex-direction: column;
+    .p-dropdown {
+      min-width: 150px;
+    }
   }
   .jerseyFilled {
     cursor: grab;

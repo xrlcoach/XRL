@@ -3,7 +3,7 @@
     <div id="headerOffset" v-if="!isMobile">
       &nbsp;
     </div>
-    <h1>XRL 2022</h1>    
+    <h1>XRL '22</h1>    
     <div id="headerActions">
       <Button label="Refresh Data" @click="refresh" class="p-button-text" icon="pi pi-refresh" loadingIcon="pi pi-spin pi-spinner" :loading="loading" />
       <Button label="Logout" @click="logout" class="p-button-text p-button-danger" />
