@@ -1117,7 +1117,7 @@
   }
   #bench {
     padding: 20px 10px;
-    background-color: var(--green-800);
+    background-color: #566f30;
   }
   #roles {
     padding: 50px 10px;
