@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue';
+import { computed, defineComponent, onMounted, ref, watch } from 'vue';
 import { XrlFixture, XrlRoundWithFixtures, XrlUser } from '../global';
 import {
   GetTeamFixtureFromRound,
@@ -41,11 +41,20 @@ import { useRoute, RouterLink } from 'vue-router';
 import { useXrlStore } from '../store';
 
 export default defineComponent({
-  setup() {
+  props: {
+    roundNumber: String,
+    fixture: String,
+  },
+  setup(props) {
     const store = useXrlStore();
     const loaded = ref(false);
 
-    const { query } = useRoute();
+    const query = computed(() => {
+      return {
+        roundNumber: props.roundNumber ? Number(props.roundNumber) : store.getters.activeRoundNumber,
+        team: (props.fixture)?.split('-v-')[0] ?? store.getters.activeUserTeamShort,
+      }
+    });
 
     const user = computed(() => store.state.user);
     const roundInfo = ref<XrlRoundWithFixtures | null>();
@@ -96,10 +105,14 @@ export default defineComponent({
       awayTeam.value = store.getters.getUserByTeamShort(fixture.value.away);
     }
 
+    watch(query, value => {
+      const { roundNumber, team } = value;
+      loadFixture(roundNumber, team);
+    })
+
     onMounted(async () => {
       try {
-        const roundNumber = query.round ? Number(query.round) : store.getters.activeRoundNumber;
-        const team = (query.fixture as string)?.split('-v-')[0] ?? store.getters.activeUserTeamShort;
+        const { roundNumber, team } = query.value;
         loadFixture(roundNumber, team);
       } catch (err) {
         console.log(err);

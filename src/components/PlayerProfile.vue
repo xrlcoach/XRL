@@ -1,7 +1,7 @@
 <template>
   <div v-if="player" id="profileContainer">
     <div id="playerInfo">
-      <h1>{{ player.player_name }}</h1>
+      <h1>{{ player.player_name + (isHistoricData ? ' - Stats ' + player.year : '') }}</h1>
       <div class="row">
         <div class="cell">
           <h4>NRL Club</h4>
@@ -227,6 +227,8 @@ export default defineComponent({
     const user = computed(() => store.state.user);
     const roundInfo = computed(() => store.getters.currentRound);
 
+    const isHistoricData = player.year && Number(player.year) !== new Date().getFullYear();
+
     const position1 = player.position;
     const p1ScoringStats = player.scoring_stats[
       position1 as keyof typeof player.scoring_stats
@@ -361,6 +363,7 @@ export default defineComponent({
 
     return {
       activeIndex,
+      isHistoricData,
       p1ScoringStats,
       p2ScoringStats,
       kickingStats,

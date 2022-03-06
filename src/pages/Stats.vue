@@ -123,6 +123,9 @@
       const loading = ref(true);
 
       const allPlayers = computed(() => store.state.allPlayers);
+
+      const yearPlayerRecords = ref([] as Player[]);
+      const currentLoadedStatsYear = ref(new Date().getFullYear());
       const playersToShow = ref([] as Player[]);
 
       const roundStats = ref([] as (PlayerAppearanceStats & Player)[]);
@@ -174,9 +177,14 @@
           let playerRecords: Player[];
           if (selectedYear.value === currentYear) {
             playerRecords = allPlayers.value ?? [];
+          } else if (selectedYear.value !== currentLoadedStatsYear.value) {
+            yearPlayerRecords.value = await GetAllPlayers(selectedYear.value);
+            currentLoadedStatsYear.value = selectedYear.value;
+            playerRecords = yearPlayerRecords.value;
           } else {
-            playerRecords = await GetAllPlayers(selectedYear.value);
+            playerRecords = yearPlayerRecords.value;
           }
+          currentDisplayedYear.value = selectedYear.value;
           playersToShow.value = applyFilters(playerRecords ?? []);
         } catch (err) {
           console.log(err);
@@ -211,6 +219,8 @@
                   p
                 );
               });
+            currentDisplayedRound.value = roundNumber;
+            currentDisplayedYear.value = year;
           }
           statsToShow.value = applyFilters(roundStats.value);
         } catch (err) {

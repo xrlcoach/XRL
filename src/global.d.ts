@@ -26,6 +26,7 @@ export type Player = {
     Forward?: number;
   };
   times_as_captain: number;
+  year?: Number | null;
 };
 
 export type PlayerRawStats = {

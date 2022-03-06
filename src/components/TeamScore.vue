@@ -584,7 +584,7 @@
     },
     setup(props) {
       const loaded = ref(false);
-      const { team } = props;
+      const team = computed(() => props.team);
       const roundNumber = computed(() => props.roundNumber);
       
       const lineup = ref([] as PlayerLineupEntry[]);
@@ -622,7 +622,7 @@
           if (team && roundNumber) {
             lineup.value = await GetLineupByTeamAndRound(
               roundNumber.value,
-              team.team_short
+              team.value.team_short
             );
             stats.value = await GetStatsByTeamAndRound(
               roundNumber.value,
@@ -641,6 +641,7 @@
       });
 
       watch(() => roundNumber.value, () => getLineupStats());
+      watch(() => team.value, () => getLineupStats());
 
       return {
         loaded,
