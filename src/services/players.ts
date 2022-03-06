@@ -29,6 +29,7 @@ export const XrlTeams = [
   'DRU',
   'GUN',
   'MCD',
+  'MIN',
   'MON',
   'PUN',
   'RAM',

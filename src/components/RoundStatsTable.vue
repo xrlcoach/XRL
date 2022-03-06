@@ -154,7 +154,7 @@ import PlayerRoundStats from "./PlayerRoundStats.vue";
       const filteredPlayers = computed(() => {
         return displayData.value.filter((p) => {
           if (!p.search_name) console.log(p);
-          return p.search_name.includes(searchTerm.value);
+          return p.search_name.includes(searchTerm.value.toLowerCase());
         });
       });
 

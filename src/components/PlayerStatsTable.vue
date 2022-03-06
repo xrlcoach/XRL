@@ -131,7 +131,7 @@ import { MutationTypes } from '../store-types';
       };
       const filteredPlayers = computed(() => {
         return playerDisplayData.value.filter(p =>
-          p.search_name.includes(searchTerm.value)
+          p.search_name.includes(searchTerm.value.toLowerCase())
         );
       });
 

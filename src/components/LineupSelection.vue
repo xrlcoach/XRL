@@ -2,11 +2,9 @@
   <section id="lineupSelection">
     <div
       id="lineupContainer"
-      :style="
-        powerplay
+      :style="powerplay
           ? `border-radius: 5px; border: 1px solid var(--pink-500); box-shadow: 0px 0px 20px var(--pink-500);`
-          : ''
-      "
+          : ''"
     >
       <transition name="fade" mode="out-in">
         <Message v-if="error">{{ error }}</Message>
@@ -176,8 +174,8 @@
                   :options="benchOptions"
                   v-model:selectedPlayerId="selections.bench.int1"
                   v-model:position="benchPositions.int1"
-                    @dragstart="onSelectedPlayerDragStart"
-                    @dragend="onPlayerDragEnd"
+                  @dragstart="onSelectedPlayerDragStart"
+                  @dragend="onPlayerDragEnd"
                   @dragover="onPositionDragOver($event, 'int1')"
                   @drop="onPositionDrop($event, 'int1')"
                 />
@@ -186,8 +184,8 @@
                   :options="benchOptions"
                   v-model:selectedPlayerId="selections.bench.int2"
                   v-model:position="benchPositions.int2"
-                    @dragstart="onSelectedPlayerDragStart"
-                    @dragend="onPlayerDragEnd"
+                  @dragstart="onSelectedPlayerDragStart"
+                  @dragend="onPlayerDragEnd"
                   @dragover="onPositionDragOver($event, 'int2')"
                   @drop="onPositionDrop($event, 'int2')"
                 />
@@ -196,8 +194,8 @@
                   :options="benchOptions"
                   v-model:selectedPlayerId="selections.bench.int3"
                   v-model:position="benchPositions.int3"
-                    @dragstart="onSelectedPlayerDragStart"
-                    @dragend="onPlayerDragEnd"
+                  @dragstart="onSelectedPlayerDragStart"
+                  @dragend="onPlayerDragEnd"
                   @dragover="onPositionDragOver($event, 'int3')"
                   @drop="onPositionDrop($event, 'int3')"
                 />
@@ -206,8 +204,8 @@
                   :options="benchOptions"
                   v-model:selectedPlayerId="selections.bench.int4"
                   v-model:position="benchPositions.int4"
-                    @dragstart="onSelectedPlayerDragStart"
-                    @dragend="onPlayerDragEnd"
+                  @dragstart="onSelectedPlayerDragStart"
+                  @dragend="onPlayerDragEnd"
                   @dragover="onPositionDragOver($event, 'int4')"
                   @drop="onPositionDrop($event, 'int4')"
                 />
@@ -291,7 +289,12 @@
         </Splitter>
       </transition>
     </div>
-    <Card v-if="!isMobile" id="lineupRoster" @dragover="onListDragOver" @drop="onListDrop">
+    <Card
+      v-if="!isMobile"
+      id="lineupRoster"
+      @dragover="onListDragOver"
+      @drop="onListDrop"
+    >
       <template #header>
         <h3>Squad</h3>
       </template>
@@ -314,7 +317,10 @@
                   class="rosterPlayerJersey"
                 />
                 <span>{{ player.player_name }}</span>
-                <span class="rosterCaptainRole" v-if="playerCaptainRole(player)">
+                <span
+                  class="rosterCaptainRole"
+                  v-if="playerCaptainRole(player)"
+                >
                   {{ playerCaptainRole(player) }}
                 </span>
                 <span class="rosterKickerRole" v-if="playerKickerRole(player)">
@@ -342,7 +348,10 @@
                   class="rosterPlayerJersey"
                 />
                 <span>{{ player.player_name }}</span>
-                <span class="rosterCaptainRole" v-if="playerCaptainRole(player)">
+                <span
+                  class="rosterCaptainRole"
+                  v-if="playerCaptainRole(player)"
+                >
                   {{ playerCaptainRole(player) }}
                 </span>
                 <span class="rosterKickerRole" v-if="playerKickerRole(player)">
@@ -370,7 +379,10 @@
                   class="rosterPlayerJersey"
                 />
                 <span>{{ player.player_name }}</span>
-                <span class="rosterCaptainRole" v-if="playerCaptainRole(player)">
+                <span
+                  class="rosterCaptainRole"
+                  v-if="playerCaptainRole(player)"
+                >
                   {{ playerCaptainRole(player) }}
                 </span>
                 <span class="rosterKickerRole" v-if="playerKickerRole(player)">
@@ -522,7 +534,7 @@
         draggingPlayer.value = player;
       };
       const onSelectedPlayerDragStart = (playerId: string) => {
-        const player = squad.value.find(p => p.player_id === playerId);
+        const player = squad.value.find((p) => p.player_id === playerId);
         if (isPlayer(player)) {
           draggingPlayer.value = player;
         }
@@ -535,7 +547,7 @@
         position: keyof typeof PositionMap
       ) => {
         const positionGeneral = PositionMap[position];
-        if (positionGeneral === 'Interchange') {
+        if (positionGeneral === "Interchange") {
           event.preventDefault();
         } else if (draggedPlayerPositions.value.includes(positionGeneral)) {
           event.preventDefault();
@@ -544,13 +556,23 @@
       const removeExistingSelection = () => {
         if (!draggingPlayer.value) return;
         for (let pos of Object.keys(selections.value.starters)) {
-          if (selections.value.starters[pos as keyof typeof selections.value.starters] === draggingPlayer.value.player_id) {
-            selections.value.starters[pos as keyof typeof selections.value.starters] = "";
+          if (
+            selections.value.starters[
+              pos as keyof typeof selections.value.starters
+            ] === draggingPlayer.value.player_id
+          ) {
+            selections.value.starters[
+              pos as keyof typeof selections.value.starters
+            ] = "";
           }
         }
         for (let pos of Object.keys(selections.value.bench)) {
-          if (selections.value.bench[pos as keyof typeof selections.value.bench] === draggingPlayer.value.player_id) {
-            selections.value.bench[pos as keyof typeof selections.value.bench] = "";
+          if (
+            selections.value.bench[pos as keyof typeof selections.value.bench] ===
+            draggingPlayer.value.player_id
+          ) {
+            selections.value.bench[pos as keyof typeof selections.value.bench] =
+              "";
           }
         }
       };
@@ -559,32 +581,40 @@
         if (!draggingPlayer.value) return;
         removeExistingSelection();
         const positionGeneral = PositionMap[position as keyof typeof PositionMap];
-        if (positionGeneral === 'Interchange') {
-          selections.value.bench[position as keyof typeof selections.value.bench] = draggingPlayer.value?.player_id ?? "";
+        if (positionGeneral === "Interchange") {
+          selections.value.bench[
+            position as keyof typeof selections.value.bench
+          ] = draggingPlayer.value?.player_id ?? "";
         } else {
-          selections.value.starters[position as keyof typeof selections.value.starters] = draggingPlayer.value?.player_id ?? "";
+          selections.value.starters[
+            position as keyof typeof selections.value.starters
+          ] = draggingPlayer.value?.player_id ?? "";
         }
         onPlayerDragEnd();
-      }
+      };
 
       const onListDragOver = (event: DragEvent) => {
         event.preventDefault();
-      }
+      };
       const onListDrop = () => {
         removeExistingSelection();
         onPlayerDragEnd();
-      }
+      };
 
       const getRosterListPlayerClass = (player: Player) => {
-        const starterIds = Object.values(selections.value.starters).concat(Object.values(selections.value.bench));
+        const starterIds = Object.values(selections.value.starters).concat(
+          Object.values(selections.value.bench)
+        );
         const benchIds = Object.values(selections.value.bench);
         return {
-          'rosterListSelected': starterIds.includes(player.player_id),
-          'rosterListBenched': benchIds.includes(player.player_id),
-          'rosterCaptain': selections.value.roles.captain === player.player_id || selections.value.roles.captain2 === player.player_id,
-          'rosterKicker': selections.value.roles.kicker === player.player_id,
-        }
-      }
+          rosterListSelected: starterIds.includes(player.player_id),
+          rosterListBenched: benchIds.includes(player.player_id),
+          rosterCaptain:
+            selections.value.roles.captain === player.player_id ||
+            selections.value.roles.captain2 === player.player_id,
+          rosterKicker: selections.value.roles.kicker === player.player_id,
+        };
+      };
 
       const selections = ref<XrlMatchLineup>({
         starters: {
@@ -618,16 +648,17 @@
       });
 
       const playerCaptainRole = (player: Player) => {
-        if (selections.value.roles.captain === player.player_id) return 'C';
-        if (selections.value.roles.captain2 === player.player_id) return 'C';
-        if (selections.value.roles.vice === player.player_id) return 'VC';
+        if (selections.value.roles.captain === player.player_id) return "C";
+        if (selections.value.roles.captain2 === player.player_id) return "C";
+        if (selections.value.roles.vice === player.player_id) return "VC";
         return null;
-      }
+      };
       const playerKickerRole = (player: Player) => {
-        if (selections.value.roles.kicker === player.player_id) return 'K';
-        if (selections.value.roles.backup_kicker === player.player_id) return 'BK';
+        if (selections.value.roles.kicker === player.player_id) return "K";
+        if (selections.value.roles.backup_kicker === player.player_id)
+          return "BK";
         return null;
-      }
+      };
 
       const benchPositions = ref({
         int1: "",
@@ -678,7 +709,7 @@
         }
       });
 
-      watch(powerplay, value => {
+      watch(powerplay, (value) => {
         if (value && selections.value.roles.vice) {
           selections.value.roles.captain2 = selections.value.roles.vice;
           selections.value.roles.vice = "";
@@ -738,8 +769,6 @@
                 played_nrl: false,
                 played_xrl: false,
               });
-            } else {
-              throw "Couldn't find one of the selected players in your squad";
             }
           }
           for (let position of Object.keys(selections.value.bench)) {
@@ -1001,7 +1030,7 @@
         onListDrop,
         getRosterListPlayerClass,
         playerCaptainRole,
-        playerKickerRole
+        playerKickerRole,
       };
     },
     components: {
@@ -1010,7 +1039,7 @@
   });
 </script>
 
-<style lang="scss" scoped>  
+<style lang="scss" scoped>
   #lineupSelection {
     display: flex;
   }
@@ -1063,7 +1092,8 @@
       border: 1px solid var(--yellow-500);
       background-color: rgba(129, 199, 132, 0.1);
     }
-    .rosterCaptainRole, .rosterKickerRole {
+    .rosterCaptainRole,
+    .rosterKickerRole {
       font-weight: 600;
       font-size: 14px;
       display: flex;
@@ -1103,7 +1133,7 @@
     display: flex;
     flex-direction: column;
     //background-color: var(--green-700);
-    background: url('/src/assets/allianz_arena2.png');
+    background: url("/src/assets/allianz_arena2.png");
     background-position: center;
     background-size: cover;
     padding: 20px 10px;
