@@ -101,6 +101,44 @@ export const XrlRelevantStats = [
   'Missed Tackles',
 ];
 
+export const BlankLineupEntry = {
+  pk: null,
+  sk: '--',
+  data: '--',
+  backup_kicker: false,
+  captain: false,
+  captain2: false,
+  kicker: false,
+  kicking_score: '--',
+  nrl_club: null,
+  played_nrl: '--',
+  played_xrl: '--',
+  player_id: '--',
+  player_name: '--',
+  playing_score: '--',
+  position_general: '--',
+  position_number: 0,
+  position_specific: '--',
+  round_number: '--',
+  score: '--',
+  second_position: '--',
+  vice: false,
+  xrl_team: '--',
+  year: '--',
+  appearanceStats: {
+    pk: null, // PLAYER#{{player_id}}
+    sk: '', // STATS#{{round_number}}
+    data: '', // CLUB#{{nrl_club}}
+    nrl_club: null,
+    opponent: '',
+    player_id: '',
+    player_name: '',
+    round_number: '',
+    scoring_stats: {'kicker': {}},
+    stats: {},
+  }
+}
+
 export function GetOrdinal(num: number | string) {
   let str = String(num);
   let lastNum = str.charAt(str.length - 1);

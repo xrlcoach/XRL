@@ -56,11 +56,15 @@
             >
               <template #body="slotProps">
                 <img
+                  v-if="slotProps.data?.nrl_club"
                   :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data?.nrl_club}.svg`"
                   :alt="slotProps.data?.nrl_club"
                   :height="50"
                   :width="50"
                 />
+                <div class="blankSlotTeamImage" v-else>
+                  --
+                </div>
               </template>
             </Column>
             <Column
@@ -293,6 +297,7 @@
             >
               <template #body="slotProps">
                 <img
+                  v-if="slotProps.data?.nrl_club"
                   :src="`https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/${slotProps.data?.nrl_club}.svg`"
                   :alt="slotProps.data?.nrl_club"
                   :height="50"
@@ -570,6 +575,7 @@
   import Skeleton from 'primevue/skeleton';
   import { GetLineupScore } from '../services/lineups';
   import PlayerAppearance from './PlayerAppearance.vue';
+import { BlankLineupEntry } from '../services/utils';
 
   export default defineComponent({
     props: {
@@ -599,6 +605,13 @@
             a => a.player_id === p.player_id
           );
         });
+        for (let i = 1; i < 14; i++) {
+          if (lineupCopy.findIndex(p => p.position_number === i) === -1) {
+            const blankEntry = { ...BlankLineupEntry };
+            blankEntry.position_number = i;
+            lineupCopy.push(blankEntry as unknown as PlayerLineupEntryWithStats)
+          }
+        }
         return lineupCopy.sort(
           (p1, p2) => p1.position_number - p2.position_number
         );
@@ -612,8 +625,10 @@
       const selectedAppearance = ref<PlayerLineupEntryWithStats>();
 
       const onSelectPlayer = (event: any) => {
-        selectedAppearance.value = event.data;
-        showPlayer.value = true;
+        if (event.data.pk !== null) {
+          selectedAppearance.value = event.data;
+          showPlayer.value = true;
+        }
       };
 
       const getLineupStats = async () => {
@@ -672,5 +687,12 @@
     align-items: center;
     gap: 50px;
     font-size: 24px;
+  }
+  .blankSlotTeamImage {
+    height: 50px;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 </style>
