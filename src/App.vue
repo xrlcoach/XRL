@@ -4,7 +4,7 @@
   <header>
     <Header />
     <TabMenu :model="tabs" v-if="!isMobile" />
-    <Dropdown id="dropdown-menu" v-else :modelValue="activeRoute" :options="tabs" optionLabel="label" @change="onDropdownNavigate" />
+    <Dropdown id="dropdown-menu" v-else :modelValue="activeRoute" :options="tabs" optionLabel="label" scrollHeight="310px" @change="onDropdownNavigate" />
   </header>
   <main>
     <div class="page-loader" v-if="loading">
@@ -176,6 +176,11 @@ import router from './router';
   }
 
   @media screen and (min-width: 960px) {
+    main {
+      padding: 50px 50px;
+    }
+  } 
+  @media screen and (min-width: 1400px) {
     main {
       padding: 50px 125px;
     }

@@ -147,10 +147,17 @@ export default defineComponent({
   gap: 50px;
 }
 
-@media screen and (min-width: 948px) {
+:deep(.matchLineupCard) {
+  flex: auto;
+}
+
+@media screen and (min-width: 960px) {
   #fixtureContainer {
     flex-direction: row;
     justify-content: space-evenly;
+  }
+  :deep(.matchLineupCard) {
+    max-width: 50%;
   }
 }
 
