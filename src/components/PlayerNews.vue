@@ -68,6 +68,10 @@ import { ActionTypes } from '../store-types';
         roundOptions.push({ label: String(i), value: i });
       }
 
+      watch(latestNews, (value) => {
+        news.value = value ?? [];
+      });
+
       watch(roundNumber, async newNumber => {
         if (newNumber === store.getters.activeRoundNumber) {
           news.value = latestNews.value ?? [];
