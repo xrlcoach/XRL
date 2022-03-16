@@ -175,6 +175,12 @@
             @click="confirmMakeClaim"
           />
           <Button
+            v-else-if="['On Waivers', 'Pre-Waivers'].includes(player.xrl_team) && roundInfo?.scooping && !userWaiverPicks.includes(player.player_id)"
+            label="Make Claim"
+            class="p-button-success"
+            @click="confirmMakeClaim"
+          />
+          <Button
             v-else-if="['None', 'On Waivers', 'Pre-Waivers'].includes(player.xrl_team) && userWaiverPicks.includes(player.player_id)"
             label="Drop Claim"
             class="p-button-warning"
@@ -191,6 +197,9 @@
     </Accordion>
     <Dialog v-model:visible="tradeFormVisible" header="Trade Offer" :breakpoints="{'960px': '100vw'}" :style="{width: '80vw'}">
       <TradeOfferBuilder :player="player" />
+    </Dialog>
+    <Dialog v-model:visible="infoDialogVisible" :header="infoHeader" :breakpoints="{'500px': '95vw'}" :style="{width: '500px'}">
+      {{ infoMessage }}
     </Dialog>
     <ConfirmDialog group="playerConfirm"></ConfirmDialog>
   </div>
@@ -225,6 +234,7 @@ export default defineComponent({
     const store = useXrlStore();
 
     const user = computed(() => store.state.user);
+    const squad = computed(() => store.getters.squad);
     const roundInfo = computed(() => store.getters.currentRound);
 
     const isHistoricData = player.year && Number(player.year) !== new Date().getFullYear();
@@ -258,6 +268,10 @@ export default defineComponent({
     const tradeFormVisible = ref(false);
     const expandedTabs = ref([0, 1]);
 
+    const infoMessage = ref('');
+    const infoHeader = ref('');
+    const infoDialogVisible = ref(false);
+
     const confirmDropPlayer = () => {
       confirm.require({
         group: 'playerConfirm',
@@ -279,13 +293,19 @@ export default defineComponent({
     }
 
     const confirmScoopPlayer = () => {
-      confirm.require({
-        group: 'playerConfirm',
-        header: 'Confirm',
-        message: `Are you sure you want to give a lifeline to ${player.player_name}?`,
-        icon: 'pi pi-user',
-        accept: scoopPlayer,
-      })
+      if (squad.value.length > 17) {
+        infoHeader.value = 'Salary Cap Violation';
+        infoMessage.value = "Your squad is full. You have to drop a player before you can scoop anyone.";
+        infoDialogVisible.value = true;
+      } else {
+        confirm.require({
+          group: 'playerConfirm',
+          header: 'Confirm',
+          message: `Are you sure you want to give a lifeline to ${player.player_name}?`,
+          icon: 'pi pi-user',
+          accept: scoopPlayer,
+        });
+      }
     }
 
     const scoopPlayer = async () => {

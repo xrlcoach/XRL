@@ -107,7 +107,7 @@ import { ActionTypes } from '../store-types';
 
       const allPlayers = computed(() => store.state.allPlayers);
       const transfers = computed(() => {
-        return transferRecords.value.map(t => {
+        const transfers = transferRecords.value.map(t => {
           return {
             ...t,
             userInfo: allUsers.value?.find(u => u.username === t.user),
@@ -117,6 +117,7 @@ import { ActionTypes } from '../store-types';
               : undefined,
           };
         });
+        return transfers;
       });
 
       const getTransfers = async (roundNo: number) => {
@@ -130,6 +131,8 @@ import { ActionTypes } from '../store-types';
           error.value = String(err);
         }
       };
+
+      onMounted(() => getTransfers(roundNumber.value));
 
       watch(roundNumber, async newValue => {
         await getTransfers(newValue);
