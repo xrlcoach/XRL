@@ -398,7 +398,10 @@ export default defineComponent({
       openTradeForm,
       tradeFormVisible,
       expandedTabs,
-      userWaiverPicks
+      userWaiverPicks,
+      infoMessage,
+      infoHeader,
+      infoDialogVisible,
     };
   },
   components: {

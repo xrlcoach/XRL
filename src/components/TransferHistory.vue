@@ -132,8 +132,7 @@ import { ActionTypes } from '../store-types';
         }
       };
 
-      onMounted(() => getTransfers(roundNumber.value));
-
+      watch(latestTransferRecords, value => transferRecords.value = value ?? []);
       watch(roundNumber, async newValue => {
         await getTransfers(newValue);
       });
