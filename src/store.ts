@@ -4,7 +4,7 @@ import { NrlClub, Player, PlayerLineupEntry, PlayerNews, TradeOffer, TradeOfferB
 import { SortLeageTable } from './services/users';
 import { ActionTypes, MutationTypes } from './store-types';
 import type { Getters, Mutations, State, Actions, XrlStore } from './store-types';
-import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetUserTradeOffers, GetWaiverReports, ProcessTradeOffer, ScoopPlayers, SendTradeOffer, SetLineup, UpdateUserWaiverPreferences, WithdrawTradeOffer } from './services/xrlApi';
+import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetTransferHistoryByRound, GetUserTradeOffers, GetWaiverReports, ProcessTradeOffer, ScoopPlayers, SendTradeOffer, SetLineup, UpdateUserWaiverPreferences, WithdrawTradeOffer } from './services/xrlApi';
 import { GetActiveRoundInfo, GetNextRoundNotInProgress, GetUserActiveFixture, GetUserLastFixture } from './services/rounds';
 
 const state = {
@@ -186,7 +186,7 @@ const actions: ActionTree<State, State> & Actions = {
     if (state.transfers) {
       return state.transfers;
     } else {
-      let transfers = await GetTransferHistory();
+      let transfers = await GetTransferHistoryByRound(getters.activeRoundNumber);
       commit(MutationTypes.SET_TRANSFERS, transfers);
       return transfers;
     }

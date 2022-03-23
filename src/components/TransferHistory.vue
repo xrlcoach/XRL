@@ -19,7 +19,12 @@
                 style="font-size: 1rem; font-weight: normal"
                 >Round</span
               >
-              <Dropdown v-model="roundNumber" :options="roundNumbers" optionLabel="label" optionValue="value" />
+              <Dropdown
+                v-model="roundNumber"
+                :options="roundNumbers"
+                optionLabel="label"
+                optionValue="value"
+              />
             </div>
           </div>
         </div>
@@ -45,7 +50,7 @@
               <Column>
                 <template #body="slotProps">
                   <span>{{
-                    slotProps.data.type === 'Drop' ? 'DROPPED' : 'SIGNED'
+                    slotProps.data.type === "Drop" ? "DROPPED" : "SIGNED"
                   }}</span>
                 </template>
               </Column>
@@ -57,13 +62,13 @@
               <Column>
                 <template #body="slotProps">
                   <span>{{
-                    slotProps.data.type === 'Scoop'
-                      ? 'on a free transfer'
-                      : slotProps.data.type === 'Waiver'
-                      ? 'on a waiver'
-                      : slotProps.data.type === 'Drop'
-                      ? ''
-                      : 'from ' + slotProps.data.sellerInfo?.team_name
+                    slotProps.data.type === "Scoop"
+                      ? "on a free transfer"
+                      : slotProps.data.type === "Waiver"
+                      ? "on a waiver"
+                      : slotProps.data.type === "Drop"
+                      ? ""
+                      : "from " + slotProps.data.sellerInfo?.team_name
                   }}</span>
                 </template>
               </Column>
@@ -76,44 +81,54 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, ref, watch, computed } from 'vue';
-  import { Player, Transfer, XrlUser } from '../global';
-  import { GetActiveRoundNumber } from '../services/rounds';
-  import { GetAllUserInfoSorted } from '../services/users';
+  import { defineComponent, onMounted, ref, watch, computed } from "vue";
+  import { Player, Transfer, XrlUser } from "../global";
+  import { GetActiveRoundNumber } from "../services/rounds";
+  import { GetAllUserInfoSorted } from "../services/users";
   import {
     GetGroupPlayersById,
     GetTransferHistoryByRound,
-  } from '../services/xrlApi';
-import { useXrlStore } from '../store';
-import { ActionTypes } from '../store-types';
+  } from "../services/xrlApi";
+  import { useXrlStore } from "../store";
+  import { ActionTypes } from "../store-types";
 
   export default defineComponent({
     setup() {
       const store = useXrlStore();
 
       const loaded = ref(false);
-      const error = ref('');
+      const error = ref("");
 
-      store.dispatch(ActionTypes.GetTransferHistory).finally(() => loaded.value = true);
+      store
+        .dispatch(ActionTypes.GetTransferHistory)
+        .finally(() => (loaded.value = true));
 
       const allUsers = computed(() => store.state.allUsers);
       const roundNumber = ref(store.getters.activeRoundNumber);
-      const roundNumbers: { label: string, value: number }[] = [];
+      const roundNumbers: { label: string; value: number }[] = [];
       for (let i = roundNumber.value; i > 0; i--) {
-        roundNumbers.push({label: String(i), value: i});
+        roundNumbers.push({ label: String(i), value: i });
       }
-      const latestTransferRecords = computed(() => store.state.transfers);
+      const latestTransferRecords = computed(() => {
+        const transfers = store.state.transfers ?? [];
+        return transfers.sort(
+          (a, b) =>
+            new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+        );
+      });
       const transferRecords = ref(latestTransferRecords.value ?? []);
 
       const allPlayers = computed(() => store.state.allPlayers);
       const transfers = computed(() => {
-        const transfers = transferRecords.value.map(t => {
+        const transfers = transferRecords.value.map((t) => {
           return {
             ...t,
-            userInfo: allUsers.value?.find(u => u.username === t.user),
-            playerInfo: allPlayers.value?.find(p => p.player_id === t.player_id),
+            userInfo: allUsers.value?.find((u) => u.username === t.user),
+            playerInfo: allPlayers.value?.find(
+              (p) => p.player_id === t.player_id
+            ),
             sellerInfo: t.seller
-              ? allUsers.value?.find(u => u.username === t.seller)
+              ? allUsers.value?.find((u) => u.username === t.seller)
               : undefined,
           };
         });
@@ -125,15 +140,24 @@ import { ActionTypes } from '../store-types';
           if (roundNo === store.getters.activeRoundNumber) {
             transferRecords.value = latestTransferRecords.value ?? [];
           } else {
-            transferRecords.value = await GetTransferHistoryByRound(roundNo);
+            let transfers = (await GetTransferHistoryByRound(
+              roundNo
+            )) as Transfer[];
+            transferRecords.value = transfers.sort(
+              (a, b) =>
+                new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+            );
           }
         } catch (err) {
           error.value = String(err);
         }
       };
 
-      watch(latestTransferRecords, value => transferRecords.value = value ?? []);
-      watch(roundNumber, async newValue => {
+      watch(
+        latestTransferRecords,
+        (value) => (transferRecords.value = value ?? [])
+      );
+      watch(roundNumber, async (newValue) => {
         await getTransfers(newValue);
       });
 
