@@ -22,7 +22,8 @@
                 placeholder="Waiver Reports"
                 v-model="selectedWaiverRound"
               />
-              <Dialog v-model:visible="showReport">
+              <Button label="View" :disabled="!selectedWaiverReport" @click="showReport = true" />
+              <Dialog v-model:visible="showReport" class="waiver-report-dialog">
                 <template #header>
                   <h3>
                     {{
@@ -402,6 +403,9 @@ export default defineComponent({
   justify-content: space-evenly;
   padding: 20px;
   align-items: center;
+}
+:global(.waiver-report-dialog) {
+  max-width: 95vw;
 }
 @media screen and (max-width: 960px) {
   #preferences-section :deep(.p-orderlist) {
