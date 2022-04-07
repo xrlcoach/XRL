@@ -2,9 +2,11 @@
   <section id="lineupSelection">
     <div
       id="lineupContainer"
-      :style="powerplay
+      :style="
+        powerplay
           ? `border-radius: 5px; border: 1px solid var(--pink-500); box-shadow: 0px 0px 20px var(--pink-500);`
-          : ''"
+          : ''
+      "
     >
       <transition name="fade" mode="out-in">
         <Message v-if="error">{{ error }}</Message>
@@ -676,6 +678,9 @@
               selections.value.bench[
                 player.position_specific as keyof typeof selections.value.bench
               ] = player.player_id;
+              benchPositions.value[
+                player.position_specific as keyof typeof benchPositions.value
+              ] = player.position_general;
             } else {
               selections.value.starters[
                 player.position_specific as keyof typeof selections.value.starters
