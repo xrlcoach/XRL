@@ -17,6 +17,7 @@ export type Player = {
   position: XrlPosition;
   position2: XrlPosition | null;
   position3: XrlPosition | null;
+  positionOrder?: Number;
   search_name: string;
   stats: PlayerProfileStats;
   scoring_stats: PlayerScoringStats;

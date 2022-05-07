@@ -37,7 +37,7 @@
             </template>
           </Column>
           <Column field="player_name" header="Name" :sortable="true"></Column>
-          <Column header="Positions" :sortable="true">
+          <Column header="Positions" sortField="positionOrder" :sortable="true">
             <template #body="slotProps">
               <div>
                 {{
@@ -59,6 +59,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
 import { Player } from '../global';
+import { PositionOrder } from '../services/players';
 import { useXrlStore } from '../store';
 import { MutationTypes } from '../store-types';
 import PlayerProfile from './PlayerProfile.vue';
@@ -70,7 +71,13 @@ export default defineComponent({
   },
   setup(props) {
     const store = useXrlStore();
-    const players = computed(() => props.squad as Player[]);
+    const players = computed(() => {
+      const squad = props.squad as Player[];
+      squad.forEach(p => {
+        p.positionOrder = PositionOrder.indexOf(p.position);
+      });
+      return squad;
+    });
     const input = ref('');
     const searchTerm = ref('');
     const filteredPlayers = computed(() => {
