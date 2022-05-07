@@ -486,7 +486,7 @@
       const newLineup = ref<PlayerLineupEntry[]>([]);
       const powerplay = ref(false);
       const canPowerplay = computed(
-        () => store.state.user && store.state.user.powerplays > 0
+        () => store.state.user && store.state.user.powerplays > 0 && fixture.value && fixture.value.home === store.state.user.team_short
       );
 
       const backs = computed(() => {

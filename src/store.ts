@@ -167,7 +167,13 @@ const actions: ActionTree<State, State> & Actions = {
     } else {
       let lineup = await GetLineup();
       if (lineup.length === 0 && getters.activeRoundNumber > 1) {
-        lineup = await GetLineupByTeamAndRound(getters.activeRoundNumber, getters.activeUserTeamShort);
+        const lastRoundNumber = (getters.nextRoundNotInProgress?.round_number ?? 2) - 1;
+        lineup = await GetLineupByTeamAndRound(lastRoundNumber, getters.activeUserTeamShort);
+        const captain2 = lineup.find(p => p.captain2);
+        if (captain2) {
+          captain2.captain2 = false;
+          captain2.vice = true;
+        }
       }
       commit(MutationTypes.SET_LINEUP, lineup);
       return lineup;
