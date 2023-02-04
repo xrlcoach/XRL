@@ -291,12 +291,7 @@
         </Splitter>
       </transition>
     </div>
-    <Card
-      v-if="!isMobile"
-      id="lineupRoster"
-      @dragover="onListDragOver"
-      @drop="onListDrop"
-    >
+    <Card v-if="!isMobile" id="lineupRoster" @dragover="onListDragOver" @drop="onListDrop">
       <template #header>
         <h3>Squad</h3>
       </template>
@@ -314,15 +309,9 @@
                 @dragstart="onPlayerDragStart(player)"
                 @dragend="onPlayerDragEnd"
               >
-                <img
-                  :src="getJerseyUrl(player.nrl_club)"
-                  class="rosterPlayerJersey"
-                />
+                <img :src="getJerseyUrl(player.nrl_club)" class="rosterPlayerJersey" />
                 <span>{{ player.player_name }}</span>
-                <span
-                  class="rosterCaptainRole"
-                  v-if="playerCaptainRole(player)"
-                >
+                <span class="rosterCaptainRole" v-if="playerCaptainRole(player)">
                   {{ playerCaptainRole(player) }}
                 </span>
                 <span class="rosterKickerRole" v-if="playerKickerRole(player)">
@@ -345,15 +334,9 @@
                 @dragstart="onPlayerDragStart(player)"
                 @dragend="onPlayerDragEnd"
               >
-                <img
-                  :src="getJerseyUrl(player.nrl_club)"
-                  class="rosterPlayerJersey"
-                />
+                <img :src="getJerseyUrl(player.nrl_club)" class="rosterPlayerJersey" />
                 <span>{{ player.player_name }}</span>
-                <span
-                  class="rosterCaptainRole"
-                  v-if="playerCaptainRole(player)"
-                >
+                <span class="rosterCaptainRole" v-if="playerCaptainRole(player)">
                   {{ playerCaptainRole(player) }}
                 </span>
                 <span class="rosterKickerRole" v-if="playerKickerRole(player)">
@@ -376,15 +359,9 @@
                 @dragstart="onPlayerDragStart(player)"
                 @dragend="onPlayerDragEnd"
               >
-                <img
-                  :src="getJerseyUrl(player.nrl_club)"
-                  class="rosterPlayerJersey"
-                />
+                <img :src="getJerseyUrl(player.nrl_club)" class="rosterPlayerJersey" />
                 <span>{{ player.player_name }}</span>
-                <span
-                  class="rosterCaptainRole"
-                  v-if="playerCaptainRole(player)"
-                >
+                <span class="rosterCaptainRole" v-if="playerCaptainRole(player)">
                   {{ playerCaptainRole(player) }}
                 </span>
                 <span class="rosterKickerRole" v-if="playerKickerRole(player)">
@@ -405,10 +382,7 @@
       <div>
         <ul>
           <li v-for="issue of issues" :key="issue">
-            <i
-              class="pi pi-info-circle"
-              style="font-size: 1rem; margin-right: 5px"
-            />
+            <i class="pi pi-info-circle" style="font-size: 1rem; margin-right: 5px" />
             {{ issue }}
           </li>
         </ul>
@@ -436,35 +410,27 @@
 </template>
 
 <script lang="ts">
-  import { useConfirm } from "primevue/useconfirm";
-  import { useToast } from "primevue/usetoast";
-  import { computed, defineComponent, onMounted, ref, watch } from "vue";
+  import { useConfirm } from 'primevue/useconfirm';
+  import { useToast } from 'primevue/usetoast';
+  import { computed, defineComponent, onMounted, ref, watch } from 'vue';
   import {
     LineupPositionType,
     Player,
     PlayerLineupEntry,
     XrlFixture,
     XrlMatchLineup,
-    XrlPosition,
-    XrlUser,
-  } from "../global";
-  import { GetUserLineup } from "../services/lineups";
-  import { GetUserSquad } from "../services/players";
-  import {
-    GetNextRoundNotInProgress,
-    GetTeamFixtureFromRound,
-  } from "../services/rounds";
-  import { GetUserInfo, GetUserInfoByTeamShort } from "../services/users";
+  } from '../global';
+  import { GetTeamFixtureFromRound } from '../services/rounds';
   import {
     CURRENT_YEAR,
     getJerseyUrl,
     isPlayer,
     PositionMap,
     PositionNumbers,
-  } from "../services/utils";
-  import { useXrlStore } from "../store";
-  import { ActionTypes } from "../store-types";
-  import PlayerSelection from "./PlayerSelection.vue";
+  } from '../services/utils';
+  import { useXrlStore } from '../store';
+  import { ActionTypes } from '../store-types';
+  import PlayerSelection from './PlayerSelection.vue';
 
   export default defineComponent({
     setup() {
@@ -472,11 +438,11 @@
       const isMobile = computed(() => store.state.isMobile);
 
       const loaded = ref(false);
-      const error = ref("");
+      const error = ref('');
 
       const fixture = ref<XrlFixture>();
-      const opponent = ref("");
-      const venue = ref("");
+      const opponent = ref('');
+      const venue = ref('');
       const roundNumber = ref(0);
 
       const user = computed(() => store.state.user);
@@ -486,35 +452,28 @@
       const newLineup = ref<PlayerLineupEntry[]>([]);
       const powerplay = ref(false);
       const canPowerplay = computed(
-        () => store.state.user && store.state.user.powerplays > 0 && fixture.value && fixture.value.home === store.state.user.team_short
+        () =>
+          store.state.user &&
+          store.state.user.powerplays > 0 &&
+          fixture.value &&
+          fixture.value.home === store.state.user.team_short
       );
 
       const backs = computed(() => {
-        return squad.value.filter(
-          (p) => p.position === "Back" || p.position2 === "Back"
-        );
+        return squad.value.filter(p => p.position === 'Back' || p.position2 === 'Back');
       });
       const playmakers = computed(() => {
-        return squad.value.filter(
-          (p) => p.position === "Playmaker" || p.position2 === "Playmaker"
-        );
+        return squad.value.filter(p => p.position === 'Playmaker' || p.position2 === 'Playmaker');
       });
       const forwards = computed(() => {
-        return squad.value.filter(
-          (p) => p.position === "Forward" || p.position2 === "Forward"
-        );
+        return squad.value.filter(p => p.position === 'Forward' || p.position2 === 'Forward');
       });
       const benchOptions = computed(() => {
-        console.log("Computing bench options");
+        console.log('Computing bench options');
         return squad.value.filter(
-          (p) =>
+          p =>
             !Object.keys(selections.value.starters)
-              .map(
-                (key) =>
-                  selections.value.starters[
-                    key as keyof typeof selections.value.starters
-                  ]
-              )
+              .map(key => selections.value.starters[key as keyof typeof selections.value.starters])
               .includes(p.player_id)
         );
       });
@@ -523,12 +482,9 @@
       const draggedPlayerPositions = computed(() => {
         const positions: LineupPositionType[] = [];
         if (!draggingPlayer.value) return positions;
-        if (draggingPlayer.value.position)
-          positions.push(draggingPlayer.value.position);
-        if (draggingPlayer.value.position2)
-          positions.push(draggingPlayer.value.position2);
-        if (draggingPlayer.value.position3)
-          positions.push(draggingPlayer.value.position3);
+        if (draggingPlayer.value.position) positions.push(draggingPlayer.value.position);
+        if (draggingPlayer.value.position2) positions.push(draggingPlayer.value.position2);
+        if (draggingPlayer.value.position3) positions.push(draggingPlayer.value.position3);
         return positions;
       });
 
@@ -536,7 +492,7 @@
         draggingPlayer.value = player;
       };
       const onSelectedPlayerDragStart = (playerId: string) => {
-        const player = squad.value.find((p) => p.player_id === playerId);
+        const player = squad.value.find(p => p.player_id === playerId);
         if (isPlayer(player)) {
           draggingPlayer.value = player;
         }
@@ -544,12 +500,9 @@
       const onPlayerDragEnd = () => {
         draggingPlayer.value = null;
       };
-      const onPositionDragOver = (
-        event: DragEvent,
-        position: keyof typeof PositionMap
-      ) => {
+      const onPositionDragOver = (event: DragEvent, position: keyof typeof PositionMap) => {
         const positionGeneral = PositionMap[position];
-        if (positionGeneral === "Interchange") {
+        if (positionGeneral === 'Interchange') {
           event.preventDefault();
         } else if (draggedPlayerPositions.value.includes(positionGeneral)) {
           event.preventDefault();
@@ -559,13 +512,10 @@
         if (!draggingPlayer.value) return;
         for (let pos of Object.keys(selections.value.starters)) {
           if (
-            selections.value.starters[
-              pos as keyof typeof selections.value.starters
-            ] === draggingPlayer.value.player_id
+            selections.value.starters[pos as keyof typeof selections.value.starters] ===
+            draggingPlayer.value.player_id
           ) {
-            selections.value.starters[
-              pos as keyof typeof selections.value.starters
-            ] = "";
+            selections.value.starters[pos as keyof typeof selections.value.starters] = '';
           }
         }
         for (let pos of Object.keys(selections.value.bench)) {
@@ -573,8 +523,7 @@
             selections.value.bench[pos as keyof typeof selections.value.bench] ===
             draggingPlayer.value.player_id
           ) {
-            selections.value.bench[pos as keyof typeof selections.value.bench] =
-              "";
+            selections.value.bench[pos as keyof typeof selections.value.bench] = '';
           }
         }
       };
@@ -583,14 +532,12 @@
         if (!draggingPlayer.value) return;
         removeExistingSelection();
         const positionGeneral = PositionMap[position as keyof typeof PositionMap];
-        if (positionGeneral === "Interchange") {
-          selections.value.bench[
-            position as keyof typeof selections.value.bench
-          ] = draggingPlayer.value?.player_id ?? "";
+        if (positionGeneral === 'Interchange') {
+          selections.value.bench[position as keyof typeof selections.value.bench] =
+            draggingPlayer.value?.player_id ?? '';
         } else {
-          selections.value.starters[
-            position as keyof typeof selections.value.starters
-          ] = draggingPlayer.value?.player_id ?? "";
+          selections.value.starters[position as keyof typeof selections.value.starters] =
+            draggingPlayer.value?.player_id ?? '';
         }
         onPlayerDragEnd();
       };
@@ -620,67 +567,63 @@
 
       const selections = ref<XrlMatchLineup>({
         starters: {
-          fullback: "",
-          winger1: "",
-          centre1: "",
-          centre2: "",
-          winger2: "",
-          five_eighth: "",
-          halfback: "",
-          prop1: "",
-          hooker: "",
-          prop2: "",
-          row1: "",
-          row2: "",
-          lock: "",
+          fullback: '',
+          winger1: '',
+          centre1: '',
+          centre2: '',
+          winger2: '',
+          five_eighth: '',
+          halfback: '',
+          prop1: '',
+          hooker: '',
+          prop2: '',
+          row1: '',
+          row2: '',
+          lock: '',
         },
         bench: {
-          int1: "",
-          int2: "",
-          int3: "",
-          int4: "",
+          int1: '',
+          int2: '',
+          int3: '',
+          int4: '',
         },
         roles: {
-          captain: "",
-          captain2: "",
-          vice: "",
-          kicker: "",
-          backup_kicker: "",
+          captain: '',
+          captain2: '',
+          vice: '',
+          kicker: '',
+          backup_kicker: '',
         },
       });
 
       const playerCaptainRole = (player: Player) => {
-        if (selections.value.roles.captain === player.player_id) return "C";
-        if (selections.value.roles.captain2 === player.player_id) return "C";
-        if (selections.value.roles.vice === player.player_id) return "VC";
+        if (selections.value.roles.captain === player.player_id) return 'C';
+        if (selections.value.roles.captain2 === player.player_id) return 'C';
+        if (selections.value.roles.vice === player.player_id) return 'VC';
         return null;
       };
       const playerKickerRole = (player: Player) => {
-        if (selections.value.roles.kicker === player.player_id) return "K";
-        if (selections.value.roles.backup_kicker === player.player_id)
-          return "BK";
+        if (selections.value.roles.kicker === player.player_id) return 'K';
+        if (selections.value.roles.backup_kicker === player.player_id) return 'BK';
         return null;
       };
 
       const benchPositions = ref({
-        int1: "",
-        int2: "",
-        int3: "",
-        int4: "",
+        int1: '',
+        int2: '',
+        int3: '',
+        int4: '',
       });
 
       function fillExistingSelections() {
         if (existingLineup.value && existingLineup.value.length) {
-          existingLineup.value.forEach((player) => {
-            if (
-              Object.keys(benchPositions.value).includes(player.position_specific)
-            ) {
+          existingLineup.value.forEach(player => {
+            if (Object.keys(benchPositions.value).includes(player.position_specific)) {
               selections.value.bench[
                 player.position_specific as keyof typeof selections.value.bench
               ] = player.player_id;
-              benchPositions.value[
-                player.position_specific as keyof typeof benchPositions.value
-              ] = player.position_general;
+              benchPositions.value[player.position_specific as keyof typeof benchPositions.value] =
+                player.position_general;
             } else {
               selections.value.starters[
                 player.position_specific as keyof typeof selections.value.starters
@@ -688,10 +631,9 @@
             }
             for (const role of Object.keys(selections.value.roles)) {
               if (player[role as keyof PlayerLineupEntry]) {
-                selections.value.roles[
-                  role as keyof typeof selections.value.roles
-                ] = player.player_id;
-                if (role === "captain2") {
+                selections.value.roles[role as keyof typeof selections.value.roles] =
+                  player.player_id;
+                if (role === 'captain2') {
                   powerplay.value = true;
                 }
               }
@@ -700,27 +642,26 @@
         }
       }
 
-      watch(selections.value.bench, (newValue) => {
-        console.log("Change in bench");
+      watch(selections.value.bench, newValue => {
+        console.log('Change in bench');
         for (let position of Object.keys(newValue)) {
           let player = squad.value.find(
-            (p) => p.player_id === newValue[position as keyof typeof newValue]
+            p => p.player_id === newValue[position as keyof typeof newValue]
           );
           if (player) {
             // benchPositions.value[position as keyof typeof benchPositions.value].options.push(player.position_general, player.second_position);
-            benchPositions.value[position as keyof typeof benchPositions.value] =
-              player.position;
+            benchPositions.value[position as keyof typeof benchPositions.value] = player.position;
           }
         }
       });
 
-      watch(powerplay, (value) => {
+      watch(powerplay, value => {
         if (value && selections.value.roles.vice) {
           selections.value.roles.captain2 = selections.value.roles.vice;
-          selections.value.roles.vice = "";
+          selections.value.roles.vice = '';
         } else if (selections.value.roles.captain2) {
           selections.value.roles.vice = selections.value.roles.captain2;
-          selections.value.roles.captain2 = "";
+          selections.value.roles.captain2 = '';
         }
       });
 
@@ -737,39 +678,31 @@
           newLineup.value = [];
           for (let position of Object.keys(selections.value.starters)) {
             let playerInfo = squad.value.find(
-              (p) =>
+              p =>
                 p.player_id ===
-                selections.value.starters[
-                  position as keyof typeof selections.value.starters
-                ]
+                selections.value.starters[position as keyof typeof selections.value.starters]
             );
             if (playerInfo) {
               newLineup.value.push({
                 pk: playerInfo.pk,
                 sk: `LINEUP#${CURRENT_YEAR}#` + roundNumber.value,
-                data: "TEAM#" + user.value?.team_short,
+                data: 'TEAM#' + user.value?.team_short,
                 year: CURRENT_YEAR,
                 round_number: String(roundNumber.value),
                 nrl_club: playerInfo.nrl_club,
-                xrl_team: user.value?.team_short || "",
+                xrl_team: user.value?.team_short || '',
                 player_id: playerInfo.player_id,
-                position_number:
-                  PositionNumbers[position as keyof typeof PositionNumbers],
+                position_number: PositionNumbers[position as keyof typeof PositionNumbers],
                 player_name: playerInfo.player_name,
-                position_general:
-                  PositionMap[position as keyof typeof PositionMap],
-                second_position: "",
+                position_general: PositionMap[position as keyof typeof PositionMap],
+                second_position: '',
                 position_specific: position,
                 captain: selections.value.roles.captain === playerInfo.player_id,
                 captain2:
-                  selections.value.roles.captain2 === playerInfo.player_id &&
-                  powerplay.value,
-                vice:
-                  selections.value.roles.vice === playerInfo.player_id &&
-                  !powerplay.value,
+                  selections.value.roles.captain2 === playerInfo.player_id && powerplay.value,
+                vice: selections.value.roles.vice === playerInfo.player_id && !powerplay.value,
                 kicker: selections.value.roles.kicker === playerInfo.player_id,
-                backup_kicker:
-                  selections.value.roles.backup_kicker === playerInfo.player_id,
+                backup_kicker: selections.value.roles.backup_kicker === playerInfo.player_id,
                 score: 0,
                 played_nrl: false,
                 played_xrl: false,
@@ -778,46 +711,36 @@
           }
           for (let position of Object.keys(selections.value.bench)) {
             let playerInfo = squad.value.find(
-              (p) =>
+              p =>
                 p.player_id ===
-                selections.value.bench[
-                  position as keyof typeof selections.value.bench
-                ]
+                selections.value.bench[position as keyof typeof selections.value.bench]
             );
             if (playerInfo) {
               newLineup.value.push({
                 pk: playerInfo.pk,
                 sk: `LINEUP#${CURRENT_YEAR}#` + roundNumber.value,
-                data: "TEAM#" + user.value?.team_short,
+                data: 'TEAM#' + user.value?.team_short,
                 round_number: String(roundNumber.value),
                 year: CURRENT_YEAR,
                 nrl_club: playerInfo.nrl_club,
-                xrl_team: user.value?.team_short || "",
+                xrl_team: user.value?.team_short || '',
                 player_id: playerInfo.player_id,
-                position_number:
-                  PositionNumbers[position as keyof typeof PositionNumbers],
+                position_number: PositionNumbers[position as keyof typeof PositionNumbers],
                 player_name: playerInfo.player_name,
                 position_general:
-                  benchPositions.value[
-                    position as keyof typeof benchPositions.value
-                  ],
+                  benchPositions.value[position as keyof typeof benchPositions.value],
                 second_position:
-                  benchPositions.value[
-                    position as keyof typeof benchPositions.value
-                  ] === playerInfo.position2
+                  benchPositions.value[position as keyof typeof benchPositions.value] ===
+                  playerInfo.position2
                     ? playerInfo.position
                     : playerInfo.position2,
                 position_specific: position,
                 captain: selections.value.roles.captain === playerInfo.player_id,
                 captain2:
-                  selections.value.roles.captain2 === playerInfo.player_id &&
-                  powerplay.value,
-                vice:
-                  selections.value.roles.vice === playerInfo.player_id &&
-                  !powerplay.value,
+                  selections.value.roles.captain2 === playerInfo.player_id && powerplay.value,
+                vice: selections.value.roles.vice === playerInfo.player_id && !powerplay.value,
                 kicker: selections.value.roles.kicker === playerInfo.player_id,
-                backup_kicker:
-                  selections.value.roles.backup_kicker === playerInfo.player_id,
+                backup_kicker: selections.value.roles.backup_kicker === playerInfo.player_id,
                 score: 0,
                 played_nrl: false,
                 played_xrl: false,
@@ -833,8 +756,8 @@
           }
         } catch (err) {
           toast.add({
-            severity: "error",
-            summary: "Problem",
+            severity: 'error',
+            summary: 'Problem',
             detail: String(err),
             closable: true,
           });
@@ -844,40 +767,31 @@
 
       function validateLineup(selections: PlayerLineupEntry[]): string[] {
         const issues: string[] = [];
-        selections.forEach((player) => {
+        selections.forEach(player => {
           //Unacceptable errors...
           //Check if player selected twice
-          if (
-            selections.filter((p) => p.player_id === player.player_id).length !==
-            1
-          ) {
+          if (selections.filter(p => p.player_id === player.player_id).length !== 1) {
             throw `${player.player_name} has been selected more than once.`;
           }
           //Check if any captains at captaincy limit
           if (player.captain || player.captain2 || player.vice) {
             let timesAsCaptain = squad.value.find(
-              (p) => p.player_id == player.player_id
+              p => p.player_id == player.player_id
             )?.times_as_captain;
             if (timesAsCaptain && timesAsCaptain > 5)
-              throw player.player_name + " has already been captained 6 times.";
+              throw player.player_name + ' has already been captained 6 times.';
           }
           //Acceptable errors.....
           //Check if captain is on bench
-          if (
-            (player.captain || player.captain2) &&
-            player.position_specific.startsWith("int")
-          ) {
-            issues.push("Your chosen captain is starting on the bench");
+          if ((player.captain || player.captain2) && player.position_specific.startsWith('int')) {
+            issues.push('Your chosen captain is starting on the bench');
           }
           //Check if kicker is on bench
-          if (player.kicker && player.position_specific.startsWith("int")) {
-            issues.push("Your chosen kicker is starting on the bench");
+          if (player.kicker && player.position_specific.startsWith('int')) {
+            issues.push('Your chosen kicker is starting on the bench');
           }
           //Check if captain is also vice-captain or second captain
-          if (
-            (player.captain && player.captain2) ||
-            (player.captain && player.vice)
-          ) {
+          if ((player.captain && player.captain2) || (player.captain && player.vice)) {
             issues.push(`${player.player_name} has two captain roles`);
           }
           //Check if kicker is also backup kicker
@@ -885,22 +799,18 @@
             issues.push(`Same player chosen as kicker and backup kicker`);
           }
           //Check if vice-captain is on bench
-          if (player.vice && player.position_specific.startsWith("int")) {
+          if (player.vice && player.position_specific.startsWith('int')) {
             issues.push(`Your chosen vice-captain is starting on the bench`);
           }
           //Check if backup kicker is on bench
-          if (
-            player.backup_kicker &&
-            player.position_specific.startsWith("int")
-          ) {
+          if (player.backup_kicker && player.position_specific.startsWith('int')) {
             issues.push(`Your chosen backup kicker is starting on the bench`);
           }
         });
-        if (!selections.some((p) => p.captain))
-          issues.push("You haven't chosen a captain");
-        if (!powerplay.value && !selections.some((p) => p.vice))
+        if (!selections.some(p => p.captain)) issues.push("You haven't chosen a captain");
+        if (!powerplay.value && !selections.some(p => p.vice))
           issues.push("You haven't chosen a vice-captain");
-        if (powerplay.value && !selections.some((p) => p.captain2))
+        if (powerplay.value && !selections.some(p => p.captain2))
           issues.push("You haven't chosen a co-captain");
         return issues;
       }
@@ -909,8 +819,8 @@
         submitting.value = true;
         await store.dispatch(ActionTypes.SetLineup, newLineup.value);
         toast.add({
-          severity: "success",
-          summary: "Confirmed",
+          severity: 'success',
+          summary: 'Confirmed',
           detail: `Lineup confirmed`,
           life: 3000,
         });
@@ -924,31 +834,25 @@
 
       const loadMatchAndLineup = async () => {
         if (!user.value) {
-          error.value = "No user data found. Please log out and in again";
+          error.value = 'No user data found. Please log out and in again';
           return;
         }
         const nextRound = store.getters.nextRoundNotInProgress;
         if (!nextRound) {
-          error.value = "There is no match next week";
+          error.value = 'There is no match next week';
           return;
         }
         roundNumber.value = nextRound.round_number;
         fixture.value = GetTeamFixtureFromRound(nextRound, user.value.team_short);
         if (!fixture.value) {
-          error.value = "You have no match this week";
+          error.value = 'You have no match this week';
           return;
         }
         let homeGame = fixture.value?.home === user.value.team_short;
-        let opponentTeamShort = homeGame
-          ? fixture.value?.away
-          : fixture.value?.home;
-        let opponentInfo = store.getters.getUserByTeamShort(
-          opponentTeamShort || ""
-        );
-        opponent.value = opponentInfo?.team_name ?? "";
-        venue.value = homeGame
-          ? user.value.homeground
-          : opponentInfo?.homeground || "";
+        let opponentTeamShort = homeGame ? fixture.value?.away : fixture.value?.home;
+        let opponentInfo = store.getters.getUserByTeamShort(opponentTeamShort || '');
+        opponent.value = opponentInfo?.team_name ?? '';
+        venue.value = homeGame ? user.value.homeground : opponentInfo?.homeground || '';
         if (!existingLineup.value) {
           try {
             store.dispatch(ActionTypes.GetUserLineup);
@@ -962,19 +866,13 @@
 
       const fillExistingLineup = () => {
         for (let position of Object.keys(selections.value.starters)) {
-          selections.value.starters[
-            position as keyof typeof selections.value.starters
-          ] =
-            existingLineup.value?.find((p) => p.position_specific === position)
-              ?.player_id || "";
+          selections.value.starters[position as keyof typeof selections.value.starters] =
+            existingLineup.value?.find(p => p.position_specific === position)?.player_id || '';
         }
         for (let position of Object.keys(selections.value.bench)) {
-          let player = existingLineup.value?.find(
-            (p) => p.position_specific === position
-          );
-          selections.value.bench[
-            position as keyof typeof selections.value.bench
-          ] = player?.player_id ?? "";
+          let player = existingLineup.value?.find(p => p.position_specific === position);
+          selections.value.bench[position as keyof typeof selections.value.bench] =
+            player?.player_id ?? '';
           if (player) {
             // benchPositions.value[position as keyof typeof benchPositions.value].options.push(player.position_general, player.second_position);
             benchPositions.value[position as keyof typeof benchPositions.value] =
@@ -983,16 +881,15 @@
         }
         for (let role of Object.keys(selections.value.roles)) {
           selections.value.roles[role as keyof typeof selections.value.roles] =
-            existingLineup.value?.find((p) => p[role as keyof typeof p])
-              ?.player_id || "";
+            existingLineup.value?.find(p => p[role as keyof typeof p])?.player_id || '';
         }
         console.log(selections.value.roles);
         powerplay.value = existingLineup.value
-          ? existingLineup.value?.findIndex((p) => p.captain2) !== -1
+          ? existingLineup.value?.findIndex(p => p.captain2) !== -1
           : false;
       };
 
-      watch(existingLineup, (newValue) => {
+      watch(existingLineup, newValue => {
         fillExistingSelections();
       });
 
@@ -1138,7 +1035,7 @@
     display: flex;
     flex-direction: column;
     //background-color: var(--green-700);
-    background: url("/src/assets/allianz_arena2.png");
+    background: url('/src/assets/allianz_arena2.png');
     background-position: center;
     background-size: cover;
     padding: 20px 10px;

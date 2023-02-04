@@ -14,6 +14,7 @@ import {
   XrlTeam,
   XrlUser,
 } from '../global';
+import { CURRENT_YEAR } from './utils';
 
 /**
  * Passes username and password to lambda login function, which authenticates user against Cognito user pool.
@@ -744,7 +745,7 @@ export async function UpdateUserWaiverPreferences(
 /**
  * Retrieves transfer records for the entire season
  */
-export async function GetTransferHistory(year = 2022) {
+export async function GetTransferHistory(year = CURRENT_YEAR) {
   const response = await fetch(
     import.meta.env['VITE_XRL_API_ROUTE'] + '/transfers?year=' + year,
     {

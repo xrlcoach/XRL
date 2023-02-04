@@ -36,7 +36,7 @@ export interface State {
   news: PlayerNews[] | null;
   selectedPlayer: Player | null;
   playerProfileVisible: boolean;
-  isMobile: Boolean;
+  isMobile: boolean;
 }
 
 export type Getters = {

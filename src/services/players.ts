@@ -6,6 +6,7 @@ export const NrlClubs = [
   'Broncos',
   'Bulldogs',
   'Cowboys',
+  'Dolphins',
   'Dragons',
   'Eels',
   'Knights',

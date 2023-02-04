@@ -100,6 +100,7 @@
     createAppearanceExportData,
     createPlayerExportData,
     exportStatsAsCSV,
+    getYearOptions,
     PositionOrder,
   } from "../services/utils";
   import {
@@ -148,7 +149,7 @@
 
       const currentYear = new Date().getFullYear();
       const selectedYear = ref(currentYear);
-      const yearOptions = [2021, 2022];
+      const yearOptions = getYearOptions();
       const currentDisplayedYear = ref(currentYear);
 
       const isSpecificRound = ref(false);

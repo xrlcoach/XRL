@@ -52,6 +52,7 @@ import { computed, defineComponent, onMounted, watch, ref } from 'vue';
   import { XrlUser } from '../global';
 import { DefaultPlayerSort } from '../services/players';
   import { GetAllUserInfoSorted, SortLeageTable } from '../services/users';
+import { getYearOptions } from '../services/utils';
 import { GetAllUsers } from '../services/xrlApi';
   import { useXrlStore } from '../store';
 
@@ -62,7 +63,7 @@ import { GetAllUsers } from '../services/xrlApi';
       
       const currentYear = new Date().getFullYear();
       const selectedYear = ref(currentYear);
-      const yearOptions = [2021, 2022];
+      const yearOptions = getYearOptions();
 
       const currentLadder = computed(() => store.getters.xrlLadder);
       const ladder = ref<XrlUser[]>(currentLadder.value);

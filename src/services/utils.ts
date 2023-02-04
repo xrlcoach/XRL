@@ -2,7 +2,16 @@ import { AppearanceExportData, Player, PlayerAppearanceStats, PlayerExportData, 
 import { LoadSessionData } from './auth';
 import { DomHandler } from 'primevue/utils';
 
-export const CURRENT_YEAR = 2022;
+const INAUGURAL_YEAR = 2021;
+export const CURRENT_YEAR = 2023;
+
+export const getYearOptions = () => {
+  let options = [];
+  for (let i = INAUGURAL_YEAR; i <= CURRENT_YEAR; i++) {
+    options.push(i);
+  }
+  return options;
+}
 
 export const LineupPositions = ['Back', 'Forward', 'Playmaker', 'Interchange'] as const;
 
