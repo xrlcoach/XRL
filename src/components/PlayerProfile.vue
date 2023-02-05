@@ -293,7 +293,7 @@ export default defineComponent({
     }
 
     const confirmScoopPlayer = () => {
-      if (squad.value.length > 17) {
+      if (squad.value.length >= 19) {
         infoHeader.value = 'Salary Cap Violation';
         infoMessage.value = "Your squad is full. You have to drop a player before you can scoop anyone.";
         infoDialogVisible.value = true;
