@@ -1,5 +1,6 @@
 import {
   MappedTradeOffer,
+  NewPlayerInput,
   NrlClub,
   Player,
   PlayerLineupEntry,
@@ -7,6 +8,7 @@ import {
   TradeOffer,
   TradeOfferBuilder,
   Transfer,
+  UpdatePlayerInput,
   WaiverPreference,
   WaiverReport,
   XrlFixture,
@@ -55,6 +57,7 @@ export type Getters = {
     state: State
   ): (roundNumber: number) => XrlRoundWithFixtures | null;
   getUserByTeamShort(state: State): (teamShort: XrlTeam) => XrlUser | null;
+  userIsAdmin(state: State): boolean;
 };
 
 export enum MutationTypes {
@@ -75,6 +78,9 @@ export enum MutationTypes {
   SHOW_SELECTED_PLAYER = 'SHOW_SELECTED_PLAYER',
   HIDE_PLAYER_TAB = 'HIDE_PLAYER_TAB',
   SET_IS_MOBILE = 'SET_IS_MOBILE',
+  ADD_NEW_PLAYER = 'ADD_NEW_PLAYER',
+  DELETE_PLAYER = 'DELETE_PLAYER',
+  UPDATE_PLAYER = 'UPDATE_PLAYER',
 }
 
 export type Mutations<S = State> = {
@@ -107,6 +113,9 @@ export type Mutations<S = State> = {
   [MutationTypes.SHOW_SELECTED_PLAYER](state: S, player: Player): void;
   [MutationTypes.HIDE_PLAYER_TAB](state: S): void;
   [MutationTypes.SET_IS_MOBILE](state: S, value: boolean): void;
+  [MutationTypes.ADD_NEW_PLAYER](state: S, player: Player): void;
+  [MutationTypes.DELETE_PLAYER](state: S, player_id: string): void;
+  [MutationTypes.UPDATE_PLAYER](state: S, player: Player): void;
 };
 
 type AugmentedActionContext = {
@@ -138,6 +147,9 @@ export enum ActionTypes {
   SendTradeOffer = 'SendTradeOffer',
   WithdrawTradeOffer = 'WithdrawTradeOffer',
   ProcessTradeOffer = 'ProcessTradeOffer',
+  CreatePlayer = 'CreatePlayer',
+  DeletePlayer = 'DeletePlayer',
+  UpdatePlayer = 'UpdatePlayer'
 }
 
 export interface Actions {
@@ -201,6 +213,21 @@ export interface Actions {
     { commit }: AugmentedActionContext,
     { offer, accepted }: { offer: TradeOffer; accepted: boolean }
   ): Promise<boolean>;
+  // #endregion
+
+  // #region ADMIN
+  [ActionTypes.CreatePlayer](
+    { commit }: AugmentedActionContext,
+    player: NewPlayerInput
+  ): Promise<Player>;
+  [ActionTypes.DeletePlayer](
+    { commit }: AugmentedActionContext,
+    playerId: string
+  ): Promise<string>;
+  [ActionTypes.UpdatePlayer](
+    { commit }: AugmentedActionContext,
+    player: UpdatePlayerInput
+  ): Promise<Player>;
   // #endregion
 }
 

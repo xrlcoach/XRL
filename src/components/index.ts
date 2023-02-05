@@ -18,6 +18,8 @@ import PlayerAppearance from './PlayerAppearance.vue';
 import PlayerStatsTable from './PlayerStatsTable.vue';
 import RoundStatsTable from './RoundStatsTable.vue';
 import PlayerNews from './PlayerNews.vue';
+import AddPlayerForm from './AddPlayerForm.vue';
+import UpdatePlayerForm from './UpdatePlayerForm.vue';
 
 export { 
   Header, 
@@ -39,5 +41,7 @@ export {
   PlayerAppearance,
   PlayerStatsTable,
   RoundStatsTable,
-  PlayerNews
+  PlayerNews,
+  AddPlayerForm,
+  UpdatePlayerForm
 };

@@ -28,7 +28,7 @@
           <p class="value">
             {{
               player.position
-            }}{{ player.position2 ? `, ${player.position2}` : '' }}
+            }}{{ player.position2 ? `, ${player.position2}` : '' }}{{ player.position3 ? `, ${player.position3}` : '' }}
           </p>
         </div>
       </div>
@@ -194,6 +194,12 @@
           />
         </div>
       </AccordionTab>
+      <AccordionTab v-if="userIsAdmin" header="Admin Actions">
+        <div class="player-actions">
+          <Button label="Update Player" class="p-button-warning" @click="updateFormVisible = true" />
+          <Button label="Delete Player" class="p-button-danger" @click="onPlayerDelete" />
+        </div>
+      </AccordionTab>
     </Accordion>
     <Dialog v-model:visible="tradeFormVisible" header="Trade Offer" :breakpoints="{'960px': '100vw'}" :style="{width: '80vw'}">
       <TradeOfferBuilder :player="player" />
@@ -202,6 +208,7 @@
       {{ infoMessage }}
     </Dialog>
     <ConfirmDialog group="playerConfirm"></ConfirmDialog>
+    <UpdatePlayerForm v-if="updateFormVisible" v-model:visible="updateFormVisible" :player="player" />
   </div>
 </template>
 
@@ -220,8 +227,9 @@ import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { UpdateUserWaiverPreferences } from '../services/xrlApi';
 import { useXrlStore } from '../store';
-import { ActionTypes } from '../store-types';
+import { ActionTypes, MutationTypes } from '../store-types';
 import TradeOfferBuilder from './TradeOfferBuilder.vue';
+import UpdatePlayerForm from './UpdatePlayerForm.vue';
 
 export default defineComponent({
   props: {
@@ -234,6 +242,7 @@ export default defineComponent({
     const store = useXrlStore();
 
     const user = computed(() => store.state.user);
+    const userIsAdmin = computed(() => store.getters.userIsAdmin);
     const squad = computed(() => store.getters.squad);
     const roundInfo = computed(() => store.getters.currentRound);
 
@@ -247,6 +256,12 @@ export default defineComponent({
     if (player.position2) {
       p2ScoringStats = player.scoring_stats[
         player.position2 as keyof typeof player.scoring_stats
+      ] as ScoringStats;
+    }
+    let p3ScoringStats;
+    if (player.position3) {
+      p3ScoringStats = player.scoring_stats[
+        player.position3 as keyof typeof player.scoring_stats
       ] as ScoringStats;
     }
     const kickingStats = player.scoring_stats.kicker;
@@ -381,11 +396,41 @@ export default defineComponent({
       tradeFormVisible.value = true;
     }
 
+    const onPlayerDelete = () => {
+      confirm.require({
+        group: 'playerConfirm',
+        header: 'Confirm',
+        message: `Are you sure you want to delete ${player.player_name}?`,
+        icon: 'pi pi-trash',
+        accept: async () => {
+          try {
+            await store.dispatch(ActionTypes.DeletePlayer, player.player_id);
+            toast.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: `Player deleted`,
+              life: 3000,
+            });
+            store.commit(MutationTypes.HIDE_PLAYER_TAB);
+          } catch (err) {
+            toast.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: String(err),
+            });
+          }
+        }
+      })
+    }
+
+    const updateFormVisible = ref(false);
+
     return {
       activeIndex,
       isHistoricData,
       p1ScoringStats,
       p2ScoringStats,
+      p3ScoringStats,
       kickingStats,
       allStats,
       keyStats,
@@ -402,6 +447,9 @@ export default defineComponent({
       infoMessage,
       infoHeader,
       infoDialogVisible,
+      userIsAdmin,
+      onPlayerDelete,
+      updateFormVisible
     };
   },
   components: {
@@ -411,6 +459,7 @@ export default defineComponent({
     Accordion,
     AccordionTab,
     TradeOfferBuilder,
+    UpdatePlayerForm
   },
 });
 </script>

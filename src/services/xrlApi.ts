@@ -1,10 +1,12 @@
 import {
+  NewPlayerInput,
   Player,
   PlayerAppearanceStats,
   PlayerLineupEntry,
   PlayerNews,
   PlayerRawStats,
   TradeOffer,
+  UpdatePlayerInput,
   UserMessage,
   WaiverPreference,
   WaiverReport,
@@ -1011,4 +1013,91 @@ export function getCookie(cname: string) {
     }
   }
   return '';
+}
+
+
+// Admin functions
+/**
+ * 
+ * @param {NewPlayerInput} input
+ * @returns {Player} The newly create player
+ */
+export async function CreateNewPlayer(input: NewPlayerInput): Promise<Player> {
+  const response = await fetch(
+    import.meta.env['VITE_XRL_API_ROUTE'] + '/admin',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: GetIdToken(),
+      },
+      body: JSON.stringify({
+        operation: 'create_player',
+        new_player: input
+      })
+    }
+  );
+  const data = await response.json();
+  if (data.error) {
+    throw data.error;
+  }
+  const newPlayer = data as Player;
+  return newPlayer;
+}
+
+/**
+ * 
+ * @param playerId 
+ * @returns 
+ */
+export async function DeletePlayer(playerId: string): Promise<string> {
+  const response = await fetch(
+    import.meta.env['VITE_XRL_API_ROUTE'] + '/admin',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: GetIdToken(),
+      },
+      body: JSON.stringify({
+        operation: 'delete_player',
+        delete_player: {
+          player_id: playerId
+        }
+      })
+    }
+  );
+  const data = await response.json();
+  if (data.error) {
+    throw data.error;
+  }
+  return JSON.stringify(data);
+}
+
+/**
+ * 
+ * @param {UpdatePlayerInput} input
+ * @returns {Player} The newly updated player
+ */
+export async function UpdatePlayer(input: UpdatePlayerInput): Promise<Player> {
+  const response = await fetch(
+    import.meta.env['VITE_XRL_API_ROUTE'] + '/admin',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: GetIdToken(),
+      },
+      body: JSON.stringify({
+        operation: 'update_player',
+        update_player: input
+      })
+    }
+  );
+  const data = await response.json();
+  if (data.error) {
+    throw data.error;
+  }
+  const newPlayer = data as Player;
+  return newPlayer;
 }

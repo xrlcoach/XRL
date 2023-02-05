@@ -4,7 +4,7 @@ import { NrlClub, Player, PlayerLineupEntry, PlayerNews, TradeOffer, TradeOfferB
 import { SortLeageTable } from './services/users';
 import { ActionTypes, MutationTypes } from './store-types';
 import type { Getters, Mutations, State, Actions, XrlStore } from './store-types';
-import { DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetTransferHistoryByRound, GetUserTradeOffers, GetWaiverReports, ProcessTradeOffer, ScoopPlayers, SendTradeOffer, SetLineup, UpdateUserWaiverPreferences, WithdrawTradeOffer } from './services/xrlApi';
+import { CreateNewPlayer, DeletePlayer, DropPlayers, GetActiveUserInfo, GetAllFixtures, GetAllPlayers, GetAllUsers, GetIdToken, GetLineup, GetLineupByTeamAndRound, GetPlayerNews, GetTransferHistory, GetTransferHistoryByRound, GetUserTradeOffers, GetWaiverReports, ProcessTradeOffer, ScoopPlayers, SendTradeOffer, SetLineup, UpdatePlayer, UpdateUserWaiverPreferences, WithdrawTradeOffer } from './services/xrlApi';
 import { GetActiveRoundInfo, GetNextRoundNotInProgress, GetUserActiveFixture, GetUserLastFixture } from './services/rounds';
 
 const state = {
@@ -41,6 +41,7 @@ const getters: GetterTree<State, State> & Getters = {
   getPlayerById: state => (playerId: string) => state.allPlayers?.find(p => p.player_id === playerId) ?? null,
   getRoundInfo: (state) => (roundNumber: number) => state.allRounds?.find(r => r.round_number === roundNumber) ?? null,
   getUserByTeamShort: (state) => (teamShort: XrlTeam) => state.allUsers?.find(u => u.team_short === teamShort) ?? null,
+  userIsAdmin: state => state.user?.is_admin ?? false
 };
 
 const mutations: MutationTree<State> & Mutations = {
@@ -114,6 +115,23 @@ const mutations: MutationTree<State> & Mutations = {
   },
   [MutationTypes.SET_IS_MOBILE] (state, value) {
     state.isMobile = value;
+  },
+  [MutationTypes.ADD_NEW_PLAYER] (state, player) {
+    state.allPlayers?.push(player);
+  },
+  [MutationTypes.DELETE_PLAYER] (state, player_id) {
+    state.allPlayers = state.allPlayers?.filter(p => p.player_id !== player_id) ?? null;
+  },
+  [MutationTypes.UPDATE_PLAYER] (state, player) {
+    if (!state.allPlayers) return;
+    const existingPlayer = state.allPlayers.find(p => p.player_id === player.player_id);
+    if (existingPlayer) {
+      existingPlayer.player_name = player.player_name;
+      existingPlayer.nrl_club = player.nrl_club;
+      existingPlayer.position = player.position;
+      existingPlayer.position2 = player.position2;
+      existingPlayer.position3 = player.position3;
+    }
   }
 };
 
@@ -284,6 +302,36 @@ const actions: ActionTree<State, State> & Actions = {
       updatedOffer.offer_status = accepted ? 'Accepted' : 'Rejected';
       commit(MutationTypes.UPSERT_TRADE_OFFER, { offer: updatedOffer });
       return true;
+    } catch (err) {
+      throw err;
+    }
+  },
+  // #endregion
+
+  // #region ADMIN
+  async [ActionTypes.CreatePlayer]({ commit }, player): Promise<Player> {
+    try {
+      const newPlayer = await CreateNewPlayer(player);
+      commit(MutationTypes.ADD_NEW_PLAYER, newPlayer);
+      return newPlayer;
+    } catch (err) {
+      throw err;
+    }
+  },
+  async [ActionTypes.DeletePlayer]({ commit }, playerId): Promise<string> {
+    try {
+      const response = await DeletePlayer(playerId);
+      commit(MutationTypes.DELETE_PLAYER, playerId);
+      return response;
+    } catch (err) {
+      throw err;
+    }
+  },
+  async [ActionTypes.UpdatePlayer]({ commit }, player): Promise<Player> {
+    try {
+      const updatedPlayer = await UpdatePlayer(player);
+      commit(MutationTypes.UPDATE_PLAYER, updatedPlayer);
+      return updatedPlayer;
     } catch (err) {
       throw err;
     }

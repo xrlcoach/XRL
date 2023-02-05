@@ -30,6 +30,16 @@ export type Player = {
   year?: Number | null;
 };
 
+export type NewPlayerInput = {
+  player_name: string;
+  nrl_club: NrlClub | null;
+  position: XrlPosition | null;
+  position2: XrlPosition | null;
+  position3: XrlPosition | null;
+};
+
+export type UpdatePlayerInput = NewPlayerInput & { player_id: string };
+
 export type PlayerRawStats = {
   '1 Point Field Goals': number;
   '2 Point Field Goals': number;
@@ -218,6 +228,7 @@ export type XrlUser = {
   username: string;
   waiver_preferences: WaiverPreference[];
   waiver_rank: number;
+  is_admin?: boolean;
 };
 
 export type XrlUserStats = {

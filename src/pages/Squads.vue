@@ -15,10 +15,14 @@
           placeholder="NRL Clubs"
         />
       </div>
+      <div v-if="userIsAdmin">
+        <Button label="+ New Player" @click="addPlayerFormVisible = true" />
+      </div>
     </div>
     <transition name="fade" mode="out-in">
       <SquadTable :name="squadName" :squad="players" />
     </transition>
+    <AddPlayerForm v-if="addPlayerFormVisible" v-model:visible="addPlayerFormVisible" />
   </div>
 </template>
 
@@ -26,7 +30,7 @@
   import { computed, defineComponent, PropType, ref } from "vue";
   import { XrlTeam, NrlClub } from "../global";
   import { NrlClubs, XrlTeams } from "../services/players";
-  import { SquadTable, LoadingIndicator } from "../components";
+  import { SquadTable, LoadingIndicator, AddPlayerForm } from "../components";
   import { useXrlStore } from "../store";
 
   export default defineComponent({
@@ -57,16 +61,22 @@
           : store.getters.getNrlSquad(squadName.value)
       );
 
+      const userIsAdmin = computed(() => store.getters.userIsAdmin);
+      const addPlayerFormVisible = ref(false);
+
       return {
         xrlTeams,
         nrlClubs,
         squadName,
         players,
+        userIsAdmin,
+        addPlayerFormVisible
       };
     },
     components: {
       SquadTable,
       LoadingIndicator,
+      AddPlayerForm
     },
   });
 </script>
