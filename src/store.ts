@@ -277,7 +277,7 @@ const actions: ActionTree<State, State> & Actions = {
   async [ActionTypes.SendTradeOffer]({ commit, state, getters}, offer: TradeOfferBuilder): Promise<boolean> {
     try {
       if (!offer.targetUser) throw 'No target team for offer';
-      const offerRecord = await SendTradeOffer(offer.sendingUser.username, offer.targetUser?.username, offer.playersOffered.map(p => p.player_id), offer.playersWanted.map(p => p.player_id), offer.powerplaysOffered, offer.powerplaysOffered);
+      const offerRecord = await SendTradeOffer(offer.sendingUser.username, offer.targetUser?.username, offer.playersOffered.map(p => p.player_id), offer.playersWanted.map(p => p.player_id), offer.powerplaysOffered, offer.powerplaysWanted);
       commit(MutationTypes.UPSERT_TRADE_OFFER, { offer: offerRecord });
       return true;
     } catch (err) {
