@@ -213,9 +213,9 @@ export default defineComponent({
         if (numA === numB) {
           const dayA = a.waiver_round.split("_")[1];
           const dayB = b.waiver_round.split("_")[1];
-          return dayA.localeCompare(dayB);
+          return dayB.localeCompare(dayA);
         }
-        return numA - numB;
+        return numB - numA;
       });
       return sorted.map((r) => {
         return {
