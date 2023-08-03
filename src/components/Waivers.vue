@@ -207,7 +207,17 @@ export default defineComponent({
     const squad = computed(() => store.getters.squad);
     const waiverReports = computed(() => store.state.waiverReports);
     const waiverReportOptions = computed(() => {
-      return waiverReports.value?.map((r) => {
+      const sorted = [...waiverReports.value ?? []].sort((a, b) => {
+        const numA = Number(a.waiver_round.split("_")[0]);
+        const numB = Number(b.waiver_round.split("_")[0]);
+        if (numA === numB) {
+          const dayA = a.waiver_round.split("_")[1];
+          const dayB = b.waiver_round.split("_")[1];
+          return dayA.localeCompare(dayB);
+        }
+        return numA - numB;
+      });
+      return sorted.map((r) => {
         return {
           label:
             "Round " +
