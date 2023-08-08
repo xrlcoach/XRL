@@ -142,7 +142,7 @@
       const selectedXrlTeam = ref<XrlTeam | "ALL">();
 
       const roundOptions = ["ALL"].concat([
-        ...Array.from(Array(23).keys()).map((n) => String(n + 1)),
+        ...Array.from(Array(27).keys()).map((n) => String(n + 1)),
       ]);
       const selectedRound = ref("");
       const currentDisplayedRound = ref(0);
