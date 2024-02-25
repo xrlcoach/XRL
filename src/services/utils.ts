@@ -3,7 +3,7 @@ import { LoadSessionData } from './auth';
 import { DomHandler } from 'primevue/utils';
 
 const INAUGURAL_YEAR = 2021;
-export const CURRENT_YEAR = 2023;
+export const CURRENT_YEAR = 2024;
 
 export const getYearOptions = () => {
   let options = [];
