@@ -9,6 +9,7 @@ import {
   Transfers,
   Squads,
   MatchCentre,
+  Rules,
 } from './pages';
 import { GetIdToken } from './services/xrlApi';
 
@@ -32,6 +33,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/squads', name: 'Squads', component: Squads },
   { path: '/stats', name: 'Stats', component: Stats },
   { path: '/transfers', name: 'Transfers', component: Transfers },
+  { path: '/rules', name: 'Rules', component: Rules },
 ];
 
 const router = createRouter({

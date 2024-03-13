@@ -103,6 +103,11 @@ import router from './router';
           icon: 'pi pi-dollar',
           to: '/transfers',
         },
+        {
+          label: 'Rules',
+          icon: 'pi pi-book',
+          to: '/rules',
+        },
       ]);
 
       const isMobile = computed(() => store.state.isMobile);

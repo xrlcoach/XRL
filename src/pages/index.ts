@@ -7,6 +7,7 @@ import Ladder from './Ladder.vue';
 import MatchCentre from './MatchCentre.vue';
 import Squads from './Squads.vue';
 import Transfers from './Transfers.vue';
+import Rules from './Rules.vue';
 
 export {
   Dashboard,
@@ -18,4 +19,5 @@ export {
   MatchCentre,
   Squads,
   Transfers,
+  Rules
 };
