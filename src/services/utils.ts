@@ -1,9 +1,17 @@
-import { AppearanceExportData, Player, PlayerAppearanceStats, PlayerExportData, PlayerScoringStats, ScoringStats, XrlPosition } from '../global';
-import { LoadSessionData } from './auth';
 import { DomHandler } from 'primevue/utils';
+import {
+  AppearanceExportData,
+  Player,
+  PlayerAppearanceStats,
+  PlayerExportData,
+  PlayerScoringStats,
+  ScoringStats,
+  XrlPosition,
+} from '../global';
+import { LoadSessionData } from './auth';
 
 const INAUGURAL_YEAR = 2021;
-export const CURRENT_YEAR = 2024;
+export const CURRENT_YEAR = 2025;
 
 export const getYearOptions = () => {
   let options = [];
@@ -11,7 +19,7 @@ export const getYearOptions = () => {
     options.push(i);
   }
   return options;
-}
+};
 
 export const LineupPositions = ['Back', 'Forward', 'Playmaker', 'Interchange'] as const;
 
@@ -75,16 +83,16 @@ export const PositionNames = {
   int4: 'Interchange',
 };
 export const PositionNamesReverse = {
-  'Fullback': 'fullback',
-  'Winger': 'winger1',
-  'Centre': 'centre1',
+  Fullback: 'fullback',
+  Winger: 'winger1',
+  Centre: 'centre1',
   'Five-Eighth': 'five_eighth',
-  'Halfback': 'halfback',
-  'Hooker': 'hooker',
-  'Prop': 'prop1',
+  Halfback: 'halfback',
+  Hooker: 'hooker',
+  Prop: 'prop1',
   '2nd Row': 'row1',
-  'Lock': 'lock',
-  'Interchange': 'int1',
+  Lock: 'lock',
+  Interchange: 'int1',
 };
 
 export const PositionOrder = ['Back', 'Playmaker', 'Forward'];
@@ -143,10 +151,10 @@ export const BlankLineupEntry = {
     player_id: '',
     player_name: '',
     round_number: '',
-    scoring_stats: {'kicker': {}},
+    scoring_stats: { kicker: {} },
     stats: {},
-  }
-}
+  },
+};
 
 export function GetOrdinal(num: number | string) {
   let str = String(num);
@@ -216,31 +224,31 @@ export function isPlayer(object: any): object is Player {
 
 export function createPlayerExportData(players: Player[]) {
   const data = players.map(p => {
-    const scoring = p.scoring_stats[
-      p.position as keyof PlayerScoringStats
-    ] as ScoringStats | undefined;
+    const scoring = p.scoring_stats[p.position as keyof PlayerScoringStats] as
+      | ScoringStats
+      | undefined;
     const appearances = Number(p.stats?.appearances);
     const pointsAsKicker = (scoring?.points ?? 0) + (p.scoring_stats?.kicker?.points ?? 0);
     const pointsPerGame = appearances ? +(pointsAsKicker / appearances).toFixed(2) : 0;
     const playerData: PlayerExportData = {
-      'Name': p.player_name,
-      'Position': p.position,
+      Name: p.player_name,
+      Position: p.position,
       'Position 2': p.position2,
       'Position 3': p.position3,
-      'Appearances': appearances,
-      'Tries': p.stats.Tries ?? 0,
-      'Goals': p.scoring_stats?.kicker?.goals ?? 0,
+      Appearances: appearances,
+      Tries: p.stats.Tries ?? 0,
+      Goals: p.scoring_stats?.kicker?.goals ?? 0,
       'Field Goals': p.stats['1 Point Field Goals'] ?? 0,
       '2pt Field Goals': p.stats['2 Point Field Goals'] ?? 0,
-      'IT': scoring?.involvement_try ?? 0,
-      'PT': scoring?.positional_try ?? 0,
-      'MIA': scoring?.mia ?? 0,
-      'Concede': scoring?.concede ?? 0,
+      IT: scoring?.involvement_try ?? 0,
+      PT: scoring?.positional_try ?? 0,
+      MIA: scoring?.mia ?? 0,
+      Concede: scoring?.concede ?? 0,
       'Sin Bins': p.stats?.['Sin Bins'] ?? 0,
       'Send Offs': p.stats?.['Send Offs'] ?? 0,
       'Points (NK)': scoring?.points ?? 0,
       'Points (K)': pointsAsKicker,
-      'Points Per Game': pointsPerGame
+      'Points Per Game': pointsPerGame,
     };
     return playerData;
   });
@@ -249,26 +257,26 @@ export function createPlayerExportData(players: Player[]) {
 
 export function createAppearanceExportData(appearances: (PlayerAppearanceStats & Player)[]) {
   const data = appearances.map(p => {
-    const scoring = p.scoring_stats[
-      p.position as keyof PlayerScoringStats
-    ] as ScoringStats | undefined;
+    const scoring = p.scoring_stats[p.position as keyof PlayerScoringStats] as
+      | ScoringStats
+      | undefined;
     const appearances = Number(p.stats?.appearances);
     const pointsAsKicker = (scoring?.points ?? 0) + (p.scoring_stats?.kicker?.points ?? 0);
     const pointsPerGame = appearances ? +(pointsAsKicker / appearances).toFixed(2) : 0;
     const playerData: AppearanceExportData = {
-      'Name': p.player_name,
+      Name: p.player_name,
       'Position Played': p.stats.Position,
-      'Club': p.nrl_club,
-      'Opponent': p.opponent,
-      'Mins': p.stats['Mins Played'],
-      'Tries': p.stats.Tries ?? 0,
-      'Goals': p.scoring_stats?.kicker?.goals ?? 0,
+      Club: p.nrl_club,
+      Opponent: p.opponent,
+      Mins: p.stats['Mins Played'],
+      Tries: p.stats.Tries ?? 0,
+      Goals: p.scoring_stats?.kicker?.goals ?? 0,
       'Field Goals': p.stats['1 Point Field Goals'] ?? 0,
       '2pt Field Goals': p.stats['2 Point Field Goals'] ?? 0,
-      'IT': Number(scoring?.involvement_try ?? 0),
-      'PT': Number(scoring?.positional_try ?? 0),
-      'MIA': Number(scoring?.mia ?? 0),
-      'Concede': Number(scoring?.concede ?? 0),
+      IT: Number(scoring?.involvement_try ?? 0),
+      PT: Number(scoring?.positional_try ?? 0),
+      MIA: Number(scoring?.mia ?? 0),
+      Concede: Number(scoring?.concede ?? 0),
       'Sin Bin': p.stats['Sin Bins'],
       'Sent Off': p.stats['Send Offs'],
       'Points (NK)': GetPlayerXrlScores(p.position, p, false),
@@ -302,7 +310,7 @@ export function exportStatsAsCSV(data: any[], fileName: string) {
       let rowInitiated = false;
       for (let i = 0; i < columns.length; i++) {
         let column = columns[i];
-        if (rowInitiated) csv += ",";
+        if (rowInitiated) csv += ',';
         else rowInitiated = true;
         let cellData = record[column as keyof typeof record];
 
@@ -321,5 +329,5 @@ export function getJerseyUrl(club: string | undefined): string {
     `https://raw.githubusercontent.com/xrlcoach/XRL/main/src/assets/jerseys/${
       club || 'default'
     }_jersey.png`
-  ); 
+  );
 }
