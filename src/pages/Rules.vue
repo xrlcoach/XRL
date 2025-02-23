@@ -47,12 +47,12 @@
                 8 Line Breaks, Line Break Assists, Try Assists, Offloads, Tackle Breaks, 40/20s,
                 20/40s and 1on1 Steals
               </li>
-              <li>140m in Run Metres</li>
+              <li>120m in Run Metres</li>
               <li>40 Tackles</li>
             </ul>
             <h4>Involvement Try:</h4>
             <ul>
-              <li>50 stats</li>
+              <li>45 stats</li>
             </ul>
             <h4>Missing in Action</h4>
             <ul>
