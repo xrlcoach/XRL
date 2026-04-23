@@ -8,7 +8,7 @@
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
       :rowsPerPageOptions="[10, 20, 50]"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-      v-model:selection="selectedPlayer"
+      v-model:selection="selectedAppearance"
       selectionMode="single"
       @rowSelect="onSelectPlayer"
       responsiveLayout="scroll"
@@ -72,29 +72,29 @@
       <Column field="concede" header="CON" :sortable="true"></Column>
       <Column field="points" header="Points" :sortable="true"></Column>
     </DataTable>
-    <Dialog header="Player Appearance" v-model:visible="showPlayer" :breakpoints="{'960px': '75vw', '640px': '100vw'}" :style="{width: '50vw'}" >
-      <PlayerRoundStats v-if="selectedAppearance" :appearance="selectedAppearance"  />
+    <Dialog
+      header="Player Appearance"
+      v-model:visible="showPlayer"
+      :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+      :style="{ width: '50vw' }"
+    >
+      <PlayerRoundStats v-if="selectedAppearance" :appearance="selectedAppearance" @view-profile="viewProfile" />
     </Dialog>
   </div>
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, watch, PropType, ref } from "vue";
-  import {
-    Player,
-    PlayerAppearanceStats,
-    PlayerScoringStats,
-    ScoringStats,
-  } from "../global";
-  import { GetPlayerXrlScores } from "../services/utils";
-  import { useXrlStore } from "../store";
-  import { MutationTypes } from "../store-types";
-  import PlayerAppearance from "./PlayerAppearance.vue";
-import PlayerRoundStats from "./PlayerRoundStats.vue";
+  import { computed, defineComponent, PropType, ref } from 'vue';
+  import { Player, PlayerAppearanceStats, PlayerScoringStats, ScoringStats } from '../global';
+  import { GetPlayerXrlScores } from '../services/utils';
+  import { useXrlStore } from '../store';
+  import { MutationTypes } from '../store-types';
+  import PlayerAppearance from './PlayerAppearance.vue';
+  import PlayerRoundStats from './PlayerRoundStats.vue';
 
   export default defineComponent({
     components: { PlayerAppearance, PlayerRoundStats },
-    emits: ["export"],
+    emits: ['export'],
     props: {
       stats: {
         type: Array as PropType<(Player & PlayerAppearanceStats)[]>,
@@ -109,21 +109,19 @@ import PlayerRoundStats from "./PlayerRoundStats.vue";
 
       const displayData = computed(() => {
         return stats
-          .map((p) => {
-            let scoring = p.scoring_stats[
-              p.position as keyof PlayerScoringStats
-            ] as ScoringStats | undefined;
+          .map(p => {
+            let scoring = p.scoring_stats[p.position as keyof PlayerScoringStats] as
+              | ScoringStats
+              | undefined;
             return {
               player_id: p.player_id,
               player_name: p.player_name,
               search_name: p.search_name,
               nrl_club: p.nrl_club,
-              minutes: p.stats["Mins Played"] ?? 0,
+              minutes: p.stats['Mins Played'] ?? 0,
               tries: p.stats.Tries ?? 0,
               goals: p.scoring_stats.kicker.goals ?? 0,
-              field_goals:
-                (scoring?.field_goals ?? 0) +
-                (scoring?.["2point_field_goals"] ?? 0),
+              field_goals: (scoring?.field_goals ?? 0) + (scoring?.['2point_field_goals'] ?? 0),
               it: scoring?.involvement_try ? 1 : 0,
               pt: scoring?.positional_try ? 1 : 0,
               mia: scoring?.mia ? 1 : 0,
@@ -138,29 +136,32 @@ import PlayerRoundStats from "./PlayerRoundStats.vue";
 
       const includeKickingPoints = ref(true);
 
-      const selectedAppearance = ref<PlayerAppearanceStats>();
+      const selectedAppearance = ref<Player & PlayerAppearanceStats>();
       const onSelectPlayer = (event: any) => {
-        selectedAppearance.value = stats.find(
-          (p) => p.player_id === event.data.player_id
-        );
+        selectedAppearance.value = stats.find(p => p.player_id === event.data.player_id);
         showPlayer.value = true;
       };
       const showPlayer = ref(false);
 
-      const searchTerm = ref("");
+      const searchTerm = ref('');
       const clearSearch = () => {
-        searchTerm.value = "";
+        searchTerm.value = '';
       };
       const filteredPlayers = computed(() => {
-        return displayData.value.filter((p) => {
+        return displayData.value.filter(p => {
           if (!p.search_name) console.log(p);
           return p.search_name.includes(searchTerm.value.toLowerCase());
         });
       });
 
+      const viewProfile = () => {
+        showPlayer.value = false;
+        store.commit(MutationTypes.SHOW_SELECTED_PLAYER, selectedAppearance.value);
+      };
+
       const exportRoundStats = () => {
         const records = stats;
-        emit("export", records);
+        emit('export', records);
       };
 
       return {
@@ -173,6 +174,7 @@ import PlayerRoundStats from "./PlayerRoundStats.vue";
         filteredPlayers,
         includeKickingPoints,
         exportRoundStats,
+        viewProfile,
       };
     },
   });

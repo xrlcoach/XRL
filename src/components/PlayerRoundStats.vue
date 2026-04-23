@@ -1,7 +1,15 @@
 <template>
   <div v-if="appearance" id="profileContainer">
     <div id="playerInfo">
-      <div style="display: flex; align-items: center; justify-content: start; gap: 20px; margin-bottom: 20px;">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: start;
+          gap: 20px;
+          margin-bottom: 20px;
+        "
+      >
         <h1>{{ appearance.player_name }}</h1>
       </div>
       <div class="row">
@@ -28,8 +36,7 @@
         <div class="cell">
           <h4>Position</h4>
           <p class="value">
-            {{ xrlPosition
-            }}
+            {{ xrlPosition }}
           </p>
         </div>
       </div>
@@ -41,9 +48,7 @@
           <p
             :style="{
               'font-size': '20px',
-              color: playedNrl
-                ? 'var(--primary-color)'
-                : 'var(--pink-300)',
+              color: playedNrl ? 'var(--primary-color)' : 'var(--pink-300)',
             }"
           >
             {{ playedNrl ? 'PLAYED' : 'DID NOT PLAY' }}
@@ -86,8 +91,8 @@
                 p1ScoringStats.points && p1ScoringStats.points > 0
                   ? 'color: var(--primary-color);'
                   : p1ScoringStats.points && p1ScoringStats.points < 0
-                  ? 'color: var(--pink-300)'
-                  : ''
+                    ? 'color: var(--pink-300)'
+                    : ''
               "
             >
               {{ p1ScoringStats.points ?? 0 }}
@@ -117,13 +122,9 @@
                     <p>Tries</p>
                     <p
                       class="value"
-                      :style="
-                        appearance.stats.Tries
-                          ? 'color: var(--primary-color);'
-                          : ''
-                      "
+                      :style="appearance.stats.Tries ? 'color: var(--primary-color);' : ''"
                     >
-                      {{ appearance.appearanceStats?.stats.Tries }}
+                      {{ appearance.stats.Tries }}
                     </p>
                   </li>
                   <li>
@@ -131,9 +132,7 @@
                     <p
                       class="value"
                       :style="
-                        p1ScoringStats.involvement_try > 0
-                          ? 'color: var(--primary-color);'
-                          : ''
+                        p1ScoringStats.involvement_try > 0 ? 'color: var(--primary-color);' : ''
                       "
                     >
                       {{ p1ScoringStats.involvement_try ? 1 : 0 }}
@@ -144,9 +143,7 @@
                     <p
                       class="value"
                       :style="
-                        p1ScoringStats.positional_try > 0
-                          ? 'color: var(--primary-color);'
-                          : ''
+                        p1ScoringStats.positional_try > 0 ? 'color: var(--primary-color);' : ''
                       "
                     >
                       {{ p1ScoringStats.positional_try ? 1 : 0 }}
@@ -156,11 +153,7 @@
                     <p>Goals</p>
                     <p
                       class="value"
-                      :style="
-                        kickingStats?.goals
-                          ? 'color: var(--primary-color);'
-                          : ''
-                      "
+                      :style="kickingStats?.goals ? 'color: var(--primary-color);' : ''"
                     >
                       {{ kickingStats?.goals }}
                     </p>
@@ -169,11 +162,7 @@
                     <p>1pt Field Goals</p>
                     <p
                       class="value"
-                      :style="
-                        p1ScoringStats.field_goals > 0
-                          ? 'color: var(--primary-color);'
-                          : ''
-                      "
+                      :style="p1ScoringStats.field_goals > 0 ? 'color: var(--primary-color);' : ''"
                     >
                       {{ p1ScoringStats.field_goals }}
                     </p>
@@ -273,63 +262,61 @@
         </div>
       </AccordionTab>
     </Accordion>
+    <Button label="View Profile" icon="pi pi-user" @click="$emit('view-profile')" />
   </div>
 </template>
 
 <script lang="ts">
+  import Accordion from 'primevue/accordion';
+  import AccordionTab from 'primevue/accordiontab';
+  import ScrollPanel from 'primevue/scrollpanel';
+  import TabPanel from 'primevue/tabpanel';
+  import TabView from 'primevue/tabview';
+  import Tag from 'primevue/tag';
   import { defineComponent, onMounted, PropType, ref } from 'vue';
   import {
     Player,
     PlayerAppearanceStats,
-    PlayerLineupEntryWithStats,
     PlayerRawStats,
-    PlayerScoringStats,
     ScoringStats,
     XrlPosition,
   } from '../global';
-  import TabView from 'primevue/tabview';
-  import TabPanel from 'primevue/tabpanel';
-  import ScrollPanel from 'primevue/scrollpanel';
-  import Accordion from 'primevue/accordion';
-  import AccordionTab from 'primevue/accordiontab';
-  import Tag from 'primevue/tag';
-  import { XrlRelevantStats, PositionMap, PositionNames, PositionNamesReverse, GetPlayerXrlScores } from '../services/utils';
+  import { GetPlayerXrlScores, XrlRelevantStats } from '../services/utils';
 
   export default defineComponent({
+    emits: ['view-profile'],
     props: {
       appearance: {
-        type: Object as PropType<PlayerAppearanceStats>,
+        type: Object as PropType<Player & PlayerAppearanceStats>,
         required: true,
       },
     },
     setup({ appearance }) {
       const loaded = ref(false);
 
-      const scoringStatPositions = Object.keys(appearance.scoring_stats).filter(key => key !== 'kicker');
+      const scoringStatPositions = Object.keys(appearance.scoring_stats).filter(
+        key => key !== 'kicker',
+      );
       const xrlPosition = scoringStatPositions[0] as XrlPosition;
-      const p1ScoringStats: ScoringStats = appearance.scoring_stats[scoringStatPositions[0] as keyof typeof appearance.scoring_stats] as ScoringStats;
+      const p1ScoringStats: ScoringStats = appearance.scoring_stats[
+        scoringStatPositions[0] as keyof typeof appearance.scoring_stats
+      ] as ScoringStats;
       p1ScoringStats.points = GetPlayerXrlScores(xrlPosition, appearance, true);
       let p2ScoringStats: ScoringStats | null = null;
       if (scoringStatPositions.length > 1) {
-        p2ScoringStats = appearance.scoring_stats[scoringStatPositions[0] as keyof typeof appearance.scoring_stats] as ScoringStats;
-
+        p2ScoringStats = appearance.scoring_stats[
+          scoringStatPositions[0] as keyof typeof appearance.scoring_stats
+        ] as ScoringStats;
       }
       const kickingStats = appearance.scoring_stats.kicker;
-      const allStats = Object.keys(appearance.stats ?? {}).map(
-        statName => {
-          return {
-            stat: statName,
-            value:
-              appearance.stats[
-                statName as keyof PlayerRawStats
-              ],
-          };
-        }
-      );
+      const allStats = Object.keys(appearance.stats ?? {}).map(statName => {
+        return {
+          stat: statName,
+          value: appearance.stats[statName as keyof PlayerRawStats],
+        };
+      });
       const playedNrl = appearance.stats['Mins Played'] > 0;
-      const keyStats = allStats.filter(stat =>
-        XrlRelevantStats.includes(stat.stat)
-      );
+      const keyStats = allStats.filter(stat => XrlRelevantStats.includes(stat.stat));
       const activeIndex = ref(0);
 
       onMounted(async () => {
