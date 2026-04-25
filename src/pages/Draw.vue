@@ -4,11 +4,24 @@
       <Splitter layout="vertical">
         <SplitterPanel>
           <div class="tableHeader">
-            <Dropdown
-              v-model="selectedRound"
-              :options="roundNumbers"
-              @change="showRoundFixtures"
-            />
+            <div class="roundSelectors">
+              <Dropdown
+                v-model="selectedYear"
+                :options="yearOptions"
+                @change="onYearChange"
+              />
+              <Dropdown
+                v-model="selectedRound"
+                :options="roundNumbers"
+                @change="showRoundFixtures"
+              />
+              <Button
+                v-if="notOnCurrentRound"
+                label="Current Round"
+                class="p-button-sm p-button-outlined"
+                @click="goToCurrentRound"
+              />
+            </div>
             {{ heading }}
             <Dropdown
               v-model="selectedUser"
@@ -110,6 +123,8 @@
   import { GetActiveRoundNumber, GetAllRounds } from '../services/rounds';
   import { GetAllUserInfoSorted } from '../services/users';
   import { useXrlStore } from '../store';
+  import { GetAllFixtures } from '../services/xrlApi';
+  import { CURRENT_YEAR, getYearOptions } from '../services/utils';
 
   export default defineComponent({
     setup() {
@@ -117,9 +132,17 @@
 
       const isMobile = computed(() => store.state.isMobile);
 
+      const yearOptions = getYearOptions().reverse();
+      const selectedYear = ref(CURRENT_YEAR);
+      const historicalRounds = ref(null as XrlRoundWithFixtures[] | null);
+
       const allRounds = computed(() => store.state.allRounds);
       const currentRound = computed(() => store.getters.activeRoundNumber);
       const selectedRound = ref(String(store.getters.activeRoundNumber));
+
+      const displayRounds = computed(() =>
+        selectedYear.value === CURRENT_YEAR ? allRounds.value : historicalRounds.value
+      );
 
       const allUsers = computed(() => store.state.allUsers);
       const selectedUser = ref('');
@@ -129,14 +152,14 @@
 
       const roundNumbers = computed(() => {
         return (
-          allRounds.value?.map(r => String(r.round_number)).concat(['--']) ?? []
+          displayRounds.value?.map(r => String(r.round_number)).concat(['--']) ?? []
         );
       });
 
       const getRoundInfo = (roundNo: number) => {
-        if (!allRounds.value) return null;
-        let i = allRounds.value.findIndex(r => r.round_number === roundNo);
-        if (i !== -1) return allRounds.value[i];
+        if (!displayRounds.value) return null;
+        let i = displayRounds.value.findIndex(r => r.round_number === roundNo);
+        if (i !== -1) return displayRounds.value[i];
         return null;
       };
 
@@ -177,10 +200,34 @@
         newValue => (selectedRound.value = String(newValue))
       );
 
+      const notOnCurrentRound = computed(
+        () =>
+          selectedYear.value !== CURRENT_YEAR ||
+          selectedRound.value !== String(currentRound.value)
+      );
+
+      const goToCurrentRound = () => {
+        selectedYear.value = CURRENT_YEAR;
+        historicalRounds.value = null;
+        selectedRound.value = String(currentRound.value);
+        selectedUser.value = 'None';
+        loadFixtureTable();
+      };
+
+      const onYearChange = async () => {
+        selectedRound.value = '--';
+        selectedUser.value = 'None';
+        fixtures.value = [];
+        heading.value = String(selectedYear.value);
+        if (selectedYear.value !== CURRENT_YEAR) {
+          historicalRounds.value = await GetAllFixtures(selectedYear.value);
+        }
+      };
+
       const userFixtures = computed(() => {
         let uf: XrlFixture[] = [];
-        if (allRounds.value) {
-          for (let r of allRounds.value) {
+        if (displayRounds.value) {
+          for (let r of displayRounds.value) {
             let i = r.fixtures.findIndex(
               f =>
                 f.away === selectedUser.value || f.home === selectedUser.value
@@ -221,6 +268,11 @@
 
       return {
         isMobile,
+        yearOptions,
+        selectedYear,
+        onYearChange,
+        notOnCurrentRound,
+        goToCurrentRound,
         roundNumbers,
         selectedRound,
         allUsers,
@@ -240,6 +292,11 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
+  }
+  .roundSelectors {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
   @media screen and (max-width: 960px) {
     :deep(.p-datatable) {

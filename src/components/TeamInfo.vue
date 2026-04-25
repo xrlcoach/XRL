@@ -50,10 +50,11 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent } from "vue";
-  import { GetOrdinal } from "../services/utils";
-  import Chart from "primevue/chart";
-import { useXrlStore } from "../store";
+  import { ChartOptions } from 'chart.js';
+  import Chart from 'primevue/chart';
+  import { computed, defineComponent } from 'vue';
+  import { GetOrdinal } from '../services/utils';
+  import { useXrlStore } from '../store';
 
   export default defineComponent({
     setup() {
@@ -65,9 +66,7 @@ import { useXrlStore } from "../store";
 
       const position = computed(() => {
         return GetOrdinal(
-          (ladder?.value?.findIndex(
-            (u) => u.username == activeUser?.value?.username
-          ) ?? 0) + 1
+          (ladder?.value?.findIndex(u => u.username == activeUser?.value?.username) ?? 0) + 1,
         );
       });
 
@@ -79,7 +78,7 @@ import { useXrlStore } from "../store";
 
       const resultData = computed(() => {
         return {
-          labels: ["Wins", "Draws", "Losses"],
+          labels: ['Wins', 'Draws', 'Losses'],
           datasets: [
             {
               data: [
@@ -87,7 +86,7 @@ import { useXrlStore } from "../store";
                 activeUser?.value?.stats.draws,
                 activeUser?.value?.stats.losses,
               ],
-              backgroundColor: ["#81C784", "#fdd87d", "#F48FB1"],
+              backgroundColor: ['#81C784', '#fdd87d', '#F48FB1'],
             },
           ],
         };
@@ -96,41 +95,39 @@ import { useXrlStore } from "../store";
         responsive: false,
       };
       const diff = computed(
-        () =>
-          (activeUser?.value?.stats.for ?? 0) -
-          (activeUser?.value?.stats.against ?? 0)
+        () => (activeUser?.value?.stats.for ?? 0) - (activeUser?.value?.stats.against ?? 0),
       );
       const pointsData = computed(() => {
         return {
-          labels: ["Points"],
+          labels: ['Points'],
           datasets: [
             {
-              label: "For",
-              backgroundColor: "#81C784",
+              label: 'For',
+              backgroundColor: '#81C784',
               data: [activeUser?.value?.stats.for],
             },
             {
-              label: "Against",
-              backgroundColor: "#F48FB1",
+              label: 'Against',
+              backgroundColor: '#F48FB1',
               data: [activeUser?.value?.stats.against],
             },
             {
-              label: "Diff",
-              backgroundColor: diff.value > 0 ? "#81C784" : "#F48FB1",
+              label: 'Diff',
+              backgroundColor: diff.value > 0 ? '#81C784' : '#F48FB1',
               data: [diff.value],
             },
           ],
         };
       });
-      const barChartOptions = {
+      const barChartOptions: ChartOptions<'bar'> = {
         responsive: false,
         scales: {
           yAxes: [
             {
-              type: "linear",
+              type: 'linear',
               display: true,
-              position: "left",
-              id: "y-axis-1",
+              position: 'left',
+              id: 'y-axis-1',
               ticks: {
                 min: Math.min(0, diff.value),
               },

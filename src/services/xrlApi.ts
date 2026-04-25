@@ -394,17 +394,18 @@ export async function SetLineup(idToken: string, players: PlayerLineupEntry[]) {
 /**
  * Retrieves all data from rounds table. Each round has status boolean properties and a fixtures property with an array of matches.
  */
-export async function GetAllFixtures() {
-  const response = await fetch(
-    import.meta.env['VITE_XRL_API_ROUTE'] + '/fixtures',
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: GetIdToken(),
-      },
-    }
-  );
+export async function GetAllFixtures(year?: number) {
+  const url =
+    import.meta.env['VITE_XRL_API_ROUTE'] +
+    '/fixtures' +
+    (year ? `?year=${year}` : '');
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: GetIdToken(),
+    },
+  });
   const data = await response.json();
   if (data.error) {
     throw data.error;
